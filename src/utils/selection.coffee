@@ -1,7 +1,17 @@
+###
+Cross-browser textarea selection module
+
+@author lambdalisue
+@since 2013
+###
 "use strict"
 
-class utils.Selection
-  constructor: (@textarea) -> @
+utils.Selection = class utils.W3CSelection
+  ###
+  Closs-browser textarea selection
+  ###
+  constructor: (@textarea) ->
+    ### Selection constructor ###
 
   _getCaret: ->
     s = @textarea.selectionStart
@@ -23,6 +33,12 @@ class utils.Selection
     a = v.substring e
     @_setWholeText(b + repl + a)
 
+  ###
+  Get or set caret
+
+  @param [s] start index of the caret
+
+  ###
   caret: (s, e) ->
     if not s?
       return @_getCaret()
@@ -170,48 +186,3 @@ class utils.Selection
       @_setCaret(s, e)
     @textarea.scrollTop = scrollTop
     return @
-
-if document.selection?
-  W3CSelection = utils.Selection
-  # http://stackoverflow.com/questions/4009756/how-to-count-string-occurrence-in-string
-  occurrences = (str, subStr, allowOverlapping) ->
-    str += ""
-    subStr += ""
-    if subStr.length <= 0
-      return str.length+1
-    n = pos = 0
-    step = if allowOverlapping then 1 else subStr.length
-    while true
-      pos = str.indexOf(subStr, pos)
-      if pos >= 0
-        n++
-        pos += step
-      else
-        break
-    return n
-  class utils.Selection extends W3CSelection
-    constructor: (@textarea) ->
-      @_document = @textarea.ownerDocument
-
-    _getWholeText: ->
-      value = @textarea.value
-      value = value.replace(/\r\n/g, "\n")
-      return value
-
-    _getCaret: ->
-      range = @_document.selection.createRange()
-      clone = range.duplicate()
-      clone.moveToElementText(@textarea)
-      clone.setEndPoint('EndToEnd', range)
-      s = clone.text.length - range.text.length
-      e = s + range.text.length
-      e -= occurrences(range.text, "\r\n")
-      return [s, e]
-
-    _setCaret: (s, e) ->
-      range = @textarea.createTextRange()
-      range.collapse(true)
-      range.moveStart('character', s)
-      range.moveEnd('character', e - s)
-      range.select()
-      return @

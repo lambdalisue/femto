@@ -1,40 +1,49 @@
+
+/*
+Cross-browser textarea selection module
+
+@author lambdalisue
+@since 2013
+*/
+
+
 (function() {
   "use strict";
 
-  var W3CSelection, occurrences,
-    __hasProp = {}.hasOwnProperty,
-    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
+  utils.Selection = utils.W3CSelection = (function() {
+    /*
+      Closs-browser textarea selection
+    */
 
-  utils.Selection = (function() {
-
-    function Selection(textarea) {
+    function W3CSelection(textarea) {
       this.textarea = textarea;
-      this;
+      /* Selection constructor
+      */
 
     }
 
-    Selection.prototype._getCaret = function() {
+    W3CSelection.prototype._getCaret = function() {
       var e, s;
       s = this.textarea.selectionStart;
       e = this.textarea.selectionEnd;
       return [s, e];
     };
 
-    Selection.prototype._setCaret = function(s, e) {
+    W3CSelection.prototype._setCaret = function(s, e) {
       this.textarea.setSelectionRange(s, e);
       return this;
     };
 
-    Selection.prototype._getWholeText = function() {
+    W3CSelection.prototype._getWholeText = function() {
       return this.textarea.value;
     };
 
-    Selection.prototype._setWholeText = function(value) {
+    W3CSelection.prototype._setWholeText = function(value) {
       this.textarea.value = value;
       return this;
     };
 
-    Selection.prototype._replace = function(repl, s, e) {
+    W3CSelection.prototype._replace = function(repl, s, e) {
       var a, b, v;
       v = this._getWholeText();
       b = v.substring(0, s);
@@ -42,7 +51,14 @@
       return this._setWholeText(b + repl + a);
     };
 
-    Selection.prototype.caret = function(s, e) {
+    /*
+      Get or set caret
+    
+      @param [s] start index of the caret
+    */
+
+
+    W3CSelection.prototype.caret = function(s, e) {
       var caret, scrollTop;
       if (!(s != null)) {
         return this._getCaret();
@@ -57,7 +73,7 @@
       return this;
     };
 
-    Selection.prototype.text = function(text, keepSelection) {
+    W3CSelection.prototype.text = function(text, keepSelection) {
       var e, s, scrollTop, _ref;
       _ref = this._getCaret(), s = _ref[0], e = _ref[1];
       if (!(text != null)) {
@@ -74,7 +90,7 @@
       return this;
     };
 
-    Selection.prototype.lineCaret = function(s, e) {
+    W3CSelection.prototype.lineCaret = function(s, e) {
       var ee, ss, v, _ref;
       if (!(s != null) || !(e != null)) {
         _ref = this._getCaret(), ss = _ref[0], ee = _ref[1];
@@ -90,7 +106,7 @@
       return [s, e];
     };
 
-    Selection.prototype.lineText = function(text, keepSelection) {
+    W3CSelection.prototype.lineText = function(text, keepSelection) {
       var e, s, scrollTop, _ref;
       _ref = this.lineCaret(), s = _ref[0], e = _ref[1];
       if (!(text != null)) {
@@ -107,7 +123,7 @@
       return this;
     };
 
-    Selection.prototype.insertBefore = function(text, keepSelection) {
+    W3CSelection.prototype.insertBefore = function(text, keepSelection) {
       var e, s, scrollTop, str, _ref;
       _ref = this._getCaret(), s = _ref[0], e = _ref[1];
       str = this.text();
@@ -122,7 +138,7 @@
       return this;
     };
 
-    Selection.prototype.insertAfter = function(text, keepSelection) {
+    W3CSelection.prototype.insertAfter = function(text, keepSelection) {
       var e, s, scrollTop, str, _ref;
       _ref = this._getCaret(), s = _ref[0], e = _ref[1];
       str = this.text();
@@ -138,7 +154,7 @@
       return this;
     };
 
-    Selection.prototype.enclose = function(lhs, rhs, keepSelection) {
+    W3CSelection.prototype.enclose = function(lhs, rhs, keepSelection) {
       var e, lastIndexOf, s, scrollTop, str, text, _ref;
       text = this.text();
       scrollTop = this.textarea.scrollTop;
@@ -159,7 +175,7 @@
       return this;
     };
 
-    Selection.prototype.insertBeforeLine = function(text, keepSelection) {
+    W3CSelection.prototype.insertBeforeLine = function(text, keepSelection) {
       var e, s, scrollTop, str, _ref;
       _ref = this.lineCaret(), s = _ref[0], e = _ref[1];
       str = this.lineText();
@@ -174,7 +190,7 @@
       return this;
     };
 
-    Selection.prototype.insertAfterLine = function(text, keepSelection) {
+    W3CSelection.prototype.insertAfterLine = function(text, keepSelection) {
       var e, s, scrollTop, str, _ref;
       _ref = this.lineCaret(), s = _ref[0], e = _ref[1];
       str = this.lineText();
@@ -190,7 +206,7 @@
       return this;
     };
 
-    Selection.prototype.encloseLine = function(lhs, rhs, keepSelection) {
+    W3CSelection.prototype.encloseLine = function(lhs, rhs, keepSelection) {
       var e, lastIndexOf, s, scrollTop, str, text, _ref;
       text = this.lineText();
       scrollTop = this.textarea.scrollTop;
@@ -211,73 +227,8 @@
       return this;
     };
 
-    return Selection;
+    return W3CSelection;
 
   })();
-
-  if (document.selection != null) {
-    W3CSelection = utils.Selection;
-    occurrences = function(str, subStr, allowOverlapping) {
-      var n, pos, step;
-      str += "";
-      subStr += "";
-      if (subStr.length <= 0) {
-        return str.length + 1;
-      }
-      n = pos = 0;
-      step = allowOverlapping ? 1 : subStr.length;
-      while (true) {
-        pos = str.indexOf(subStr, pos);
-        if (pos >= 0) {
-          n++;
-          pos += step;
-        } else {
-          break;
-        }
-      }
-      return n;
-    };
-    utils.Selection = (function(_super) {
-
-      __extends(Selection, _super);
-
-      function Selection(textarea) {
-        this.textarea = textarea;
-        this._document = this.textarea.ownerDocument;
-      }
-
-      Selection.prototype._getWholeText = function() {
-        var value;
-        value = this.textarea.value;
-        value = value.replace(/\r\n/g, "\n");
-        return value;
-      };
-
-      Selection.prototype._getCaret = function() {
-        var clone, e, range, s;
-        range = this._document.selection.createRange();
-        clone = range.duplicate();
-        clone.moveToElementText(this.textarea);
-        clone.setEndPoint('EndToEnd', range);
-        s = clone.text.length - range.text.length;
-        e = s + range.text.length;
-        e -= occurrences(range.text, "\r\n");
-        return [s, e];
-      };
-
-      Selection.prototype._setCaret = function(s, e) {
-        var range;
-        range = this.textarea.createTextRange();
-        range.collapse(true);
-        range.moveStart('character', s);
-        range.moveEnd('character', e - s);
-        range.select();
-        return this;
-      };
-
-      return Selection;
-
-    })(W3CSelection);
-  }
 
 }).call(this);
