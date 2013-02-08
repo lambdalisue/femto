@@ -14,7 +14,7 @@ toast
   # bare: false
   packaging: true
   expose: null
-  minify: false
+  minify: true
 
   # => HTTPFOLDER (optional), RELEASE / DEBUG (required)
   httpfolder: 'js'
