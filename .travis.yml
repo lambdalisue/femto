@@ -1,0 +1,6 @@
+scripts:
+  test: phantomjs node_modules/mocha-phantomjs/lib/mocha-phantomjs.coffee www/test.html
+install:
+  - npm install mocha
+  - npm install mocha-phantomjs
+  - npm install expect.js
