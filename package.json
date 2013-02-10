@@ -10,6 +10,7 @@
         "mocha": "*",
         "mocha-phantomjs": "*",
         "expect.js": "*",
-        "coffee-toaster": "*"
+        "coffee-toaster": "*",
+        "codo": "*"
     }
 }
