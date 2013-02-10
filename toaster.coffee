@@ -12,9 +12,10 @@ toast
 
   # => OPTIONS (optional, default values listed)
   # bare: false
+  bare: true
   packaging: true
-  expose: null
-  minify: true
+  #expose: 'window'
+  #minify: false
 
   # => HTTPFOLDER (optional), RELEASE / DEBUG (required)
   httpfolder: 'js'

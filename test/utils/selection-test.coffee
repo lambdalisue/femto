@@ -1,6 +1,6 @@
 #<< utils/selection
 #<< utils/selection.ie
-describe 'femto.utils.Selection', ->
+describe 'utils.Selection', ->
   textarea = instance = value = null
   Selection = utils.Selection
 
