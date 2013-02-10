@@ -1,4 +1,4 @@
 script:
   - cake debug
   - cake test
-install: cake install
+install: npm install

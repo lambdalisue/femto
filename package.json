@@ -7,10 +7,11 @@
         "test": "node_modules/mocha-phantomjs/bin/mocha-phantomjs www/test.html"
     },
     "dependencies": {
+        "coffee-script": "*",
+        "coffee-toaster": "*",
+        "codo": "*",
         "mocha": "*",
         "mocha-phantomjs": "*",
-        "expect.js": "*",
-        "coffee-toaster": "*",
-        "codo": "*"
+        "expect.js": "*"
     }
 }
