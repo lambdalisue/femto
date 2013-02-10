@@ -9,6 +9,7 @@
     "dependencies": {
         "mocha": "*",
         "mocha-phantomjs": "*",
-        "expect.js": "*"
+        "expect.js": "*",
+        "coffee-toaster": "*"
     }
 }
