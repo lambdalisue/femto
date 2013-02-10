@@ -4,7 +4,7 @@ describe 'utils.Originator', ->
   expected_methods = [
     'createMemento', 'setMemento'
   ]
-  for method in expected_methods
+  for method in expected_methods then do (method) ->
     it "instance should have `#{method}` method", ->
       instance = new utils.Originator()
       expect(instance).to.have.property(method)
@@ -22,7 +22,7 @@ describe 'utils.Caretaker', ->
     'originator', 'save', 'undo', 'redo',
     'canUndo', 'canRedo',
   ]
-  for method in expected_methods
+  for method in expected_methods then do (method) ->
     it "instance should have `#{method}` method", ->
       expect(instance).to.have.property(method)
       expect(instance[method]).to.be.a('function')
@@ -58,6 +58,8 @@ describe 'utils.Caretaker', ->
 
       r = instance.save('HELLO')
       expect(r).to.be.eql(instance)
+
+    it 'should call originator `createMemento()` method to get current memento without any argument'
 
     it 'should save new memento into `_undoStack` and change `_previous` when called without any argument', ->
       dummy.memento = 'HELLO'
@@ -103,6 +105,9 @@ describe 'utils.Caretaker', ->
         expect(instance._redoStack.length).to.be.eql(0)
         expect(instance._previous).to.be.eql(null)
 
+      it 'should call originator `createMemento()` method to get current value'
+      it 'should call originator `setMemento(value)` method to change current value'
+
       it 'should pop previous memento from `_undoStack`', ->
         dummy.memento = "HELLO1"
         for i in [2..3]
@@ -141,6 +146,9 @@ describe 'utils.Caretaker', ->
         expect(instance._redoStack.length).to.be.eql(0)
         expect(instance._previous).to.be.eql(null)
 
+      it 'should call originator `createMemento()` method to get current value'
+      it 'should call originator `setMemento(value)` method to change current value'
+
       it 'should pop further memento from `_redoStack`', ->
         dummy.memento = "HELLO1"
         for i in [2..3]
@@ -172,23 +180,23 @@ describe 'utils.Caretaker', ->
       it 'should return boolean', ->
         r = instance.canUndo()
         expect(r).to.be.a('boolean')
-      it 'should return false when `_undoStack` is empty', ->
+      it 'should return `false` when `_undoStack` is empty', ->
         r = instance.canUndo()
-        expect(r).to.be.eql(false)
-      it 'should return true when `_undoStack` is not empty', ->
+        expect(r).to.be.false
+      it 'should return `true` when `_undoStack` is not empty', ->
         instance.save('HELLO')
         r = instance.canUndo()
-        expect(r).to.be.eql(true)
+        expect(r).to.be.true
 
     describe '#canRedo() -> boolean', ->
       it 'should return boolean', ->
         r = instance.canRedo()
         expect(r).to.be.a('boolean')
-      it 'should return false when `_redoStack` is empty', ->
+      it 'should return `false` when `_redoStack` is empty', ->
         r = instance.canRedo()
-        expect(r).to.be.eql(false)
-      it 'should return true when `_redoStack` is not empty', ->
+        expect(r).to.be.false
+      it 'should return `true` when `_redoStack` is not empty', ->
         instance.save('HELLO')
         instance.undo()
         r = instance.canRedo()
-        expect(r).to.be.eql(true)
+        expect(r).to.be.true

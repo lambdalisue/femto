@@ -1,7 +1,7 @@
 var Widget;
 
 Widget = function(selector, context) {
-  var elem;
+  var elem, _outerHeight, _outerWidth;
   if (selector == null) {
     selector = '<div>';
   }
@@ -10,30 +10,28 @@ Widget = function(selector, context) {
   } else {
     elem = $(selector, context);
   }
+  _outerWidth = jQuery.prototype.outerWidth;
+  _outerHeight = jQuery.prototype.outerHeight;
   elem.nonContentWidth = function(includeMargin) {
     if (includeMargin == null) {
       includeMargin = false;
     }
-    return this.outerWidth(includeMargin) - this.width();
+    return _outerWidth.call(this, includeMargin) - this.width();
   };
   elem.nonContentHeight = function(includeMargin) {
     if (includeMargin == null) {
       includeMargin = false;
     }
-    return this.outerHeight(includeMargin) - this.height();
+    return _outerHeight.call(this, includeMargin) - this.height();
   };
-  elem._outerWidth = elem.outerWidth;
   elem.outerWidth = function(includeMargin, value) {
     var offset;
-    if (includeMargin == null) {
-      includeMargin = false;
-    }
-    if (!(includeMargin != null)) {
-      return this._outerWidth();
-    }
     if (utils.type(includeMargin) === 'number') {
       value = includeMargin;
       includeMargin = false;
+    }
+    if (!(value != null)) {
+      return _outerWidth.call(this);
     }
     offset = this.nonContentWidth(includeMargin);
     return this.width(value - offset);
@@ -41,18 +39,16 @@ Widget = function(selector, context) {
   elem._outerHeight = elem.outerHeight;
   elem.outerHeight = function(includeMargin, value) {
     var offset;
-    if (includeMargin == null) {
-      includeMargin = false;
-    }
-    if (!(includeMargin != null)) {
-      return this._outerHeight();
-    }
     if (utils.type(includeMargin) === 'number') {
       value = includeMargin;
       includeMargin = false;
     }
+    if (!(value != null)) {
+      return _outerHeight.call(this);
+    }
     offset = this.nonContentHeight(includeMargin);
     return this.height(value - offset);
   };
+  elem.widget = true;
   return elem;
 };

@@ -7,18 +7,20 @@ describe('utils.Originator', function() {
   _results = [];
   for (_i = 0, _len = expected_methods.length; _i < _len; _i++) {
     method = expected_methods[_i];
-    _results.push(it("instance should have `" + method + "` method", function() {
-      var instance;
-      instance = new utils.Originator();
-      expect(instance).to.have.property(method);
-      return expect(instance[method]).to.be.a('function');
-    }));
+    _results.push((function(method) {
+      return it("instance should have `" + method + "` method", function() {
+        var instance;
+        instance = new utils.Originator();
+        expect(instance).to.have.property(method);
+        return expect(instance[method]).to.be.a('function');
+      });
+    })(method));
   }
   return _results;
 });
 
 describe('utils.Caretaker', function() {
-  var Dummy, dummy, expected_methods, instance, method, _i, _len;
+  var Dummy, dummy, expected_methods, instance, method, _fn, _i, _len;
   Dummy = (function(_super) {
 
     __extends(Dummy, _super);
@@ -41,12 +43,15 @@ describe('utils.Caretaker', function() {
   dummy = new Dummy();
   instance = new utils.Caretaker(dummy);
   expected_methods = ['originator', 'save', 'undo', 'redo', 'canUndo', 'canRedo'];
-  for (_i = 0, _len = expected_methods.length; _i < _len; _i++) {
-    method = expected_methods[_i];
-    it("instance should have `" + method + "` method", function() {
+  _fn = function(method) {
+    return it("instance should have `" + method + "` method", function() {
       expect(instance).to.have.property(method);
       return expect(instance[method]).to.be.a('function');
     });
+  };
+  for (_i = 0, _len = expected_methods.length; _i < _len; _i++) {
+    method = expected_methods[_i];
+    _fn(method);
   }
   beforeEach(function() {
     dummy.memento = null;
@@ -95,6 +100,7 @@ describe('utils.Caretaker', function() {
       r = instance.save('HELLO');
       return expect(r).to.be.eql(instance);
     });
+    it('should call originator `createMemento()` method to get current memento without any argument');
     it('should save new memento into `_undoStack` and change `_previous` when called without any argument', function() {
       dummy.memento = 'HELLO';
       instance.save();
@@ -139,6 +145,8 @@ describe('utils.Caretaker', function() {
         expect(instance._redoStack.length).to.be.eql(0);
         return expect(instance._previous).to.be.eql(null);
       });
+      it('should call originator `createMemento()` method to get current value');
+      it('should call originator `setMemento(value)` method to change current value');
       it('should pop previous memento from `_undoStack`', function() {
         var i, _j, _k, _results;
         dummy.memento = "HELLO1";
@@ -186,6 +194,8 @@ describe('utils.Caretaker', function() {
         expect(instance._redoStack.length).to.be.eql(0);
         return expect(instance._previous).to.be.eql(null);
       });
+      it('should call originator `createMemento()` method to get current value');
+      it('should call originator `setMemento(value)` method to change current value');
       it('should pop further memento from `_redoStack`', function() {
         var i, _j, _k, _l;
         dummy.memento = "HELLO1";
@@ -228,16 +238,16 @@ describe('utils.Caretaker', function() {
         r = instance.canUndo();
         return expect(r).to.be.a('boolean');
       });
-      it('should return false when `_undoStack` is empty', function() {
+      it('should return `false` when `_undoStack` is empty', function() {
         var r;
         r = instance.canUndo();
-        return expect(r).to.be.eql(false);
+        return expect(r).to.be["false"];
       });
-      return it('should return true when `_undoStack` is not empty', function() {
+      return it('should return `true` when `_undoStack` is not empty', function() {
         var r;
         instance.save('HELLO');
         r = instance.canUndo();
-        return expect(r).to.be.eql(true);
+        return expect(r).to.be["true"];
       });
     });
     return describe('#canRedo() -> boolean', function() {
@@ -246,17 +256,17 @@ describe('utils.Caretaker', function() {
         r = instance.canRedo();
         return expect(r).to.be.a('boolean');
       });
-      it('should return false when `_redoStack` is empty', function() {
+      it('should return `false` when `_redoStack` is empty', function() {
         var r;
         r = instance.canRedo();
-        return expect(r).to.be.eql(false);
+        return expect(r).to.be["false"];
       });
-      return it('should return true when `_redoStack` is not empty', function() {
+      return it('should return `true` when `_redoStack` is not empty', function() {
         var r;
         instance.save('HELLO');
         instance.undo();
         r = instance.canRedo();
-        return expect(r).to.be.eql(true);
+        return expect(r).to.be["true"];
       });
     });
   });

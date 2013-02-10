@@ -12,16 +12,24 @@ describe('Widget', function() {
     instance = Widget(div);
     return expect(instance).to.be.eql(div);
   });
-  expected_methods = ['nonContentWidth', 'nonContentHeight', 'outerWidth', '_outerWidth', 'outerHeight', '_outerHeight'];
+  it('should have `widget` property', function() {
+    var instance;
+    instance = Widget();
+    expect(instance).to.have.property('widget');
+    return expect(instance.widget).to.be.eql(true);
+  });
+  expected_methods = ['nonContentWidth', 'nonContentHeight', 'outerWidth', 'outerHeight'];
   _results = [];
   for (_i = 0, _len = expected_methods.length; _i < _len; _i++) {
     method = expected_methods[_i];
-    _results.push(it("return instance should have `" + method + "` method", function() {
-      var instance;
-      instance = Widget();
-      expect(instance).to.have.property(method);
-      return expect(instance[method]).to.be.a('function');
-    }));
+    _results.push((function(method) {
+      return it("return instance should have `" + method + "` method", function() {
+        var instance;
+        instance = Widget();
+        expect(instance).to.have.property(method);
+        return expect(instance[method]).to.be.a('function');
+      });
+    })(method));
   }
   return _results;
 });

@@ -9,12 +9,16 @@ describe 'Widget', ->
     instance = Widget(div)
     expect(instance).to.be.eql(div)
 
+  it 'should have `widget` property', ->
+    instance = Widget()
+    expect(instance).to.have.property('widget')
+    expect(instance.widget).to.be.eql(true)
+
   expected_methods = [
     'nonContentWidth', 'nonContentHeight',
-    'outerWidth', '_outerWidth',
-    'outerHeight', '_outerHeight',
+    'outerWidth', 'outerHeight',
   ]
-  for method in expected_methods
+  for method in expected_methods then do (method) ->
     it "return instance should have `#{method}` method", ->
       instance = Widget()
       expect(instance).to.have.property(method)
