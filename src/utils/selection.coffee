@@ -1,32 +1,50 @@
-###
-Cross-browser textarea selection module
-
-@author lambdalisue
-@since 2013
-###
 "use strict"
+###
+Cross-browser textarea selection class
+
+@example
+  textarea = document.createElement('textarea')
+  textarea.selection = new Selection(textarea)
+  # get current caret position
+  [start, end] = textarea.selection.caret()
+  # move caret to [1, 5]
+  textarea.selection.caret(1, 5)
+  # move caret +4
+  textarea.selection.caret(4)
+  # get selected text
+  selected = textarea.selection.text()
+  # replace selected text
+  textarea.selection.text("HELLO")
+###
 
 utils.Selection = class utils.W3CSelection
   ###
-  Closs-browser textarea selection
+  Constructor
+
+  @param [DOM element] textarea A target textarea DOM element
+  @return [Selection] the new instance
   ###
   constructor: (@textarea) ->
-    ### Selection constructor ###
 
+  # @private
   _getCaret: ->
     s = @textarea.selectionStart
     e = @textarea.selectionEnd
     return [s, e]
+  # @private
   _setCaret: (s, e) ->
     @textarea.setSelectionRange(s, e)
     return @
 
+  # @private
   _getWholeText: ->
     return @textarea.value
+  # @private
   _setWholeText: (value) ->
     @textarea.value = value
     return @
 
+  # @private
   _replace: (repl, s, e) ->
     v = @_getWholeText()
     b = v.substring 0, s
@@ -34,10 +52,14 @@ utils.Selection = class utils.W3CSelection
     @_setWholeText(b + repl + a)
 
   ###
-  Get or set caret
+  Get caret when called without any argument.
+  Set caret when called with two arguments.
+  Move caret when called with an argument.
 
-  @param [s] start index of the caret
-
+  @param [Integer] s a start index of the caret or caret offset
+  @param [Integer] e a end index of the caret
+  @return [Array, Selection] return [s, e] array when called without any
+    arguments. return the instance when called with arguments.
   ###
   caret: (s, e) ->
     if not s?
@@ -52,6 +74,15 @@ utils.Selection = class utils.W3CSelection
     @textarea.scrollTop = scrollTop
     return @
 
+  ###
+  Get selected text when called without any argument.
+  Replace selected text when called with arguments.
+
+  @param [String] text a text used to replace the selection
+  @param [Boolean] keepSelection select replaced text if it is `true`
+  @return [String, Selection] return selected text when called without any
+    argument. return the instance when called with arguments
+  ###
   text: (text, keepSelection) ->
     [s, e] = @_getCaret()
     if not text?
@@ -68,6 +99,14 @@ utils.Selection = class utils.W3CSelection
     @textarea.scrollTop = scrollTop
     return @
 
+  ###
+  Get caret of the line on the current caret when called without any argument.
+  Get caret of the line on the specified caret when called with two arguments.
+
+  @param [Integer] s a start index of the caret
+  @param [Integer] e a end index of the caret
+  @return [Array] return [s, e] array
+  ###
   lineCaret: (s, e) ->
     if not s? or not e?
       [ss, ee] = @_getCaret()
@@ -79,6 +118,15 @@ utils.Selection = class utils.W3CSelection
     e = v.length if e is -1
     return [s, e]
 
+  ###
+  Get line text of the line caret when called without any argument.
+  Replace line text of the line caret when called with arguments.
+
+  @param [String] text a text used to replace the selection
+  @param [Boolean] keepSelection select replaced text if it is `true`
+  @return [String, Selection] return selected text when called without any
+    argument. return the instance when called with arguments
+  ###
   lineText: (text, keepSelection) ->
     [s, e] = @lineCaret()
     if not text?
@@ -95,6 +143,13 @@ utils.Selection = class utils.W3CSelection
     @textarea.scrollTop = scrollTop
     return @
 
+  ###
+  Insert text before the selection
+
+  @param [String] text a text used to insert
+  @param [Boolean] keepSelection select inserted text if it is `true`
+  @return [Selection] return the instance
+  ###
   insertBefore: (text, keepSelection) ->
     [s, e] = @_getCaret()
     str = @text()
@@ -109,6 +164,13 @@ utils.Selection = class utils.W3CSelection
     @textarea.scrollTop = scrollTop
     return @
 
+  ###
+  Insert text after the selection
+
+  @param [String] text a text used to insert
+  @param [Boolean] keepSelection select inserted text if it is `true`
+  @return [Selection] return the instance
+  ###
   insertAfter: (text, keepSelection) ->
     [s, e] = @_getCaret()
     str = @text()
@@ -124,6 +186,14 @@ utils.Selection = class utils.W3CSelection
     @textarea.scrollTop = scrollTop
     return @
 
+  ###
+  Enclose selected text or Open the enclosed text
+
+  @param [String] lhs a text used to insert before the selection
+  @param [String] rhs a text used to insert after the selection
+  @param [Boolean] keepSelection select inserted text if it is `true`
+  @return [Selection] return the instance
+  ###
   enclose: (lhs, rhs, keepSelection) ->
     text = @text()
     scrollTop = @textarea.scrollTop
@@ -141,6 +211,13 @@ utils.Selection = class utils.W3CSelection
     @textarea.scrollTop = scrollTop
     return @
 
+  ###
+  Insert text before the line
+
+  @param [String] text a text used to insert
+  @param [Boolean] keepSelection select inserted text if it is `true`
+  @return [Selection] return the instance
+  ###
   insertBeforeLine: (text, keepSelection) ->
     [s, e] = @lineCaret()
     str = @lineText()
@@ -155,6 +232,13 @@ utils.Selection = class utils.W3CSelection
     @textarea.scrollTop = scrollTop
     return @
 
+  ###
+  Insert text after the line
+
+  @param [String] text a text used to insert
+  @param [Boolean] keepSelection select inserted text if it is `true`
+  @return [Selection] return the instance
+  ###
   insertAfterLine: (text, keepSelection) ->
     [s, e] = @lineCaret()
     str = @lineText()
@@ -170,6 +254,14 @@ utils.Selection = class utils.W3CSelection
     @textarea.scrollTop = scrollTop
     return @
 
+  ###
+  Enclose the line or Open the enclosed line
+
+  @param [String] lhs a text used to insert before the selection
+  @param [String] rhs a text used to insert after the selection
+  @param [Boolean] keepSelection select inserted text if it is `true`
+  @return [Selection] return the instance
+  ###
   encloseLine: (lhs, rhs, keepSelection) ->
     text = @lineText()
     scrollTop = @textarea.scrollTop
