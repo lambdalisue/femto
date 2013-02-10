@@ -1,4 +1,4 @@
 script:
   - node_modules/coffee-toaster/bin/toaster -cd
-  - node_modules/mocha-phantomjs/lib/mocha-phantomjs.coffee www/test.html
+  - node_modules/mocha-phantomjs/bin/mocha-phantomjs www/test.html
 install: npm install
