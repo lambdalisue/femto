@@ -1,4 +1,5 @@
 #<< editor
+
 describe 'Editor', ->
   textarea = instance = null
 
