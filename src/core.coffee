@@ -21,6 +21,7 @@ window.Femto = Femto = (textarea, options) ->
     return @
 
   # Apply plugins
+  elem.plugins = {}
   for name, plugin of Femto.plugins
     console.debug "Appling Femto plugin (#{name}) ..."
     plugin(elem)
@@ -30,11 +31,11 @@ window.Femto = Femto = (textarea, options) ->
 Femto.plugins = {}
 
 Femto.plugins.indenty = (femto) ->
-  editor = femto.editor
-  editor.indenty = new utils.Indenty(editor.textarea)
-  editor.indenty.enable()
+  textarea = femto.editor.textarea
+  femto.plugins.indenty = new utils.Indenty(textarea)
+  femto.plugins.indenty.enable()
 
 Femto.plugins.autoIndenty = (femto) ->
-  editor = femto.editor
-  editor.autoIndenty = new utils.AutoIndenty(editor.textarea)
-  editor.autoIndenty.enable()
+  textarea = femto.editor.textarea
+  femto.plugins.autoIndenty = new utils.AutoIndenty(textarea)
+  femto.plugins.autoIndenty.enable()
