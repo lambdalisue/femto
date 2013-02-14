@@ -1,0 +1,18 @@
+.border-radius (...) {
+    -webkit-border-radius: @arguments;
+    -moz-border-radius: @arguments;
+    -ms-border-radius: @arguments;
+    -o-border-radius: @arguments;
+    border-radius: @arguments;
+}
+.femto {
+    width: 80%;
+    min-height: 400px;
+    position: relative;
+
+    .panel {
+        padding: 0.5em;
+        border: 1px solid #ababab;
+        .border-radius(5px);
+    }
+}

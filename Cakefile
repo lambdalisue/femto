@@ -3,6 +3,7 @@ spawn = require('child_process').spawn
 COFFEE_TOASTER = "node_modules/coffee-toaster/bin/toaster"
 MOCHA_PHANTOMJS = "node_modules/mocha-phantomjs/bin/mocha-phantomjs"
 CODO = "node_modules/codo/bin/codo"
+LESS = "node_modules/less/bin/lessc"
 
 exec = (file, args, done) ->
   proc = spawn(file, args)
@@ -28,6 +29,9 @@ task 'release', 'compile coffee file', (options) ->
   args.push('-w') if options.watch?
   toaster = 'node_modules/coffee-toaster/bin/toaster'
   proc = exec(toaster, args)
+
+task 'style', 'create css files', ->
+  exec(LESS, ['less/core.less', 'www/css/app.css'])
 
 task 'docs', 'create document files', ->
   exec(CODO, ['--no-private', '--cautions'])

@@ -1,0 +1,14 @@
+.femto {
+  width: 80%;
+  min-height: 400px;
+  position: relative;
+}
+.femto .panel {
+  padding: 0.5em;
+  border: 1px solid #ababab;
+  -webkit-border-radius: 5px;
+  -moz-border-radius: 5px;
+  -ms-border-radius: 5px;
+  -o-border-radius: 5px;
+  border-radius: 5px;
+}
