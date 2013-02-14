@@ -15,6 +15,7 @@ exec = (file, args, done) ->
 option '-w', '--watch', 'watch files'
 
 task 'debug', 'compile coffee file', (options) ->
+  invoke 'style'
   args = ['-cd', '-f', 'config/debug.toaster.coffee']
   args.push('-w') if options.watch?
   toaster = 'node_modules/coffee-toaster/bin/toaster'
@@ -25,6 +26,7 @@ task 'develop', 'watches and compiles coffee files', (options) ->
   invoke 'debug'
 
 task 'release', 'compile coffee file', (options) ->
+  invoke 'style'
   args = ['-c', '-f', 'config/release.toaster.coffee']
   args.push('-w') if options.watch?
   toaster = 'node_modules/coffee-toaster/bin/toaster'
