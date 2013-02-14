@@ -16,7 +16,6 @@ Cross-browser textarea selection class
   # replace selected text
   textarea.selection.text("HELLO")
 ###
-
 utils.Selection = class utils.W3CSelection
   ###
   Constructor
@@ -60,6 +59,8 @@ utils.Selection = class utils.W3CSelection
   @param [Integer] e a end index of the caret
   @return [Array, Selection] return [s, e] array when called without any
     arguments. return the instance when called with arguments.
+  @note caret will be reset when you change the value of textarea, so
+    you have to set caret after you change the value if it's needed
   ###
   caret: (s, e) ->
     if not s?
@@ -72,6 +73,29 @@ utils.Selection = class utils.W3CSelection
     scrollTop = @textarea.scrollTop
     @_setCaret(s, e)
     @textarea.scrollTop = scrollTop
+    return @
+
+  ###
+  Return whether the selection's start and end points are the same position
+
+  @return [Boolean] true when the selection is collapsed
+  ###
+  isCollapsed: ->
+    [s, e] = @_getCaret()
+    return s is e
+
+  ###
+  Moves the start point of a range to its end point or vica versa
+
+  @param [Boolean] toEnd true to move the end point to the start point
+  @return [Selection] instance
+  ###
+  collapse: (toStart) ->
+    [s, e] = @_getCaret()
+    if toStart
+      @_setCaret(s, s)
+    else
+      @_setCaret(e, e)
     return @
 
   ###

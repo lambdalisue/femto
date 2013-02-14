@@ -31,6 +31,7 @@ describe 'utils.Selection', ->
   # check expected public methods
   expected_methods = [
     'caret', 'text', 'lineCaret', 'lineText',
+    'isCollapsed', 'collapse',
     'insertBefore', 'insertAfter', 'enclose'
     'insertBeforeLine', 'insertAfterLine', 'encloseLine'
   ]
@@ -67,6 +68,39 @@ describe 'utils.Selection', ->
       ncaret = instance.caret(5).caret()
       expect(ncaret).to.be.eql([pcaret[0]+5, pcaret[1]+5])
 
+
+  describe '#isCollapsed() -> boolean', ->
+    it 'should return true when the start and end points of the selection are the same', ->
+      instance.caret(0, 0)
+      expect(instance.isCollapsed()).to.be.true
+      instance.caret(5, 5)
+      expect(instance.isCollapsed()).to.be.true
+
+    it 'should return false when the start and end points of the selection are not the same', ->
+      instance.caret(0, 1)
+      expect(instance.isCollapsed()).to.be.false
+      instance.caret(5, 6)
+      expect(instance.isCollapsed()).to.be.true
+
+
+  describe '#collapse(toStart) -> instance', ->
+    it 'should moves the start point of the selection to its end point and return the instance when called without argument', ->
+      instance.caret(0, 10)
+      r = instance.collapse()
+      [s, e] = instance.caret()
+      expect(r).to.be.a(Selection)
+      expect(r).to.be.eql(instance)
+      expect(s).to.be.eql(10)
+      expect(e).to.be.eql(10)
+
+    it 'should moves the start point of the selection to its end point and return the instance when called with argument', ->
+      instance.caret(0, 10)
+      r = instance.collapse(true)
+      [s, e] = instance.caret()
+      expect(r).to.be.a(Selection)
+      expect(r).to.be.eql(instance)
+      expect(s).to.be.eql(0)
+      expect(e).to.be.eql(0)
 
   describe '#text(text, keepSelection) -> string | instance', ->
     it 'should return current selected text when called without any arguments', ->
