@@ -12,7 +12,7 @@ describe 'utils.Indenty', ->
     value = ->
       # IE use \r\n so replace it
       textarea.value.replace(/\r\n/g, "\n")
-    instance = new Indenty(textarea, '    ')
+    instance = new Indenty(jQuery(textarea), '    ')
     selection = instance._selection
     document.body.appendChild textarea
     textarea.focus()

@@ -1,6 +1,7 @@
 #<< editor
-
-window.Femto = (textarea, options) ->
+#<< utils/indenty
+#<< utils/autoindenty
+window.Femto = Femto = (textarea, options) ->
   elem = Widget($('<div>').insertAfter(textarea).hide())
                           .addClass('femto')
   elem.editor = Editor(textarea)
@@ -19,5 +20,21 @@ window.Femto = (textarea, options) ->
     @editor.adjust()
     return @
 
-  return elem.init()
+  # Apply plugins
+  for name, plugin of Femto.plugins
+    console.debug "Appling Femto plugin (#{name}) ..."
+    plugin(elem)
 
+  return elem.init().adjust()
+
+Femto.plugins = {}
+
+Femto.plugins.indenty = (femto) ->
+  editor = femto.editor
+  editor.indenty = new utils.Indenty(editor.textarea)
+  editor.indenty.enable()
+
+Femto.plugins.autoIndenty = (femto) ->
+  editor = femto.editor
+  editor.autoIndenty = new utils.AutoIndenty(editor.textarea)
+  editor.autoIndenty.enable()

@@ -6,7 +6,7 @@ Cross-browser textarea indent manager
 
 @example
   textarea = document.createElement('textarea')
-  textarea.indenty = new Indenty(textarea)
+  textarea.indenty = new Indenty(jQuery(textarea))
   # indent at current caret position
   textarea.indenty.indent()
   # outdent at current caret position
@@ -20,14 +20,16 @@ class utils.Indenty
   ###
   Constructor
 
-  @param [DOM element] textarea A target textarea DOM element
+  @param [jQuery] textarea A target textarea DOM element
   @param [String] tabString a tab string used to insert (default: '    ')
   ###
   constructor: (@textarea, @tabString='    ') ->
+    if @textarea not instanceof jQuery
+      @textarea = jQuery(@textarea)
     if @textarea._selection?
       @_selection = @textarea._selection
     else
-      @_selection = new utils.Selection(@textarea)
+      @_selection = new utils.Selection(@textarea.get(0))
       @textarea._selection = @_selection
 
   ###
@@ -82,7 +84,7 @@ class utils.Indenty
     return @
 
   # @private
-  _keyDownEvent: =>
+  _keyDownEvent: (e) =>
     # TAB = 9
     return if e.which isnt 9
     if e.shiftKey
