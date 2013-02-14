@@ -17,7 +17,7 @@
     &raquo;
     <span class='title'>utils</span>
     &raquo;
-    <span class='title'>IESelection</span>
+    <span class='title'>Indenty</span>
     <nav>
       <ul>
         <li class='noframes'>
@@ -108,117 +108,200 @@
     <div id='content'>
       <h1>
         Class:
-        utils.IESelection
+        utils.Indenty
       </h1>
       <table class='box'>
         <tr>
           <td>Defined in:</td>
-          <td>src&#47;utils&#47;selection.ie.coffee</td>
-        </tr>
-        <tr>
-          <td>Inherits:</td>
-          <td>
-            <a href='..&#47;..&#47;classes/utils&#47;W3CSelection.html'>utils.W3CSelection</a>
-          </td>
+          <td>src&#47;utils&#47;indenty.coffee</td>
         </tr>
       </table>
+      <h2>Overview</h2>
+      <div class='docstring'>
+  <p>Cross-browser textarea indent manager</p>
+  <div class='examples'>
+    <h3>Examples:</h3>
+    <h4>
+      
+    </h4>
+    <pre><code class='coffee'>textarea = document.createElement(&#39;textarea&#39;)
+textarea.indenty = new Indenty(textarea)
+# indent at current caret position
+textarea.indenty.indent()
+# outdent at current caret position
+textarea.indenty.outdent()
+# enable TAB key indent
+textarea.indenty.enable()
+# disable TAB key indent
+textarea.indenty.disable()</code></pre>
+  </div>
+</div>
+<div class='tags'>
+</div>
       <h2>Instance Method Summary</h2>
       <ul class='summary'>
   <li>
     <span class='signature'>
       <a href='#constructor-instance'>
-        - (void) <strong>constructor</strong>(textarea)
+        - (void) <strong>constructor</strong>(textarea, tabString = '    ')
       </a>
     </span>
     <span class='constructor note title'>Constructor</span>
     <span class='desc'>
-      
+      Constructor
     </span>
   </li>
   <li>
     <span class='signature'>
-      <a href='#_getWholeText-instance'>
-        - (void) <strong>_getWholeText</strong>()
+      <a href='#indent-instance'>
+        - (Indenty) <strong>indent</strong>()
       </a>
     </span>
     <span class='desc'>
-      
+      Insert tabString at the current caret position or start point of the selection
     </span>
   </li>
   <li>
     <span class='signature'>
-      <a href='#_getCaret-instance'>
-        - (void) <strong>_getCaret</strong>()
+      <a href='#outdent-instance'>
+        - (Indenty) <strong>outdent</strong>()
       </a>
     </span>
     <span class='desc'>
-      
+      Remove tabString at the current caret position or the left hand of the selection It will not do anything if no tabString is found
     </span>
   </li>
   <li>
     <span class='signature'>
-      <a href='#_setCaret-instance'>
-        - (void) <strong>_setCaret</strong>(s, e)
+      <a href='#enable-instance'>
+        - (Indenty) <strong>enable</strong>()
       </a>
     </span>
     <span class='desc'>
-      
+      Enable TAB key indent feature on target textarea
+    </span>
+  </li>
+  <li>
+    <span class='signature'>
+      <a href='#disable-instance'>
+        - (Indenty) <strong>disable</strong>()
+      </a>
+    </span>
+    <span class='desc'>
+      Disable TAB key indent feature on target textarea
     </span>
   </li>
 </ul>
-      <h2>
-        <small>Inherited Method Summary</small>
-      </h2>
-      <h3 class='inherited'>
-        Methods inherited from
-        <a href='..&#47;..&#47;classes/utils&#47;W3CSelection.html'>utils.W3CSelection</a>
-      </h3>
-      <p class='inherited'>
-                <a href='..&#47;..&#47;classes/utils&#47;W3CSelection.html#constructor-instance'>#constructor</a>,
-                <a href='..&#47;..&#47;classes/utils&#47;W3CSelection.html#caret-instance'>#caret</a>,
-                <a href='..&#47;..&#47;classes/utils&#47;W3CSelection.html#isCollapsed-instance'>#isCollapsed</a>,
-                <a href='..&#47;..&#47;classes/utils&#47;W3CSelection.html#collapse-instance'>#collapse</a>,
-                <a href='..&#47;..&#47;classes/utils&#47;W3CSelection.html#text-instance'>#text</a>,
-                <a href='..&#47;..&#47;classes/utils&#47;W3CSelection.html#lineCaret-instance'>#lineCaret</a>,
-                <a href='..&#47;..&#47;classes/utils&#47;W3CSelection.html#lineText-instance'>#lineText</a>,
-                <a href='..&#47;..&#47;classes/utils&#47;W3CSelection.html#insertBefore-instance'>#insertBefore</a>,
-                <a href='..&#47;..&#47;classes/utils&#47;W3CSelection.html#insertAfter-instance'>#insertAfter</a>,
-                <a href='..&#47;..&#47;classes/utils&#47;W3CSelection.html#enclose-instance'>#enclose</a>,
-                <a href='..&#47;..&#47;classes/utils&#47;W3CSelection.html#insertBeforeLine-instance'>#insertBeforeLine</a>,
-                <a href='..&#47;..&#47;classes/utils&#47;W3CSelection.html#insertAfterLine-instance'>#insertAfterLine</a>,
-        <a href='..&#47;..&#47;classes/utils&#47;W3CSelection.html#encloseLine-instance'>#encloseLine</a>
-      </p>
       <h2>Constructor Details</h2>
       <div class='methods'>
   <div class='method_details'>
     <p class='signature' id='constructor-instance'>
-      - (void) <strong>constructor</strong>(textarea)
+      - (void) <strong>constructor</strong>(textarea, tabString = '    ')
     </p>
-    <div class='tags'>
+    <div class='docstring'>
+  <p>Constructor</p>
+</div>
+<div class='tags'>
+  <h3>Parameters:</h3>
+  <ul class='param'>
+    <li>
+      <span class='name'>textarea</span>
+      <span class='type'>
+        (<tt>jQuery</tt>)
+      </span>
+      &mdash;
+      <span class='desc'>A target textarea DOM element</span>
+    </li>
+    <li>
+      <span class='name'>tabString</span>
+      <span class='type'>
+        (<tt>String</tt>)
+      </span>
+      &mdash;
+      <span class='desc'>a tab string used to insert (default: &#39;    &#39;)</span>
+    </li>
+  </ul>
 </div>
   </div>
 </div>
       <h2>Instance Method Details</h2>
       <div class='methods'>
   <div class='method_details'>
-    <p class='signature' id='_getWholeText-instance'>
-      - (void) <strong>_getWholeText</strong>()
+    <p class='signature' id='indent-instance'>
+      - (Indenty) <strong>indent</strong>()
     </p>
-    <div class='tags'>
+    <div class='docstring'>
+  <p>Insert tabString at the current caret position
+or start point of the selection</p>
+</div>
+<div class='tags'>
+  <h3>Returns:</h3>
+  <ul class='return'>
+    <li>
+      <span class='type'></span>
+      (<tt>Indenty</tt>)
+      &mdash;
+      <span class='desc'>the instance</span>
+    </li>
+  </ul>
 </div>
   </div>
   <div class='method_details'>
-    <p class='signature' id='_getCaret-instance'>
-      - (void) <strong>_getCaret</strong>()
+    <p class='signature' id='outdent-instance'>
+      - (Indenty) <strong>outdent</strong>()
     </p>
-    <div class='tags'>
+    <div class='docstring'>
+  <p>Remove tabString at the current caret position
+or the left hand of the selection</p><p>It will not do anything if no tabString is found</p>
+</div>
+<div class='tags'>
+  <h3>Returns:</h3>
+  <ul class='return'>
+    <li>
+      <span class='type'></span>
+      (<tt>Indenty</tt>)
+      &mdash;
+      <span class='desc'>the instance</span>
+    </li>
+  </ul>
 </div>
   </div>
   <div class='method_details'>
-    <p class='signature' id='_setCaret-instance'>
-      - (void) <strong>_setCaret</strong>(s, e)
+    <p class='signature' id='enable-instance'>
+      - (Indenty) <strong>enable</strong>()
     </p>
-    <div class='tags'>
+    <div class='docstring'>
+  <p>Enable TAB key indent feature on target textarea</p>
+</div>
+<div class='tags'>
+  <h3>Returns:</h3>
+  <ul class='return'>
+    <li>
+      <span class='type'></span>
+      (<tt>Indenty</tt>)
+      &mdash;
+      <span class='desc'>the instance</span>
+    </li>
+  </ul>
+</div>
+  </div>
+  <div class='method_details'>
+    <p class='signature' id='disable-instance'>
+      - (Indenty) <strong>disable</strong>()
+    </p>
+    <div class='docstring'>
+  <p>Disable TAB key indent feature on target textarea</p>
+</div>
+<div class='tags'>
+  <h3>Returns:</h3>
+  <ul class='return'>
+    <li>
+      <span class='type'></span>
+      (<tt>Indenty</tt>)
+      &mdash;
+      <span class='desc'>the instance</span>
+    </li>
+  </ul>
 </div>
   </div>
 </div>

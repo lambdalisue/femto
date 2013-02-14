@@ -145,6 +145,26 @@
   </li>
   <li>
     <span class='signature'>
+      <a href='#isCollapsed-instance'>
+        - (Boolean) <strong>isCollapsed</strong>()
+      </a>
+    </span>
+    <span class='desc'>
+      Return whether the selection&#39;s start and end points are the same position
+    </span>
+  </li>
+  <li>
+    <span class='signature'>
+      <a href='#collapse-instance'>
+        - (Selection) <strong>collapse</strong>(toStart)
+      </a>
+    </span>
+    <span class='desc'>
+      Moves the start point of a range to its end point or vica versa
+    </span>
+  </li>
+  <li>
+    <span class='signature'>
       <a href='#text-instance'>
         - (String, Selection) <strong>text</strong>(text, keepSelection)
       </a>
@@ -274,6 +294,10 @@
       - (Array, Selection) <strong>caret</strong>(s, e)
     </p>
     <div class='docstring'>
+  <div class='note'>
+    <strong>Note:</strong>
+    caret will be reset when you change the value of textarea, so you have to set caret after you change the value if it&#39;s needed
+  </div>
   <p>Get caret when called without any argument.
 Set caret when called with two arguments.
 Move caret when called with an argument.</p>
@@ -305,6 +329,55 @@ Move caret when called with an argument.</p>
       (<tt>Array, Selection</tt>)
       &mdash;
       <span class='desc'>return [s, e] array when called without any arguments. return the instance when called with arguments.</span>
+    </li>
+  </ul>
+</div>
+  </div>
+  <div class='method_details'>
+    <p class='signature' id='isCollapsed-instance'>
+      - (Boolean) <strong>isCollapsed</strong>()
+    </p>
+    <div class='docstring'>
+  <p>Return whether the selection&#39;s start and end points are the same position</p>
+</div>
+<div class='tags'>
+  <h3>Returns:</h3>
+  <ul class='return'>
+    <li>
+      <span class='type'></span>
+      (<tt>Boolean</tt>)
+      &mdash;
+      <span class='desc'>true when the selection is collapsed</span>
+    </li>
+  </ul>
+</div>
+  </div>
+  <div class='method_details'>
+    <p class='signature' id='collapse-instance'>
+      - (Selection) <strong>collapse</strong>(toStart)
+    </p>
+    <div class='docstring'>
+  <p>Moves the start point of a range to its end point or vica versa</p>
+</div>
+<div class='tags'>
+  <h3>Parameters:</h3>
+  <ul class='param'>
+    <li>
+      <span class='name'>toEnd</span>
+      <span class='type'>
+        (<tt>Boolean</tt>)
+      </span>
+      &mdash;
+      <span class='desc'>true to move the end point to the start point</span>
+    </li>
+  </ul>
+  <h3>Returns:</h3>
+  <ul class='return'>
+    <li>
+      <span class='type'></span>
+      (<tt>Selection</tt>)
+      &mdash;
+      <span class='desc'>instance</span>
     </li>
   </ul>
 </div>
@@ -674,11 +747,11 @@ Replace line text of the line caret when called with arguments.</p>
     </div>
     <div id='footer'>
   Generated on
-  Mon Feb 11 2013 05:19:57 GMT+0900 (JST)
+  Thu Feb 14 2013 23:17:16 GMT+0900 (JST)
   by
   <a href='https://github.com/netzpirat/codo' title='CoffeeScript API documentation generator'>Codo</a>
   v1.5.4
-  (Node.js v0.8.19).
+  (Node.js v0.8.11).
   &#10034;
   Press Ctrl-h to see the keyboard shortcuts
   &#10034;
