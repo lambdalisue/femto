@@ -70,7 +70,7 @@ It helps user to write these kind of text with the following features:</p>
 <li>
 <p>Preview panel (bundle)</p>
 
-<p>femto has viewer panel to check the output of the current text.
+<p>femto has a viewer panel to check the output of the current text.
 It support Template system so you can change the looks of the preview.
 It also support Render system so you can use Markdown, reStructuredText or so
 on.
@@ -85,13 +85,15 @@ It is under developping now</p>
 <li>
 <p><code>TAB</code> indent and <code>SHIFT + TAB</code> outdent (features)</p>
 
-<p><code>TAB</code> key move the focus to the next object in browser default <code>textarea</code>.
-However most desktop text editor use <code>TAB</code> key for indent.</p>
+<p><code>TAB</code> key move the focus to the next object in ordinal browsers.
+However most desktop text editors use <code>TAB</code> key for indent.
+femto follow this rule.
+</p>
 </li>
 <li>
 <p>Auto indent (Keep indent) (features)</p>
 
-<p>Some desktop text editor automatically keep indent level when user hit
+<p>Some desktop text editors automatically keep indent level when user hit
 <code>RETURN</code> key. It is useful when user write a kind of Markup text which use
 indent as a blockquote or code block.</p>
 </li>
@@ -124,12 +126,12 @@ It has not developed yet.</p>
 </li>
 </ul><h2>Usage</h2>
 
-<p>femto is under developped yet. If you want to try femto, you can follow the
-steps below:</p>
+<p>femto is under developped yet. If you want to try femto, you can try with
+following the steps below:</p>
 
 <ol>
 <li>
-<p>Clone git repository on your hard disc with</p>
+<p>Clone git repository on your hard disk with</p>
 
 <div class="highlight"><pre>% git clone https://github.com/lambdalisue/femto.git
 % <span class="nb">cd </span>femto
@@ -148,11 +150,11 @@ steps below:</p>
 </pre></div>
 </li>
 <li>
-<p>Copy and rename <code>femto.js</code> and <code>femto.css</code> to your project</p>
+<p>Copy and rename <code>femto.js</code> and <code>app.css</code> to your project</p>
 
 <div class="highlight"><pre>% mkdir -p ~/femto
 % copy ./www/js/femto.js ~/femto/femto.0.0.0.js
-% copy ./www/css/femto.css ~/femto/femto.0.0.0.css
+% copy ./www/css/app.css ~/femto/femto.0.0.0.css
 </pre></div>
 </li>
 <li>
@@ -190,7 +192,7 @@ steps below:</p>
 
 <h3>Disable features globally</h3>
 
-<p>If you want to disable features of all femto instance, follow the steps below:</p>
+<p>If you want to disable features of all femto instances, follow the steps below:</p>
 
 <div class="highlight"><pre><span class="c1">// You have to disable features before you make the instance</span>
 <span class="nx">del</span> <span class="nx">Femto</span><span class="p">.</span><span class="nx">features</span><span class="p">.</span><span class="nx">indent</span><span class="p">;</span>
@@ -201,14 +203,15 @@ steps below:</p>
 
 <h2>Supported browsers</h2>
 
-<p>The following browsers are (or will be) supported.</p>
+<p>The following browsers are supported(○), not tested yet(△), or not supported(×).</p>
 
 <ul>
-<li>✓ Google Chrome</li>
-<li>✗ Mozilla Firefox</li>
-<li>✗ Safari</li>
-<li>✗ Opera</li>
-<li>✗ Internet Explorer 8 (and over 8)</li>
+<li>○ Google Chrome</li>
+<li>△ Mozilla Firefox</li>
+<li>△ Safari</li>
+<li>△ Opera</li>
+<li>△ Internet Explorer 9 (and over 9)</li>
+<li>× Internet Explorer 8 (and below 8)</li>
 </ul><h2>Test</h2>
 
 <p>You can check the test result at
