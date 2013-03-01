@@ -14,6 +14,18 @@
       .femto .panel {
         background: #fff;
       }
+      .supported { color: #36d; }
+      .not-tested { color: #691; }
+      .not-supported { color: #933; }
+      .supported:before {
+        content: "☑ ";
+      }
+      .not-tested:before {
+        content: "☐ ";
+      }
+      .not-supported:before {
+        content: "☒ ";
+      }
     </style>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
     <script src="javascripts/respond.js"></script>
@@ -68,7 +80,7 @@ It helps user to write these kind of text with the following features:</p>
 
 <ul>
 <li>
-<p>Preview panel (bundle)</p>
+<p><strong>Preview panel (bundle)</strong></p>
 
 <p>femto has a viewer panel to check the output of the current text.
 It support Template system so you can change the looks of the preview.
@@ -77,13 +89,14 @@ on.
 It is under developping now</p>
 </li>
 <li>
-<p>Undo &amp; Redo (bundle)</p>
+<p><strong>Undo &amp; Redo (bundle)</strong></p>
 
 <p>femto has its own Undo &amp; Redo system. Everything can be undo with
 <code>Ctrl+Z</code> and redo with <code>Ctrl+Shift+Z</code>.</p>
 </li>
 <li>
-<p><code>TAB</code> indent and <code>SHIFT + TAB</code> outdent (features)</p>
+<p><strong><code>TAB</code> indent and <code>SHIFT + TAB</code> outdent
+  (features)</strong></p>
 
 <p><code>TAB</code> key move the focus to the next object in ordinal browsers.
 However most desktop text editors use <code>TAB</code> key for indent.
@@ -91,33 +104,33 @@ femto follow this rule.
 </p>
 </li>
 <li>
-<p>Auto indent (Keep indent) (features)</p>
+<p><strong>Auto indent (Keep indent) (features)</strong></p>
 
 <p>Some desktop text editors automatically keep indent level when user hit
 <code>RETURN</code> key. It is useful when user write a kind of Markup text which use
 indent as a blockquote or code block.</p>
 </li>
 <li>
-<p>Smart indent (plugin)</p>
+<p><strong>Smart indent (plugin)</strong></p>
 
 <p>With <code>smartIndent</code> plugin, femto automatically insert a Markup specified
 leading characters like <code>&gt;</code> in Markdown or <code>#.</code> in reStructuredText.
 It has not developed yet.</p>
 </li>
 <li>
-<p>Fullscreen (plugin)</p>
+<p><strong>Fullscreen (plugin)</strong></p>
 
 <p>With <code>fullscreen</code> plugin, user can use femto in fullscreen mode.
 It has not developed yet.</p>
 </li>
 <li>
-<p>Mobile support (plugin)</p>
+<p><strong>Mobile support (plugin)</strong></p>
 
 <p>With <code>mobile</code> plugin, user can use femto in smart phone like iPhone.
 It has not developed yet.</p>
 </li>
 <li>
-<p>Attachment (plugin)</p>
+<p><strong>Attachment (plugin)</strong></p>
 
 <p>With <code>attachment</code> plugin, user can attach files like Image or Zip to the
 text. It use some free upload services or user specified upload services to
@@ -203,15 +216,22 @@ following the steps below:</p>
 
 <h2>Supported browsers</h2>
 
-<p>The following browsers are supported(○), not tested yet(△), or not supported(×).</p>
+<p>The following browsers are
+<span class="supported">supported</span>,
+<span class="not-tested">not tested yet</span>, or
+<span class="not-supported">not supported</span>.</p>
 
 <ul>
-<li>○ Google Chrome</li>
-<li>△ Mozilla Firefox</li>
-<li>△ Safari</li>
-<li>△ Opera</li>
-<li>△ Internet Explorer 9 (and over 9)</li>
-<li>× Internet Explorer 8 (and below 8)</li>
+<li class="supported">Google Chrome (25.0.1364.97)</li>
+<li class="not-tested">Mozilla Firefox</li>
+<li class="not-tested">Safari</li>
+<li class="not-tested">Opera</li>
+<li class="not-tested">Internet Explorer 10</li>
+<li class="not-tested">Internet Explorer 9</li>
+<li class="not-supported">Internet Explorer 8</li>
+<li class="not-supported">Internet Explorer 7</li>
+<li class="not-supported">Internet Explorer 6</li>
+<li class="not-supported">Internet Explorer 5</li>
 </ul><h2>Test</h2>
 
 <p>You can check the test result at
