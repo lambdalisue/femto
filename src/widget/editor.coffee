@@ -46,9 +46,6 @@ Editor = (textarea) ->
   elem.focus = ->
     textarea.focus()
     return @
-  elem.adjust = ->
-    textarea.outerWidth true, @width()
-    textarea.outerHeight true, @height()
   ###
   Get or set the value of the widget
   ###

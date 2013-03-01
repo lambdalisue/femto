@@ -34,12 +34,6 @@ transform = (textarea, options) ->
     @show()
     return @
 
-  elem.adjust = ->
-    #@editor.outerWidth true, @width()
-    #@editor.outerHeight true, @height()
-    #@editor.adjust()
-    return @
-
   caret_start = caret_end = 0
   elem.previewMode = ->
     # store current caret position
@@ -69,7 +63,7 @@ transform = (textarea, options) ->
     feature(elem)
 
   jQuery(elem).ready ->
-    elem.init().adjust()
+    elem.init()
   return elem
 
 namespace 'Femto', (exports) ->

@@ -13,10 +13,6 @@ Viewer = (textarea, template) ->
   elem.init = ->
     @iframe.init()
     return @
-  elem.adjust = ->
-    iframe.outerWidth true, @width()
-    iframe.outerHeight true, @height()
-    return @
   elem.focus = ->
     iframe.focus()
     return @
