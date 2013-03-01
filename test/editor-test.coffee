@@ -87,6 +87,58 @@ describe 'Femto.widget.Editor', ->
         # reset the method
         instance.save = save
 
+    it "should call `caretaker.undo()` method when user press Ctrl+Z", ->
+      # Z = 90
+      e = jQuery.Event('keydown', {which: 90, ctrlKey: true})
+      undo = instance.undo
+      instance.undo = -> @undo.called = true
+      instance.undo.called = false
+      # trigger
+      instance.textarea.trigger(e)
+      # should be called
+      expect(instance.undo.called).to.be.true
+      # reset the method
+      instance.undo = undo
+
+    it "should not call `caretaker.undo()` method when user press Ctrl+Shift+Z", ->
+      # Z = 90
+      e = jQuery.Event('keydown', {which: 90, ctrlKey: true, shiftKey: true})
+      undo = instance.undo
+      instance.undo = -> @undo.called = true
+      instance.undo.called = false
+      # trigger
+      instance.textarea.trigger(e)
+      # should be called
+      expect(instance.undo.called).to.be.false
+      # reset the method
+      instance.undo = undo
+
+    it "should not call `caretaker.redo()` method when user press Ctrl+Z", ->
+      # Z = 90
+      e = jQuery.Event('keydown', {which: 90, ctrlKey: true})
+      redo = instance.redo
+      instance.redo = -> @redo.called = true
+      instance.redo.called = false
+      # trigger
+      instance.textarea.trigger(e)
+      # should be called
+      expect(instance.redo.called).to.be.false
+      # reset the method
+      instance.redo = redo
+
+    it "should call `caretaker.redo()` method when user press Ctrl+Shift+Z", ->
+      # Z = 90
+      e = jQuery.Event('keydown', {which: 90, ctrlKey: true, shiftKey: true})
+      redo = instance.redo
+      instance.redo = -> @redo.called = true
+      instance.redo.called = false
+      # trigger
+      instance.textarea.trigger(e)
+      # should be called
+      expect(instance.redo.called).to.be.true
+      # reset the method
+      instance.redo = redo
+
     describe '#createMemento() -> value', ->
       it 'should return current value of the textarea', ->
         textarea.val('HELLO')

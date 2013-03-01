@@ -2817,6 +2817,68 @@ Cross-browser textarea selection class
         _ref2 = save_trigger_actions[_n], name = _ref2[0], action = _ref2[1];
         _fn5(name, action);
       }
+      it("should call `caretaker.undo()` method when user press Ctrl+Z", function() {
+        var e, undo;
+        e = jQuery.Event('keydown', {
+          which: 90,
+          ctrlKey: true
+        });
+        undo = instance.undo;
+        instance.undo = function() {
+          return this.undo.called = true;
+        };
+        instance.undo.called = false;
+        instance.textarea.trigger(e);
+        expect(instance.undo.called).to.be["true"];
+        return instance.undo = undo;
+      });
+      it("should not call `caretaker.undo()` method when user press Ctrl+Shift+Z", function() {
+        var e, undo;
+        e = jQuery.Event('keydown', {
+          which: 90,
+          ctrlKey: true,
+          shiftKey: true
+        });
+        undo = instance.undo;
+        instance.undo = function() {
+          return this.undo.called = true;
+        };
+        instance.undo.called = false;
+        instance.textarea.trigger(e);
+        expect(instance.undo.called).to.be["false"];
+        return instance.undo = undo;
+      });
+      it("should not call `caretaker.redo()` method when user press Ctrl+Z", function() {
+        var e, redo;
+        e = jQuery.Event('keydown', {
+          which: 90,
+          ctrlKey: true
+        });
+        redo = instance.redo;
+        instance.redo = function() {
+          return this.redo.called = true;
+        };
+        instance.redo.called = false;
+        instance.textarea.trigger(e);
+        expect(instance.redo.called).to.be["false"];
+        return instance.redo = redo;
+      });
+      it("should call `caretaker.redo()` method when user press Ctrl+Shift+Z", function() {
+        var e, redo;
+        e = jQuery.Event('keydown', {
+          which: 90,
+          ctrlKey: true,
+          shiftKey: true
+        });
+        redo = instance.redo;
+        instance.redo = function() {
+          return this.redo.called = true;
+        };
+        instance.redo.called = false;
+        instance.textarea.trigger(e);
+        expect(instance.redo.called).to.be["true"];
+        return instance.redo = redo;
+      });
       describe('#createMemento() -> value', function() {
         return it('should return current value of the textarea', function() {
           var r;
