@@ -1,5 +1,22 @@
 #<< widget/widget
 #<< utils/undo
+###
+Femto Editor widget
+
+@param [jQuery] textarea A jQuery instance of target textarea DOM element
+@return [jQuery extend] extended jQuery instance which contains the textarea
+
+@example
+  textarea = document.createElement('textarea')
+  textarea = jQuery(textarea)
+  editor = Femto.widget.Editor(textarea)
+  # set focus
+  editor.focus()
+  # set value
+  editor.val("Hello")
+  # get value
+  console.log editor.val()
+###
 Editor = (textarea) ->
   raw = textarea.get(0)
   textarea = Femto.widget.Widget(textarea)
@@ -23,12 +40,18 @@ Editor = (textarea) ->
   elem.textarea = textarea
   elem.selection = textarea._selection
   elem.caretaker = textarea._caretaker
+  ###
+  Focus the widget
+  ###
   elem.focus = ->
     textarea.focus()
     return @
   elem.adjust = ->
     textarea.outerWidth true, @width()
     textarea.outerHeight true, @height()
+  ###
+  Get or set the value of the widget
+  ###
   elem.val = -> textarea.val(arguments...)
   # configure caretaker
   textarea.on 'keydown', (e) ->

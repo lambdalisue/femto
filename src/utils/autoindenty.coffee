@@ -18,7 +18,7 @@ class AutoIndenty
   ###
   Constructor
 
-  @param [jQuery] textarea A target textarea DOM element
+  @param [jQuery] textarea A jQuery instance of target textarea DOM element
   @param [bool] expandTab When true, use SPACE insted of TAB for indent
   @param [integer] indentLevel An indent level. Enable only when expandTab is `true`
   ###
