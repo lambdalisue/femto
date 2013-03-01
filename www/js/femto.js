@@ -1274,10 +1274,10 @@ Cross-browser textarea selection class
       var RETURN, _ref;
       RETURN = 13;
       if (e.which !== RETURN) {
-        return;
+        return true;
       }
-      if (e.shiftKey) {
-        return;
+      if (e.shiftKey === true) {
+        return true;
       }
       this.insertNewLine();
       if ((_ref = this.textarea._caretaker) != null) {
@@ -1685,7 +1685,7 @@ Cross-browser textarea selection class
     return _results;
   });
 
-  describe('utils.Caretaker', function() {
+  describe('Femto.utils.Caretaker', function() {
     var Dummy, dummy, expected_methods, instance, method, _fn, _i, _len;
     Originator = Femto.utils.Originator;
     Caretaker = Femto.utils.Caretaker;
@@ -2011,7 +2011,7 @@ Cross-browser textarea selection class
       method = expected_methods[_l];
       _fn3(method);
     }
-    return describe('#insertNewLine() -> instance', function() {
+    describe('#insertNewLine() -> instance', function() {
       it('should return the instance', function() {
         var r;
         r = instance.insertNewLine();
@@ -2036,6 +2036,38 @@ Cross-browser textarea selection class
         selection.caret(25, 25);
         instance.insertNewLine();
         return expect(value()).to.be.eql("AAAAABBBBBCCCCC\n    aaaaa\n    bbbbbccccc\n111112222233333");
+      });
+    });
+    return describe('!KeyDown event', function() {
+      it('should call `insertNewLine()` when user hit RETURN', function() {
+        var e, insertNewLine;
+        e = jQuery.Event('keydown', {
+          which: 13
+        });
+        insertNewLine = instance.insertNewLine;
+        instance.insertNewLine = function() {
+          return this.insertNewLine.called = true;
+        };
+        instance.insertNewLine.called = false;
+        $(textarea).trigger(e);
+        expect(instance.insertNewLine.called).to.be["true"];
+        return instance.insertNewLine = insertNewLine;
+      });
+      return it('should NOT call `insertNewLine()` when user hit Shift+RETURN', function() {
+        var e, insertNewLine;
+        e = jQuery.Event('keydown', {
+          which: 13,
+          shiftKey: true
+        });
+        insertNewLine = instance.insertNewLine;
+        instance.insertNewLine = function() {
+          return this.insertNewLine.called = true;
+        };
+        instance.insertNewLine.called = false;
+        selection.caret(0, 0);
+        $(textarea).trigger(e);
+        expect(instance.insertNewLine.called).to.be["false"];
+        return instance.insertNewLine = insertNewLine;
       });
     });
   });
@@ -2588,6 +2620,179 @@ Cross-browser textarea selection class
     });
   });
 
+  describe('Femto.widget.Widget', function() {
+    var expected_methods, method, _i, _len, _results;
+    Widget = Femto.widget.Widget;
+    it('should return jQuery instance', function() {
+      var instance;
+      instance = Widget();
+      return expect(instance).to.be.a(jQuery);
+    });
+    it('should return same (but extended) jQuery instance when it specified', function() {
+      var div, instance;
+      div = jQuery('<div>');
+      instance = Widget(div);
+      return expect(instance).to.be.eql(div);
+    });
+    it('should have `widget` property', function() {
+      var instance;
+      instance = Widget();
+      expect(instance).to.have.property('widget');
+      return expect(instance.widget).to.be.eql(true);
+    });
+    expected_methods = ['nonContentWidth', 'nonContentHeight', 'outerWidth', 'outerHeight'];
+    _results = [];
+    for (_i = 0, _len = expected_methods.length; _i < _len; _i++) {
+      method = expected_methods[_i];
+      _results.push((function(method) {
+        return it("return instance should have `" + method + "` method", function() {
+          var instance;
+          instance = Widget();
+          expect(instance).to.have.property(method);
+          return expect(instance[method]).to.be.a('function');
+        });
+      })(method));
+    }
+    return _results;
+  });
+
+  describe('Femto.widget.Editor', function() {
+    var expected_classname, expected_methods, expected_properties, instance, method, name, textarea, _fn, _fn1, _fn2, _i, _j, _k, _len, _len1, _len2, _ref;
+    Editor = Femto.widget.Editor;
+    textarea = instance = null;
+    before(function() {
+      textarea = jQuery('<textarea>');
+      return instance = Editor(textarea);
+    });
+    it('should return jQuery instance', function() {
+      return expect(instance).to.be.a(jQuery);
+    });
+    expected_classname = ['panel', 'editor'];
+    _fn = function(name) {
+      return it("should have `" + name + "` class in its DOM element", function() {
+        return expect(instance.hasClass(name)).to.be["true"];
+      });
+    };
+    for (_i = 0, _len = expected_classname.length; _i < _len; _i++) {
+      name = expected_classname[_i];
+      _fn(name);
+    }
+    it('DOM element should have `textarea` DOM element in it', function() {
+      var children;
+      children = instance.children();
+      expect(children.length).to.be.eql(1);
+      return expect(children[0]).to.be.eql(instance.textarea[0]);
+    });
+    expected_properties = [['textarea', jQuery], ['caretaker', Femto.utils.Caretaker]];
+    _fn1 = function(name, type) {
+      return it("return instance should have `" + name + "` property as `" + type.name + "`", function() {
+        expect(instance).to.have.property(name);
+        return expect(instance[name]).to.be.a(type);
+      });
+    };
+    for (_j = 0, _len1 = expected_properties.length; _j < _len1; _j++) {
+      _ref = expected_properties[_j], name = _ref[0], type = _ref[1];
+      _fn1(name, type);
+    }
+    expected_methods = ['val'];
+    _fn2 = function(method) {
+      return it("return instance should have `" + method + "` method", function() {
+        expect(instance).to.have.property(method);
+        return expect(instance[method]).to.be.a('function');
+      });
+    };
+    for (_k = 0, _len2 = expected_methods.length; _k < _len2; _k++) {
+      method = expected_methods[_k];
+      _fn2(method);
+    }
+    describe('#textarea : An extended jQuery instance', function() {
+      var action, key, save_trigger_actions, save_trigger_keys, _fn3, _fn4, _fn5, _l, _len3, _len4, _len5, _m, _n, _ref1, _ref2;
+      it('should have `widget` property', function() {
+        expect(instance.textarea).to.have.property('widget');
+        return expect(instance.textarea.widget).to.be.eql(true);
+      });
+      expected_methods = ['createMemento', 'setMemento'];
+      _fn3 = function(method) {
+        return it("should have `" + method + "` method", function() {
+          expect(instance.textarea).to.have.property(method);
+          return expect(instance.textarea[method]).to.be.a('function');
+        });
+      };
+      for (_l = 0, _len3 = expected_methods.length; _l < _len3; _l++) {
+        method = expected_methods[_l];
+        _fn3(method);
+      }
+      save_trigger_keys = [['Return', 13], ['Tab', 9], ['Backspace', 8], ['Delete', 46]];
+      _fn4 = function(name, key) {
+        return it("should call `caretaker.save()` method when user press " + name);
+      };
+      for (_m = 0, _len4 = save_trigger_keys.length; _m < _len4; _m++) {
+        _ref1 = save_trigger_keys[_m], name = _ref1[0], key = _ref1[1];
+        _fn4(name, key);
+      }
+      save_trigger_actions = [['paste', null], ['drop', null]];
+      _fn5 = function(name, action) {
+        return it("should call `caretaker.save()` method when user " + name + " text");
+      };
+      for (_n = 0, _len5 = save_trigger_actions.length; _n < _len5; _n++) {
+        _ref2 = save_trigger_actions[_n], name = _ref2[0], action = _ref2[1];
+        _fn5(name, action);
+      }
+      describe('#createMemento() -> value', function() {
+        return it('should return current value of the textarea', function() {
+          var r;
+          textarea.val('HELLO');
+          r = textarea.createMemento();
+          expect(r).to.be.eql('HELLO');
+          textarea.val('HELLO2');
+          r = textarea.createMemento();
+          expect(r).to.be.eql('HELLO2');
+          return textarea.val('');
+        });
+      });
+      return describe('#setMemento(value) -> instance', function() {
+        it('should return the instance', function() {
+          var r;
+          r = textarea.setMemento('');
+          return expect(r).to.be.eql(textarea);
+        });
+        return it('should change current value of the textarea', function() {
+          textarea.setMemento('HELLO');
+          expect(textarea.val()).to.be.eql('HELLO');
+          textarea.setMemento('HELLO2');
+          expect(textarea.val()).to.be.eql('HELLO2');
+          return textarea.val('');
+        });
+      });
+    });
+    describe('#caretaker : utils.Caretaker instance', function() {
+      return it('should use `textarea` as an originator', function() {
+        var originator;
+        originator = instance.caretaker.originator();
+        return expect(originator).to.be.eql(instance.textarea);
+      });
+    });
+    return describe('#val(value) -> value | instance', function() {
+      it('should return current value of the textarea when called without any argument', function() {
+        var r;
+        instance.textarea.val("HELLO");
+        r = instance.val();
+        expect(r).to.be.eql("HELLO");
+        instance.textarea.val("HELLO2");
+        r = instance.val();
+        expect(r).to.be.eql("HELLO2");
+        return instance.textarea.val("");
+      });
+      return it('should change current value of the textarea when called with an argument', function() {
+        instance.val("HELLO");
+        expect(instance.val()).to.be.eql("HELLO");
+        instance.val("HELLO2");
+        expect(instance.val()).to.be.eql("HELLO2");
+        return instance.textarea.val("");
+      });
+    });
+  });
+
   describe('Femto.utils.Indenty', function() {
     var Selection, expected_methods, expected_private_methods, expected_private_properties, expected_properties, instance, method, name, selection, textarea, value, _fn, _fn1, _fn2, _fn3, _i, _j, _k, _l, _len, _len1, _len2, _len3, _ref, _ref1;
     textarea = instance = selection = value = null;
@@ -2915,179 +3120,6 @@ Cross-browser textarea selection class
         selection.caret(30, 50);
         instance.outdent();
         return expect(selection.caret()).to.be.eql([20, 51]);
-      });
-    });
-  });
-
-  describe('Femto.widget.Widget', function() {
-    var expected_methods, method, _i, _len, _results;
-    Widget = Femto.widget.Widget;
-    it('should return jQuery instance', function() {
-      var instance;
-      instance = Widget();
-      return expect(instance).to.be.a(jQuery);
-    });
-    it('should return same (but extended) jQuery instance when it specified', function() {
-      var div, instance;
-      div = jQuery('<div>');
-      instance = Widget(div);
-      return expect(instance).to.be.eql(div);
-    });
-    it('should have `widget` property', function() {
-      var instance;
-      instance = Widget();
-      expect(instance).to.have.property('widget');
-      return expect(instance.widget).to.be.eql(true);
-    });
-    expected_methods = ['nonContentWidth', 'nonContentHeight', 'outerWidth', 'outerHeight'];
-    _results = [];
-    for (_i = 0, _len = expected_methods.length; _i < _len; _i++) {
-      method = expected_methods[_i];
-      _results.push((function(method) {
-        return it("return instance should have `" + method + "` method", function() {
-          var instance;
-          instance = Widget();
-          expect(instance).to.have.property(method);
-          return expect(instance[method]).to.be.a('function');
-        });
-      })(method));
-    }
-    return _results;
-  });
-
-  describe('Femto.widget.Editor', function() {
-    var expected_classname, expected_methods, expected_properties, instance, method, name, textarea, _fn, _fn1, _fn2, _i, _j, _k, _len, _len1, _len2, _ref;
-    Editor = Femto.widget.Editor;
-    textarea = instance = null;
-    before(function() {
-      textarea = jQuery('<textarea>');
-      return instance = Editor(textarea);
-    });
-    it('should return jQuery instance', function() {
-      return expect(instance).to.be.a(jQuery);
-    });
-    expected_classname = ['panel', 'editor'];
-    _fn = function(name) {
-      return it("should have `" + name + "` class in its DOM element", function() {
-        return expect(instance.hasClass(name)).to.be["true"];
-      });
-    };
-    for (_i = 0, _len = expected_classname.length; _i < _len; _i++) {
-      name = expected_classname[_i];
-      _fn(name);
-    }
-    it('DOM element should have `textarea` DOM element in it', function() {
-      var children;
-      children = instance.children();
-      expect(children.length).to.be.eql(1);
-      return expect(children[0]).to.be.eql(instance.textarea[0]);
-    });
-    expected_properties = [['textarea', jQuery], ['caretaker', Femto.utils.Caretaker]];
-    _fn1 = function(name, type) {
-      return it("return instance should have `" + name + "` property as `" + type.name + "`", function() {
-        expect(instance).to.have.property(name);
-        return expect(instance[name]).to.be.a(type);
-      });
-    };
-    for (_j = 0, _len1 = expected_properties.length; _j < _len1; _j++) {
-      _ref = expected_properties[_j], name = _ref[0], type = _ref[1];
-      _fn1(name, type);
-    }
-    expected_methods = ['val'];
-    _fn2 = function(method) {
-      return it("return instance should have `" + method + "` method", function() {
-        expect(instance).to.have.property(method);
-        return expect(instance[method]).to.be.a('function');
-      });
-    };
-    for (_k = 0, _len2 = expected_methods.length; _k < _len2; _k++) {
-      method = expected_methods[_k];
-      _fn2(method);
-    }
-    describe('#textarea : An extended jQuery instance', function() {
-      var action, key, save_trigger_actions, save_trigger_keys, _fn3, _fn4, _fn5, _l, _len3, _len4, _len5, _m, _n, _ref1, _ref2;
-      it('should have `widget` property', function() {
-        expect(instance.textarea).to.have.property('widget');
-        return expect(instance.textarea.widget).to.be.eql(true);
-      });
-      expected_methods = ['createMemento', 'setMemento'];
-      _fn3 = function(method) {
-        return it("should have `" + method + "` method", function() {
-          expect(instance.textarea).to.have.property(method);
-          return expect(instance.textarea[method]).to.be.a('function');
-        });
-      };
-      for (_l = 0, _len3 = expected_methods.length; _l < _len3; _l++) {
-        method = expected_methods[_l];
-        _fn3(method);
-      }
-      save_trigger_keys = [['Return', 13], ['Tab', 9], ['Backspace', 8], ['Delete', 46]];
-      _fn4 = function(name, key) {
-        return it("should call `caretaker.save()` method when user press " + name);
-      };
-      for (_m = 0, _len4 = save_trigger_keys.length; _m < _len4; _m++) {
-        _ref1 = save_trigger_keys[_m], name = _ref1[0], key = _ref1[1];
-        _fn4(name, key);
-      }
-      save_trigger_actions = [['paste', null], ['drop', null]];
-      _fn5 = function(name, action) {
-        return it("should call `caretaker.save()` method when user " + name + " text");
-      };
-      for (_n = 0, _len5 = save_trigger_actions.length; _n < _len5; _n++) {
-        _ref2 = save_trigger_actions[_n], name = _ref2[0], action = _ref2[1];
-        _fn5(name, action);
-      }
-      describe('#createMemento() -> value', function() {
-        return it('should return current value of the textarea', function() {
-          var r;
-          textarea.val('HELLO');
-          r = textarea.createMemento();
-          expect(r).to.be.eql('HELLO');
-          textarea.val('HELLO2');
-          r = textarea.createMemento();
-          expect(r).to.be.eql('HELLO2');
-          return textarea.val('');
-        });
-      });
-      return describe('#setMemento(value) -> instance', function() {
-        it('should return the instance', function() {
-          var r;
-          r = textarea.setMemento('');
-          return expect(r).to.be.eql(textarea);
-        });
-        return it('should change current value of the textarea', function() {
-          textarea.setMemento('HELLO');
-          expect(textarea.val()).to.be.eql('HELLO');
-          textarea.setMemento('HELLO2');
-          expect(textarea.val()).to.be.eql('HELLO2');
-          return textarea.val('');
-        });
-      });
-    });
-    describe('#caretaker : utils.Caretaker instance', function() {
-      return it('should use `textarea` as an originator', function() {
-        var originator;
-        originator = instance.caretaker.originator();
-        return expect(originator).to.be.eql(instance.textarea);
-      });
-    });
-    return describe('#val(value) -> value | instance', function() {
-      it('should return current value of the textarea when called without any argument', function() {
-        var r;
-        instance.textarea.val("HELLO");
-        r = instance.val();
-        expect(r).to.be.eql("HELLO");
-        instance.textarea.val("HELLO2");
-        r = instance.val();
-        expect(r).to.be.eql("HELLO2");
-        return instance.textarea.val("");
-      });
-      return it('should change current value of the textarea when called with an argument', function() {
-        instance.val("HELLO");
-        expect(instance.val()).to.be.eql("HELLO");
-        instance.val("HELLO2");
-        expect(instance.val()).to.be.eql("HELLO2");
-        return instance.textarea.val("");
       });
     });
   });

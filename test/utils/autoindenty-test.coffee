@@ -89,3 +89,31 @@ describe 'Femto.utils.AutoIndenty', ->
       selection.caret(25, 25)
       instance.insertNewLine()
       expect(value()).to.be.eql("AAAAABBBBBCCCCC\n    aaaaa\n    bbbbbccccc\n111112222233333")
+
+  describe '!KeyDown event', ->
+    it 'should call `insertNewLine()` when user hit RETURN', ->
+      # RETURN = 13
+      e = jQuery.Event('keydown', {which: 13})
+      insertNewLine = instance.insertNewLine
+      instance.insertNewLine = -> @insertNewLine.called = true
+      instance.insertNewLine.called = false
+      # trigger
+      $(textarea).trigger(e)
+      # insertNewLine should be called
+      expect(instance.insertNewLine.called).to.be.true
+      # reset the method
+      instance.insertNewLine = insertNewLine
+
+    it 'should NOT call `insertNewLine()` when user hit Shift+RETURN', ->
+      # RETURN = 13
+      e = jQuery.Event('keydown', {which: 13, shiftKey: true})
+      insertNewLine = instance.insertNewLine
+      instance.insertNewLine = -> @insertNewLine.called = true
+      instance.insertNewLine.called = false
+      selection.caret(0, 0)
+      # trigger
+      $(textarea).trigger(e)
+      # insertNewLine should be called
+      expect(instance.insertNewLine.called).to.be.false
+      # reset the method
+      instance.insertNewLine = insertNewLine

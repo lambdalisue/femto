@@ -56,9 +56,9 @@ class AutoIndenty
   # @private
   _keyDownEvent: (e) =>
     RETURN = 13
-    return if e.which isnt RETURN
+    return true if e.which isnt RETURN
     # do not use autoIndent if the ShiftKey is pressed
-    return if e.shiftKey
+    return true if e.shiftKey is true
     # insert newline with appropriate indent characters
     @insertNewLine()
     # save memento if available
