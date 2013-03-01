@@ -16,7 +16,6 @@ Cross-browser textarea selection class
   textarea.selection.text("HELLO")
 ###
 class W3CSelection
-  """use strict"""
   ###
   Constructor
 

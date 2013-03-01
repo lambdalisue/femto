@@ -142,10 +142,634 @@ textarea.selection.text(&quot;HELLO&quot;)</code></pre>
       <p class='children'>
         <a href='../classes/IESelection.html'>IESelection</a>
       </p>
+      <h2>Instance Method Summary</h2>
+      <ul class='summary'>
+  <li>
+    <span class='signature'>
+      <a href='#constructor-instance'>
+        - (Selection) <strong>constructor</strong>(textarea)
+      </a>
+    </span>
+    <span class='constructor note title'>Constructor</span>
+    <span class='desc'>
+      Constructor
+    </span>
+  </li>
+  <li>
+    <span class='signature'>
+      <a href='#caret-instance'>
+        - (Array, Selection) <strong>caret</strong>(s, e)
+      </a>
+    </span>
+    <span class='desc'>
+      Get caret when called without any argument.
+    </span>
+  </li>
+  <li>
+    <span class='signature'>
+      <a href='#isCollapsed-instance'>
+        - (Boolean) <strong>isCollapsed</strong>()
+      </a>
+    </span>
+    <span class='desc'>
+      Return whether the selection&#39;s start and end points are the same position
+    </span>
+  </li>
+  <li>
+    <span class='signature'>
+      <a href='#collapse-instance'>
+        - (Selection) <strong>collapse</strong>(toStart)
+      </a>
+    </span>
+    <span class='desc'>
+      Moves the start point of a range to its end point or vica versa
+    </span>
+  </li>
+  <li>
+    <span class='signature'>
+      <a href='#text-instance'>
+        - (String, Selection) <strong>text</strong>(text, keepSelection)
+      </a>
+    </span>
+    <span class='desc'>
+      Get selected text when called without any argument.
+    </span>
+  </li>
+  <li>
+    <span class='signature'>
+      <a href='#lineCaret-instance'>
+        - (Array) <strong>lineCaret</strong>(s, e)
+      </a>
+    </span>
+    <span class='desc'>
+      Get caret of the line on the current caret when called without any argument.
+    </span>
+  </li>
+  <li>
+    <span class='signature'>
+      <a href='#lineText-instance'>
+        - (String, Selection) <strong>lineText</strong>(text, keepSelection)
+      </a>
+    </span>
+    <span class='desc'>
+      Get line text of the line caret when called without any argument.
+    </span>
+  </li>
+  <li>
+    <span class='signature'>
+      <a href='#insertBefore-instance'>
+        - (Selection) <strong>insertBefore</strong>(text, keepSelection)
+      </a>
+    </span>
+    <span class='desc'>
+      Insert text before the selection
+    </span>
+  </li>
+  <li>
+    <span class='signature'>
+      <a href='#insertAfter-instance'>
+        - (Selection) <strong>insertAfter</strong>(text, keepSelection)
+      </a>
+    </span>
+    <span class='desc'>
+      Insert text after the selection
+    </span>
+  </li>
+  <li>
+    <span class='signature'>
+      <a href='#enclose-instance'>
+        - (Selection) <strong>enclose</strong>(lhs, rhs, keepSelection)
+      </a>
+    </span>
+    <span class='desc'>
+      Enclose selected text or Open the enclosed text
+    </span>
+  </li>
+  <li>
+    <span class='signature'>
+      <a href='#insertBeforeLine-instance'>
+        - (Selection) <strong>insertBeforeLine</strong>(text, keepSelection)
+      </a>
+    </span>
+    <span class='desc'>
+      Insert text before the line
+    </span>
+  </li>
+  <li>
+    <span class='signature'>
+      <a href='#insertAfterLine-instance'>
+        - (Selection) <strong>insertAfterLine</strong>(text, keepSelection)
+      </a>
+    </span>
+    <span class='desc'>
+      Insert text after the line
+    </span>
+  </li>
+  <li>
+    <span class='signature'>
+      <a href='#encloseLine-instance'>
+        - (Selection) <strong>encloseLine</strong>(lhs, rhs, keepSelection)
+      </a>
+    </span>
+    <span class='desc'>
+      Enclose the line or Open the enclosed line
+    </span>
+  </li>
+</ul>
+      <h2>Constructor Details</h2>
+      <div class='methods'>
+  <div class='method_details'>
+    <p class='signature' id='constructor-instance'>
+      - (Selection) <strong>constructor</strong>(textarea)
+    </p>
+    <div class='docstring'>
+  <p>Constructor</p>
+</div>
+<div class='tags'>
+  <h3>Parameters:</h3>
+  <ul class='param'>
+    <li>
+      <span class='name'>textarea</span>
+      <span class='type'>
+        (<tt>DOM element</tt>)
+      </span>
+      &mdash;
+      <span class='desc'>A target textarea DOM element</span>
+    </li>
+  </ul>
+  <h3>Returns:</h3>
+  <ul class='return'>
+    <li>
+      <span class='type'></span>
+      (<tt>Selection</tt>)
+      &mdash;
+      <span class='desc'>the new instance</span>
+    </li>
+  </ul>
+</div>
+  </div>
+</div>
+      <h2>Instance Method Details</h2>
+      <div class='methods'>
+  <div class='method_details'>
+    <p class='signature' id='caret-instance'>
+      - (Array, Selection) <strong>caret</strong>(s, e)
+    </p>
+    <div class='docstring'>
+  <div class='note'>
+    <strong>Note:</strong>
+    caret will be reset when you change the value of textarea, so you have to set caret after you change the value if it&#39;s needed
+  </div>
+  <p>Get caret when called without any argument.
+Set caret when called with two arguments.
+Move caret when called with an argument.</p>
+</div>
+<div class='tags'>
+  <h3>Parameters:</h3>
+  <ul class='param'>
+    <li>
+      <span class='name'>s</span>
+      <span class='type'>
+        (<tt>Integer</tt>)
+      </span>
+      &mdash;
+      <span class='desc'>a start index of the caret or caret offset</span>
+    </li>
+    <li>
+      <span class='name'>e</span>
+      <span class='type'>
+        (<tt>Integer</tt>)
+      </span>
+      &mdash;
+      <span class='desc'>a end index of the caret</span>
+    </li>
+  </ul>
+  <h3>Returns:</h3>
+  <ul class='return'>
+    <li>
+      <span class='type'></span>
+      (<tt>Array, Selection</tt>)
+      &mdash;
+      <span class='desc'>return [s, e] array when called without any arguments. return the instance when called with arguments.</span>
+    </li>
+  </ul>
+</div>
+  </div>
+  <div class='method_details'>
+    <p class='signature' id='isCollapsed-instance'>
+      - (Boolean) <strong>isCollapsed</strong>()
+    </p>
+    <div class='docstring'>
+  <p>Return whether the selection&#39;s start and end points are the same position</p>
+</div>
+<div class='tags'>
+  <h3>Returns:</h3>
+  <ul class='return'>
+    <li>
+      <span class='type'></span>
+      (<tt>Boolean</tt>)
+      &mdash;
+      <span class='desc'>true when the selection is collapsed</span>
+    </li>
+  </ul>
+</div>
+  </div>
+  <div class='method_details'>
+    <p class='signature' id='collapse-instance'>
+      - (Selection) <strong>collapse</strong>(toStart)
+    </p>
+    <div class='docstring'>
+  <p>Moves the start point of a range to its end point or vica versa</p>
+</div>
+<div class='tags'>
+  <h3>Parameters:</h3>
+  <ul class='param'>
+    <li>
+      <span class='name'>toEnd</span>
+      <span class='type'>
+        (<tt>Boolean</tt>)
+      </span>
+      &mdash;
+      <span class='desc'>true to move the end point to the start point</span>
+    </li>
+  </ul>
+  <h3>Returns:</h3>
+  <ul class='return'>
+    <li>
+      <span class='type'></span>
+      (<tt>Selection</tt>)
+      &mdash;
+      <span class='desc'>instance</span>
+    </li>
+  </ul>
+</div>
+  </div>
+  <div class='method_details'>
+    <p class='signature' id='text-instance'>
+      - (String, Selection) <strong>text</strong>(text, keepSelection)
+    </p>
+    <div class='docstring'>
+  <p>Get selected text when called without any argument.
+Replace selected text when called with arguments.</p>
+</div>
+<div class='tags'>
+  <h3>Parameters:</h3>
+  <ul class='param'>
+    <li>
+      <span class='name'>text</span>
+      <span class='type'>
+        (<tt>String</tt>)
+      </span>
+      &mdash;
+      <span class='desc'>a text used to replace the selection</span>
+    </li>
+    <li>
+      <span class='name'>keepSelection</span>
+      <span class='type'>
+        (<tt>Boolean</tt>)
+      </span>
+      &mdash;
+      <span class='desc'>select replaced text if it is <code>true</code></span>
+    </li>
+  </ul>
+  <h3>Returns:</h3>
+  <ul class='return'>
+    <li>
+      <span class='type'></span>
+      (<tt>String, Selection</tt>)
+      &mdash;
+      <span class='desc'>return selected text when called without any argument. return the instance when called with arguments</span>
+    </li>
+  </ul>
+</div>
+  </div>
+  <div class='method_details'>
+    <p class='signature' id='lineCaret-instance'>
+      - (Array) <strong>lineCaret</strong>(s, e)
+    </p>
+    <div class='docstring'>
+  <p>Get caret of the line on the current caret when called without any argument.
+Get caret of the line on the specified caret when called with two arguments.</p>
+</div>
+<div class='tags'>
+  <h3>Parameters:</h3>
+  <ul class='param'>
+    <li>
+      <span class='name'>s</span>
+      <span class='type'>
+        (<tt>Integer</tt>)
+      </span>
+      &mdash;
+      <span class='desc'>a start index of the caret</span>
+    </li>
+    <li>
+      <span class='name'>e</span>
+      <span class='type'>
+        (<tt>Integer</tt>)
+      </span>
+      &mdash;
+      <span class='desc'>an end index of the caret</span>
+    </li>
+  </ul>
+  <h3>Returns:</h3>
+  <ul class='return'>
+    <li>
+      <span class='type'></span>
+      (<tt>Array</tt>)
+      &mdash;
+      <span class='desc'>return [s, e] array</span>
+    </li>
+  </ul>
+</div>
+  </div>
+  <div class='method_details'>
+    <p class='signature' id='lineText-instance'>
+      - (String, Selection) <strong>lineText</strong>(text, keepSelection)
+    </p>
+    <div class='docstring'>
+  <p>Get line text of the line caret when called without any argument.
+Replace line text of the line caret when called with arguments.</p>
+</div>
+<div class='tags'>
+  <h3>Parameters:</h3>
+  <ul class='param'>
+    <li>
+      <span class='name'>text</span>
+      <span class='type'>
+        (<tt>String</tt>)
+      </span>
+      &mdash;
+      <span class='desc'>a text used to replace the selection</span>
+    </li>
+    <li>
+      <span class='name'>keepSelection</span>
+      <span class='type'>
+        (<tt>Boolean</tt>)
+      </span>
+      &mdash;
+      <span class='desc'>select replaced text if it is <code>true</code></span>
+    </li>
+  </ul>
+  <h3>Returns:</h3>
+  <ul class='return'>
+    <li>
+      <span class='type'></span>
+      (<tt>String, Selection</tt>)
+      &mdash;
+      <span class='desc'>return selected text when called without any argument. return the instance when called with arguments</span>
+    </li>
+  </ul>
+</div>
+  </div>
+  <div class='method_details'>
+    <p class='signature' id='insertBefore-instance'>
+      - (Selection) <strong>insertBefore</strong>(text, keepSelection)
+    </p>
+    <div class='docstring'>
+  <p>Insert text before the selection</p>
+</div>
+<div class='tags'>
+  <h3>Parameters:</h3>
+  <ul class='param'>
+    <li>
+      <span class='name'>text</span>
+      <span class='type'>
+        (<tt>String</tt>)
+      </span>
+      &mdash;
+      <span class='desc'>a text used to insert</span>
+    </li>
+    <li>
+      <span class='name'>keepSelection</span>
+      <span class='type'>
+        (<tt>Boolean</tt>)
+      </span>
+      &mdash;
+      <span class='desc'>select inserted text if it is <code>true</code></span>
+    </li>
+  </ul>
+  <h3>Returns:</h3>
+  <ul class='return'>
+    <li>
+      <span class='type'></span>
+      (<tt>Selection</tt>)
+      &mdash;
+      <span class='desc'>return the instance</span>
+    </li>
+  </ul>
+</div>
+  </div>
+  <div class='method_details'>
+    <p class='signature' id='insertAfter-instance'>
+      - (Selection) <strong>insertAfter</strong>(text, keepSelection)
+    </p>
+    <div class='docstring'>
+  <p>Insert text after the selection</p>
+</div>
+<div class='tags'>
+  <h3>Parameters:</h3>
+  <ul class='param'>
+    <li>
+      <span class='name'>text</span>
+      <span class='type'>
+        (<tt>String</tt>)
+      </span>
+      &mdash;
+      <span class='desc'>a text used to insert</span>
+    </li>
+    <li>
+      <span class='name'>keepSelection</span>
+      <span class='type'>
+        (<tt>Boolean</tt>)
+      </span>
+      &mdash;
+      <span class='desc'>select inserted text if it is <code>true</code></span>
+    </li>
+  </ul>
+  <h3>Returns:</h3>
+  <ul class='return'>
+    <li>
+      <span class='type'></span>
+      (<tt>Selection</tt>)
+      &mdash;
+      <span class='desc'>return the instance</span>
+    </li>
+  </ul>
+</div>
+  </div>
+  <div class='method_details'>
+    <p class='signature' id='enclose-instance'>
+      - (Selection) <strong>enclose</strong>(lhs, rhs, keepSelection)
+    </p>
+    <div class='docstring'>
+  <p>Enclose selected text or Open the enclosed text</p>
+</div>
+<div class='tags'>
+  <h3>Parameters:</h3>
+  <ul class='param'>
+    <li>
+      <span class='name'>lhs</span>
+      <span class='type'>
+        (<tt>String</tt>)
+      </span>
+      &mdash;
+      <span class='desc'>a text used to insert before the selection</span>
+    </li>
+    <li>
+      <span class='name'>rhs</span>
+      <span class='type'>
+        (<tt>String</tt>)
+      </span>
+      &mdash;
+      <span class='desc'>a text used to insert after the selection</span>
+    </li>
+    <li>
+      <span class='name'>keepSelection</span>
+      <span class='type'>
+        (<tt>Boolean</tt>)
+      </span>
+      &mdash;
+      <span class='desc'>select inserted text if it is <code>true</code></span>
+    </li>
+  </ul>
+  <h3>Returns:</h3>
+  <ul class='return'>
+    <li>
+      <span class='type'></span>
+      (<tt>Selection</tt>)
+      &mdash;
+      <span class='desc'>return the instance</span>
+    </li>
+  </ul>
+</div>
+  </div>
+  <div class='method_details'>
+    <p class='signature' id='insertBeforeLine-instance'>
+      - (Selection) <strong>insertBeforeLine</strong>(text, keepSelection)
+    </p>
+    <div class='docstring'>
+  <p>Insert text before the line</p>
+</div>
+<div class='tags'>
+  <h3>Parameters:</h3>
+  <ul class='param'>
+    <li>
+      <span class='name'>text</span>
+      <span class='type'>
+        (<tt>String</tt>)
+      </span>
+      &mdash;
+      <span class='desc'>a text used to insert</span>
+    </li>
+    <li>
+      <span class='name'>keepSelection</span>
+      <span class='type'>
+        (<tt>Boolean</tt>)
+      </span>
+      &mdash;
+      <span class='desc'>select inserted text if it is <code>true</code></span>
+    </li>
+  </ul>
+  <h3>Returns:</h3>
+  <ul class='return'>
+    <li>
+      <span class='type'></span>
+      (<tt>Selection</tt>)
+      &mdash;
+      <span class='desc'>return the instance</span>
+    </li>
+  </ul>
+</div>
+  </div>
+  <div class='method_details'>
+    <p class='signature' id='insertAfterLine-instance'>
+      - (Selection) <strong>insertAfterLine</strong>(text, keepSelection)
+    </p>
+    <div class='docstring'>
+  <p>Insert text after the line</p>
+</div>
+<div class='tags'>
+  <h3>Parameters:</h3>
+  <ul class='param'>
+    <li>
+      <span class='name'>text</span>
+      <span class='type'>
+        (<tt>String</tt>)
+      </span>
+      &mdash;
+      <span class='desc'>a text used to insert</span>
+    </li>
+    <li>
+      <span class='name'>keepSelection</span>
+      <span class='type'>
+        (<tt>Boolean</tt>)
+      </span>
+      &mdash;
+      <span class='desc'>select inserted text if it is <code>true</code></span>
+    </li>
+  </ul>
+  <h3>Returns:</h3>
+  <ul class='return'>
+    <li>
+      <span class='type'></span>
+      (<tt>Selection</tt>)
+      &mdash;
+      <span class='desc'>return the instance</span>
+    </li>
+  </ul>
+</div>
+  </div>
+  <div class='method_details'>
+    <p class='signature' id='encloseLine-instance'>
+      - (Selection) <strong>encloseLine</strong>(lhs, rhs, keepSelection)
+    </p>
+    <div class='docstring'>
+  <p>Enclose the line or Open the enclosed line</p>
+</div>
+<div class='tags'>
+  <h3>Parameters:</h3>
+  <ul class='param'>
+    <li>
+      <span class='name'>lhs</span>
+      <span class='type'>
+        (<tt>String</tt>)
+      </span>
+      &mdash;
+      <span class='desc'>a text used to insert before the selection</span>
+    </li>
+    <li>
+      <span class='name'>rhs</span>
+      <span class='type'>
+        (<tt>String</tt>)
+      </span>
+      &mdash;
+      <span class='desc'>a text used to insert after the selection</span>
+    </li>
+    <li>
+      <span class='name'>keepSelection</span>
+      <span class='type'>
+        (<tt>Boolean</tt>)
+      </span>
+      &mdash;
+      <span class='desc'>select inserted text if it is <code>true</code></span>
+    </li>
+  </ul>
+  <h3>Returns:</h3>
+  <ul class='return'>
+    <li>
+      <span class='type'></span>
+      (<tt>Selection</tt>)
+      &mdash;
+      <span class='desc'>return the instance</span>
+    </li>
+  </ul>
+</div>
+  </div>
+</div>
     </div>
     <div id='footer'>
   Generated on
-  Fri Mar 01 2013 21:33:13 GMT+0900 (JST)
+  Fri Mar 01 2013 21:38:45 GMT+0900 (JST)
   by
   <a href='https://github.com/netzpirat/codo' title='CoffeeScript API documentation generator'>Codo</a>
   v1.5.6

@@ -1,6 +1,5 @@
 #<< utils/selection
 if document.selection?
-  """use strict"""
   # http://stackoverflow.com/questions/4009756/how-to-count-string-occurrence-in-string
   occurrences = (str, subStr, allowOverlapping) ->
     str += ""

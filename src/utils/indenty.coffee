@@ -15,14 +15,7 @@ Cross-browser textarea indent manager
   # disable TAB key indent
   textarea.indenty.disable()
 ###
-makeTabString = (level) ->
-  cache = "#{level}Cache"
-  if not makeTabString[cache]?
-    makeTabString[cache] = new Array(level + 1).join(" ")
-  return makeTabString[cache]
-
 class Indenty
-  """use strict"""
   ###
   Constructor
 
@@ -141,7 +134,11 @@ class Indenty
   disable: ->
     @textarea.off 'keydown', @_keyDownEvent
     return @
-Indenty._makeTabString = makeTabString
+Indenty._makeTabString = makeTabString = (level) ->
+  cache = "#{level}Cache"
+  if not makeTabString[cache]?
+    makeTabString[cache] = new Array(level + 1).join(" ")
+  return makeTabString[cache]
 
 namespace 'Femto.utils', (exports) ->
   exports.Indenty = Indenty

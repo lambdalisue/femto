@@ -14,7 +14,6 @@ Cross-browser textarea auto indent manager
   textarea.autoIndenty.disable()
 ###
 class AutoIndenty
-  """use strict"""
   ###
   Constructor
 

@@ -9,7 +9,6 @@ Base class for Originator
     setMemento: (memento) -> @value = memento
 ###
 class Originator
-  """use strict"""
   ###
   Create memento of the instance
 
@@ -45,7 +44,6 @@ Caretaker of `Originator`
   notebook.caretaker.redo()
 ###
 class Caretaker
-  """use strict"""
   ###
   Constructor
 

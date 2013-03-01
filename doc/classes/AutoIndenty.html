@@ -121,10 +121,155 @@
 </div>
 <div class='tags'>
 </div>
+      <h2>Instance Method Summary</h2>
+      <ul class='summary'>
+  <li>
+    <span class='signature'>
+      <a href='#constructor-instance'>
+        - (void) <strong>constructor</strong>(textarea, expandTab = true, indentLevel = 4)
+      </a>
+    </span>
+    <span class='constructor note title'>Constructor</span>
+    <span class='desc'>
+      Constructor
+    </span>
+  </li>
+  <li>
+    <span class='signature'>
+      <a href='#insertNewLine-instance'>
+        - (AutoIndenty) <strong>insertNewLine</strong>()
+      </a>
+    </span>
+    <span class='desc'>
+      Insert newline after the current caret position with appropriate indent characters (keep previous indent level)
+    </span>
+  </li>
+  <li>
+    <span class='signature'>
+      <a href='#enable-instance'>
+        - (AutoIndenty) <strong>enable</strong>()
+      </a>
+    </span>
+    <span class='desc'>
+      Enable auto indent feature on target textarea
+    </span>
+  </li>
+  <li>
+    <span class='signature'>
+      <a href='#disable-instance'>
+        - (AutoIndenty) <strong>disable</strong>()
+      </a>
+    </span>
+    <span class='desc'>
+      Disable auto indent feature on target textarea
+    </span>
+  </li>
+</ul>
+      <h2>Constructor Details</h2>
+      <div class='methods'>
+  <div class='method_details'>
+    <p class='signature' id='constructor-instance'>
+      - (void) <strong>constructor</strong>(textarea, expandTab = true, indentLevel = 4)
+    </p>
+    <div class='docstring'>
+  <p>Constructor</p>
+</div>
+<div class='tags'>
+  <h3>Parameters:</h3>
+  <ul class='param'>
+    <li>
+      <span class='name'>textarea</span>
+      <span class='type'>
+        (<tt>jQuery</tt>)
+      </span>
+      &mdash;
+      <span class='desc'>A jQuery instance of target textarea DOM element</span>
+    </li>
+    <li>
+      <span class='name'>expandTab</span>
+      <span class='type'>
+        (<tt>bool</tt>)
+      </span>
+      &mdash;
+      <span class='desc'>When true, use SPACE insted of TAB for indent</span>
+    </li>
+    <li>
+      <span class='name'>indentLevel</span>
+      <span class='type'>
+        (<tt>integer</tt>)
+      </span>
+      &mdash;
+      <span class='desc'>An indent level. Enable only when expandTab is <code>true</code></span>
+    </li>
+  </ul>
+</div>
+  </div>
+</div>
+      <h2>Instance Method Details</h2>
+      <div class='methods'>
+  <div class='method_details'>
+    <p class='signature' id='insertNewLine-instance'>
+      - (AutoIndenty) <strong>insertNewLine</strong>()
+    </p>
+    <div class='docstring'>
+  <p>Insert newline after the current caret position
+with appropriate indent characters (keep previous indent level)</p>
+</div>
+<div class='tags'>
+  <h3>Returns:</h3>
+  <ul class='return'>
+    <li>
+      <span class='type'></span>
+      (<tt><a href='../classes/AutoIndenty.html'>AutoIndenty</a></tt>)
+      &mdash;
+      <span class='desc'>the instance</span>
+    </li>
+  </ul>
+</div>
+  </div>
+  <div class='method_details'>
+    <p class='signature' id='enable-instance'>
+      - (AutoIndenty) <strong>enable</strong>()
+    </p>
+    <div class='docstring'>
+  <p>Enable auto indent feature on target textarea</p>
+</div>
+<div class='tags'>
+  <h3>Returns:</h3>
+  <ul class='return'>
+    <li>
+      <span class='type'></span>
+      (<tt><a href='../classes/AutoIndenty.html'>AutoIndenty</a></tt>)
+      &mdash;
+      <span class='desc'>the instance</span>
+    </li>
+  </ul>
+</div>
+  </div>
+  <div class='method_details'>
+    <p class='signature' id='disable-instance'>
+      - (AutoIndenty) <strong>disable</strong>()
+    </p>
+    <div class='docstring'>
+  <p>Disable auto indent feature on target textarea</p>
+</div>
+<div class='tags'>
+  <h3>Returns:</h3>
+  <ul class='return'>
+    <li>
+      <span class='type'></span>
+      (<tt><a href='../classes/AutoIndenty.html'>AutoIndenty</a></tt>)
+      &mdash;
+      <span class='desc'>the instance</span>
+    </li>
+  </ul>
+</div>
+  </div>
+</div>
     </div>
     <div id='footer'>
   Generated on
-  Fri Mar 01 2013 21:33:13 GMT+0900 (JST)
+  Fri Mar 01 2013 21:38:45 GMT+0900 (JST)
   by
   <a href='https://github.com/netzpirat/codo' title='CoffeeScript API documentation generator'>Codo</a>
   v1.5.6
