@@ -49,46 +49,46 @@ It helps user to write these kind of text with the following features:</p>
 
 <ul>
 <li>
-<p>[x] Preview panel (bundle)</p>
+<p>Preview panel (bundle)</p>
 
 <p>With <code>previewPanel</code> plugin, femto add preview panel to check the output of
 the current text.
 It is under developping now</p>
 </li>
 <li>
-<p>[x] <code>TAB</code> indent and <code>SHIFT + TAB</code> outdent (features)</p>
+<p><code>TAB</code> indent and <code>SHIFT + TAB</code> outdent (features)</p>
 
 <p><code>TAB</code> key move the focus to the next object in browser default <code>textarea</code>.
 However most desktop text editor use <code>TAB</code> key for indent.</p>
 </li>
 <li>
-<p>[x] Auto indent (Keep indent) (features)</p>
+<p>Auto indent (Keep indent) (features)</p>
 
 <p>Some desktop text editor automatically keep indent level when user hit
 <code>RETURN</code> key. It is useful when user write a kind of Markup text which use
 indent as a blockquote or code block.</p>
 </li>
 <li>
-<p>[ ] Smart indent (plugin)</p>
+<p>Smart indent (plugin)</p>
 
 <p>With <code>smartIndent</code> plugin, femto automatically insert a Markup specified
 leading characters like <code>&gt;</code> in Markdown or <code>#.</code> in reStructuredText.
 It has not developed yet.</p>
 </li>
 <li>
-<p>[ ] Fullscreen (plugin)</p>
+<p>Fullscreen (plugin)</p>
 
 <p>With <code>fullscreen</code> plugin, user can use femto in fullscreen mode.
 It has not developed yet.</p>
 </li>
 <li>
-<p>[ ] Mobile support (plugin)</p>
+<p>Mobile support (plugin)</p>
 
 <p>With <code>mobile</code> plugin, user can use femto in smart phone like iPhone.
 It has not developed yet.</p>
 </li>
 <li>
-<p>[ ] Attachment (plugin)</p>
+<p>Attachment (plugin)</p>
 
 <p>With <code>attachment</code> plugin, user can attach files like Image or Zip to the
 text. It use some free upload services or user specified upload services to
@@ -104,90 +104,96 @@ steps below:</p>
 <li>
 <p>Clone git repository on your hard disc with</p>
 
-<pre><code>% git clone https://github.com/lambdalisue/femto.git
-% cd femto
-</code></pre>
+<div class="highlight"><pre>% git clone https://github.com/lambdalisue/femto.git
+% <span class="nb">cd </span>femto
+</pre></div>
 </li>
 <li>
 <p>Install required library to build femto with</p>
 
-<pre><code>% npm install
-</code></pre>
+<div class="highlight"><pre>% npm install
+</pre></div>
 </li>
 <li>
 <p>Build femto with</p>
 
-<pre><code>% ./node_modules/coffee-script/bin/cake release
-</code></pre>
+<div class="highlight"><pre>% ./node_modules/coffee-script/bin/cake release
+</pre></div>
 </li>
 <li>
 <p>Copy and rename <code>femto.js</code> and <code>femto.css</code> to your project</p>
 
-<pre><code>% mkdir -p ~/femto
+<div class="highlight"><pre>% mkdir -p ~/femto
 % copy ./www/js/femto.js ~/femto/femto.0.0.0.js
 % copy ./www/css/femto.css ~/femto/femto.0.0.0.css
-</code></pre>
+</pre></div>
 </li>
 <li>
 <p>Write HTML as:</p>
 
-<pre><code>&lt;html&gt;
-    &lt;head&gt;
-        &lt;link rel="stylesheet" href="femto/femto.0.0.0.css"&gt;
-    &lt;/head&gt;
-    &lt;body&gt;
-        &lt;textarea id="femto-demo"&gt;&lt;/textarea&gt;
-        &lt;script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"&gt;&lt;/script&gt;
-        &lt;script src="femto/femto.0.0.0.js"&gt;&lt;/script&gt;
-        &lt;script&gt;
-            $(function() {
-                var textarea;
-                textarea = $('textarea#femto-demo');
-                textarea = Femto.transform(textarea);
-            });
-        &lt;/script&gt;
-    &lt;/body&gt;
-&lt;/html&gt;
-</code></pre>
+<div class="highlight"><pre><span class="nt">&lt;html&gt;</span>
+    <span class="nt">&lt;head&gt;</span>
+        <span class="nt">&lt;link</span> <span class="na">rel=</span><span class="s">"stylesheet"</span> <span class="na">href=</span><span class="s">"femto/femto.0.0.0.css"</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;/head&gt;</span>
+    <span class="nt">&lt;body&gt;</span>
+        <span class="nt">&lt;textarea</span> <span class="na">id=</span><span class="s">"femto-demo"</span><span class="nt">&gt;&lt;/textarea&gt;</span>
+        <span class="nt">&lt;script </span><span class="na">src=</span><span class="s">"//ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"</span><span class="nt">&gt;&lt;/script&gt;</span>
+        <span class="nt">&lt;script </span><span class="na">src=</span><span class="s">"femto/femto.0.0.0.js"</span><span class="nt">&gt;&lt;/script&gt;</span>
+        <span class="nt">&lt;script&gt;</span>
+            <span class="nx">$</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+                <span class="kd">var</span> <span class="nx">textarea</span><span class="p">;</span>
+                <span class="nx">textarea</span> <span class="o">=</span> <span class="nx">$</span><span class="p">(</span><span class="s1">'textarea#femto-demo'</span><span class="p">);</span>
+                <span class="nx">textarea</span> <span class="o">=</span> <span class="nx">Femto</span><span class="p">.</span><span class="nx">transform</span><span class="p">(</span><span class="nx">textarea</span><span class="p">);</span>
+            <span class="p">});</span>
+        <span class="nt">&lt;/script&gt;</span>
+    <span class="nt">&lt;/body&gt;</span>
+<span class="nt">&lt;/html&gt;</span>
+</pre></div>
 </li>
 </ol><h3>Disable features of each femto instance</h3>
 
 <p>If you want to disable features of each femto instance, follow the steps below:</p>
 
-<pre><code>var textarea;
-textarea = $('textarea#femto-demo');
-textarea = Femto.transform(textarea);
-# if you want to disable `indent` feature
-textarea.features.indent.disable();
-</code></pre>
+<div class="highlight"><pre><span class="kd">var</span> <span class="nx">textarea</span><span class="p">;</span>
+<span class="nx">textarea</span> <span class="o">=</span> <span class="nx">$</span><span class="p">(</span><span class="s1">'textarea#femto-demo'</span><span class="p">);</span>
+<span class="nx">textarea</span> <span class="o">=</span> <span class="nx">Femto</span><span class="p">.</span><span class="nx">transform</span><span class="p">(</span><span class="nx">textarea</span><span class="p">);</span>
+<span class="c1">// if you want to disable `indent` feature</span>
+<span class="nx">textarea</span><span class="p">.</span><span class="nx">features</span><span class="p">.</span><span class="nx">indent</span><span class="p">.</span><span class="nx">disable</span><span class="p">();</span>
+</pre></div>
 
 <h3>Disable features globally</h3>
 
 <p>If you want to disable features of all femto instance, follow the steps below:</p>
 
-<pre><code># You have to disable features before you make the instance
-del Femto.features.indent;
-var textarea;
-textarea = $('textarea#femto-demo');
-textarea = Femto.transform(textarea);
-</code></pre>
+<div class="highlight"><pre><span class="c1">// You have to disable features before you make the instance</span>
+<span class="nx">del</span> <span class="nx">Femto</span><span class="p">.</span><span class="nx">features</span><span class="p">.</span><span class="nx">indent</span><span class="p">;</span>
+<span class="kd">var</span> <span class="nx">textarea</span><span class="p">;</span>
+<span class="nx">textarea</span> <span class="o">=</span> <span class="nx">$</span><span class="p">(</span><span class="s1">'textarea#femto-demo'</span><span class="p">);</span>
+<span class="nx">textarea</span> <span class="o">=</span> <span class="nx">Femto</span><span class="p">.</span><span class="nx">transform</span><span class="p">(</span><span class="nx">textarea</span><span class="p">);</span>
+</pre></div>
 
 <h2>Supported browsers</h2>
 
 <p>The following browsers are (or will be) supported.</p>
 
 <ul>
-<li>  [x] Google Chrome</li>
-<li>  [ ] Mozilla Firefox</li>
-<li>  [ ] Safari</li>
-<li>  [ ] Opera</li>
-<li>  [ ] Internet Explorer 8 (and over 8)</li>
+<li>✓ Google Chrome</li>
+<li>✗ Mozilla Firefox</li>
+<li>✗ Safari</li>
+<li>✗ Opera</li>
+<li>✗ Internet Explorer 8 (and over 8)</li>
 </ul><h2>Test</h2>
 
 <p>You can check the test result at
 <a href="https://travis-ci.org/lambdalisue/femto">femto Travis-ci</a>.</p>
 
-<h2>License</h2>
+<h2>Develop</h2>
+
+<p>femto is not stable yet. Features might be changed in future.</p>
+
+<ul>
+<li><a href="http://coffeedoc.info/github/lambdalisue/femto/master/">femto API documentation</a></li>
+</ul><h2>License</h2>
 
 <p>MIT License</p>
 
