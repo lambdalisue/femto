@@ -1768,7 +1768,18 @@ Cross-browser textarea selection class
         r = instance.save('HELLO');
         return expect(r).to.be.eql(instance);
       });
-      it('should call originator `createMemento()` method to get current memento without any argument');
+      it('should call originator `createMemento()` method to get current memento without any argument', function() {
+        var createMemento, o;
+        o = instance.originator();
+        createMemento = o.createMemento;
+        o.createMemento = function() {
+          return this.createMemento.called = true;
+        };
+        o.createMemento.called = false;
+        instance.save();
+        expect(o.createMemento.called).to.be["true"];
+        return o.createMemento = createMemento;
+      });
       it('should save new memento into `_undoStack` and change `_previous` when called without any argument', function() {
         dummy.memento = 'HELLO';
         instance.save();
@@ -1813,8 +1824,30 @@ Cross-browser textarea selection class
           expect(instance._redoStack.length).to.be.eql(0);
           return expect(instance._previous).to.be.eql(null);
         });
-        it('should call originator `createMemento()` method to get current value');
-        it('should call originator `setMemento(value)` method to change current value');
+        it('should call originator `createMemento()` method to get current value', function() {
+          var createMemento, o;
+          o = instance.originator();
+          createMemento = o.createMemento;
+          o.createMemento = function() {
+            return this.createMemento.called = true;
+          };
+          o.createMemento.called = false;
+          instance.undo();
+          expect(o.createMemento.called).to.be["true"];
+          return o.createMemento = createMemento;
+        });
+        it('should call originator `setMemento(value)` method to change current value', function() {
+          var o, setMemento;
+          o = instance.originator();
+          setMemento = o.setMemento;
+          o.setMemento = function() {
+            return this.setMemento.called = true;
+          };
+          o.setMemento.called = false;
+          instance.undo();
+          expect(o.setMemento.called).to.be["true"];
+          return o.setMemento = setMemento;
+        });
         it('should pop previous memento from `_undoStack`', function() {
           var i, _j, _k, _results;
           dummy.memento = "HELLO1";
@@ -1862,8 +1895,30 @@ Cross-browser textarea selection class
           expect(instance._redoStack.length).to.be.eql(0);
           return expect(instance._previous).to.be.eql(null);
         });
-        it('should call originator `createMemento()` method to get current value');
-        it('should call originator `setMemento(value)` method to change current value');
+        it('should call originator `createMemento()` method to get current value', function() {
+          var createMemento, o;
+          o = instance.originator();
+          createMemento = o.createMemento;
+          o.createMemento = function() {
+            return this.createMemento.called = true;
+          };
+          o.createMemento.called = false;
+          instance.redo();
+          expect(o.createMemento.called).to.be["true"];
+          return o.createMemento = createMemento;
+        });
+        it('should call originator `setMemento(value)` method to change current value', function() {
+          var o, setMemento;
+          o = instance.originator();
+          setMemento = o.setMemento;
+          o.setMemento = function() {
+            return this.setMemento.called = true;
+          };
+          o.setMemento.called = false;
+          instance.redo();
+          expect(o.setMemento.called).to.be["true"];
+          return o.setMemento = setMemento;
+        });
         it('should pop further memento from `_redoStack`', function() {
           var i, _j, _k, _l;
           dummy.memento = "HELLO1";

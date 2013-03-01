@@ -61,7 +61,14 @@ describe 'Femto.utils.Caretaker', ->
       r = instance.save('HELLO')
       expect(r).to.be.eql(instance)
 
-    it 'should call originator `createMemento()` method to get current memento without any argument'
+    it 'should call originator `createMemento()` method to get current memento without any argument', ->
+      o = instance.originator()
+      createMemento = o.createMemento
+      o.createMemento = -> @createMemento.called = true
+      o.createMemento.called = false
+      instance.save()
+      expect(o.createMemento.called).to.be.true
+      o.createMemento = createMemento
 
     it 'should save new memento into `_undoStack` and change `_previous` when called without any argument', ->
       dummy.memento = 'HELLO'
@@ -107,8 +114,23 @@ describe 'Femto.utils.Caretaker', ->
         expect(instance._redoStack.length).to.be.eql(0)
         expect(instance._previous).to.be.eql(null)
 
-      it 'should call originator `createMemento()` method to get current value'
-      it 'should call originator `setMemento(value)` method to change current value'
+      it 'should call originator `createMemento()` method to get current value', ->
+        o = instance.originator()
+        createMemento = o.createMemento
+        o.createMemento = -> @createMemento.called = true
+        o.createMemento.called = false
+        instance.undo()
+        expect(o.createMemento.called).to.be.true
+        o.createMemento = createMemento
+
+      it 'should call originator `setMemento(value)` method to change current value', ->
+        o = instance.originator()
+        setMemento = o.setMemento
+        o.setMemento = -> @setMemento.called = true
+        o.setMemento.called = false
+        instance.undo()
+        expect(o.setMemento.called).to.be.true
+        o.setMemento = setMemento
 
       it 'should pop previous memento from `_undoStack`', ->
         dummy.memento = "HELLO1"
@@ -148,8 +170,23 @@ describe 'Femto.utils.Caretaker', ->
         expect(instance._redoStack.length).to.be.eql(0)
         expect(instance._previous).to.be.eql(null)
 
-      it 'should call originator `createMemento()` method to get current value'
-      it 'should call originator `setMemento(value)` method to change current value'
+      it 'should call originator `createMemento()` method to get current value', ->
+        o = instance.originator()
+        createMemento = o.createMemento
+        o.createMemento = -> @createMemento.called = true
+        o.createMemento.called = false
+        instance.redo()
+        expect(o.createMemento.called).to.be.true
+        o.createMemento = createMemento
+
+      it 'should call originator `setMemento(value)` method to change current value', ->
+        o = instance.originator()
+        setMemento = o.setMemento
+        o.setMemento = -> @setMemento.called = true
+        o.setMemento.called = false
+        instance.redo()
+        expect(o.setMemento.called).to.be.true
+        o.setMemento = setMemento
 
       it 'should pop further memento from `_redoStack`', ->
         dummy.memento = "HELLO1"
