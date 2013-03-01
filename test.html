@@ -10,6 +10,17 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
     <script>window.jQuery || document.write('<script src="javascripts/jquery-1.8.0.min.js"><\/script>')</script>
     <script src="javascripts/respond.js"></script>
+    <style>
+      /* mocha use wide output */
+      #mocha {
+        width: 950px;
+        /* .wrapper width = 650 */
+        margin: 10px -150px;
+      }
+      #mocha-stats {
+        z-index: 1000;
+      }
+    </style>
     <!--[if lt IE 9]>
       <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
     <![endif]-->
@@ -41,10 +52,15 @@
           <span class="credits right">Hosted on GitHub Pages &mdash; Theme by <a href="http://twitter.com/#!/michigangraham">mattgraham</a></span>
         </div>
 
-        <h1>femto<a href="https://travis-ci.org/lambdalisue/femto"><img src="https://travis-ci.org/lambdalisue/femto.png" alt="Build Status"></a></h1>
-        <p>Please tell me if you find a issue.</p>
+        <h1>femto <a href="https://travis-ci.org/lambdalisue/femto"><img src="https://travis-ci.org/lambdalisue/femto.png" alt="Build Status"></a></h1>
+        <p>Send me any
+          <a href="https://github.com/lambdalisue/femto/issues">Issue reports</a> or
+          <a href="https://github.com/lambdalisue/femto/pulls">Pull requests</a>
+          if you find any issues or need some features.</p>
 
+        <hr>
         <div id="mocha"></div>
+        <hr>
 
         <p>Copyright(c) 2012 lambdalisue, hashnote.net all right reserved.</p>
       </section>
