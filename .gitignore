@@ -1,4 +1,5 @@
 node_modules
+javascripts
 www/js/app.js
 www/js/app-debug.js
 www/js/toaster
