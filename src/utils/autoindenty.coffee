@@ -19,9 +19,10 @@ class AutoIndenty
   Constructor
 
   @param [jQuery] textarea A target textarea DOM element
-  @param [String] tabString a tab string used to insert (default: '    ')
+  @param [bool] expandTab When true, use SPACE insted of TAB for indent
+  @param [integer] indentLevel An indent level. Enable only when expandTab is `true`
   ###
-  constructor: (@textarea, @tabString='    ') ->
+  constructor: (@textarea, @expandTab=true, @indentLevel=4) ->
     if @textarea not instanceof jQuery
       @textarea = jQuery(@textarea)
     if @textarea._selection?
@@ -29,6 +30,11 @@ class AutoIndenty
     else
       @_selection = new Femto.utils.Selection(@textarea.get(0))
       @textarea._selection = @_selection
+    if @expandTab
+      tabString = Femto.utils.Indenty._makeTabString(indentLevel)
+    else
+      tabString = "\t"
+    @_pattern = new RegExp "^(?:#{tabString})*"
 
   ###
   Insert newline after the current caret position
@@ -38,10 +44,9 @@ class AutoIndenty
   ###
   insertNewLine: ->
     [cs] = @_selection.caret()
-    pattern = new RegExp "^(?:#{@tabString})*"
     # get current indent level with regexp
     line = @_selection.lineText().split("\n")[0]
-    indent = line.match(pattern)
+    indent = line.match(@_pattern)
     # move caret forward if the caret stands just before the newline
     if @_selection._getWholeText().substring(cs, cs+1) is "\n"
       @_selection.caret(1)

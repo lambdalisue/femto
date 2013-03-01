@@ -11,7 +11,7 @@ describe 'Femto.utils.AutoIndenty', ->
     value = ->
       # IE use \r\n so replace it
       textarea.value.replace(/\r\n/g, "\n")
-    instance = new AutoIndenty(jQuery(textarea), '    ')
+    instance = new AutoIndenty(jQuery(textarea), true, 4)
     selection = instance._selection
     document.body.appendChild textarea
     textarea.focus()
@@ -35,7 +35,8 @@ describe 'Femto.utils.AutoIndenty', ->
   # check expected public properties
   expected_properties = [
     ['textarea', null]
-    ['tabString', 'string']
+    ['expandTab', 'boolean']
+    ['indentLevel', 'number']
   ]
   for [name, type] in expected_properties then do (name, type) ->
     it "instance should have public `#{name}` property", ->

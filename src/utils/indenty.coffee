@@ -139,6 +139,7 @@ class Indenty
   disable: ->
     @textarea.off 'keydown', @_keyDownEvent
     return @
+Indenty._makeTabString = makeTabString
 
 namespace 'Femto.utils', (exports) ->
   exports.Indenty = Indenty

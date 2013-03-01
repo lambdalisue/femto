@@ -1200,12 +1200,15 @@ Cross-browser textarea selection class
       Constructor
     
       @param [jQuery] textarea A target textarea DOM element
-      @param [String] tabString a tab string used to insert (default: '    ')
+      @param [bool] expandTab When true, use SPACE insted of TAB for indent
+      @param [integer] indentLevel An indent level. Enable only when expandTab is `true`
     */
 
-    function AutoIndenty(textarea, tabString) {
+    function AutoIndenty(textarea, expandTab, indentLevel) {
+      var tabString;
       this.textarea = textarea;
-      this.tabString = tabString != null ? tabString : '    ';
+      this.expandTab = expandTab != null ? expandTab : true;
+      this.indentLevel = indentLevel != null ? indentLevel : 4;
       this._keyDownEvent = __bind(this._keyDownEvent, this);
 
       if (!(this.textarea instanceof jQuery)) {
@@ -1217,6 +1220,12 @@ Cross-browser textarea selection class
         this._selection = new Femto.utils.Selection(this.textarea.get(0));
         this.textarea._selection = this._selection;
       }
+      if (this.expandTab) {
+        tabString = Femto.utils.Indenty._makeTabString(indentLevel);
+      } else {
+        tabString = "\t";
+      }
+      this._pattern = new RegExp("^(?:" + tabString + ")*");
     }
 
     /*
@@ -1228,11 +1237,10 @@ Cross-browser textarea selection class
 
 
     AutoIndenty.prototype.insertNewLine = function() {
-      var cs, indent, line, pattern;
+      var cs, indent, line;
       cs = this._selection.caret()[0];
-      pattern = new RegExp("^(?:" + this.tabString + ")*");
       line = this._selection.lineText().split("\n")[0];
-      indent = line.match(pattern);
+      indent = line.match(this._pattern);
       if (this._selection._getWholeText().substring(cs, cs + 1) === "\n") {
         this._selection.caret(1);
       }
@@ -1532,6 +1540,8 @@ Cross-browser textarea selection class
     return Indenty;
 
   })();
+
+  Indenty._makeTabString = makeTabString;
 
   namespace('Femto.utils', function(exports) {
     return exports.Indenty = Indenty;
@@ -1922,7 +1932,7 @@ Cross-browser textarea selection class
       value = function() {
         return textarea.value.replace(/\r\n/g, "\n");
       };
-      instance = new AutoIndenty(jQuery(textarea), '    ');
+      instance = new AutoIndenty(jQuery(textarea), true, 4);
       selection = instance._selection;
       document.body.appendChild(textarea);
       return textarea.focus();
@@ -1944,7 +1954,7 @@ Cross-browser textarea selection class
       _ref = expected_private_properties[_i], name = _ref[0], type = _ref[1];
       _fn(name, type);
     }
-    expected_properties = [['textarea', null], ['tabString', 'string']];
+    expected_properties = [['textarea', null], ['expandTab', 'boolean'], ['indentLevel', 'number']];
     _fn1 = function(name, type) {
       return it("instance should have public `" + name + "` property", function() {
         expect(instance).to.have.property(name);
