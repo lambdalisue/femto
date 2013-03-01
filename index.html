@@ -1,0 +1,211 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>Femto by lambdalisue</title>
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+    <script src="javascripts/respond.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <!--[if lt IE 8]>
+    <link rel="stylesheet" href="stylesheets/ie.css">
+    <![endif]-->
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+
+  </head>
+  <body>
+      <div id="header">
+        <nav>
+          <li class="fork"><a href="https://github.com/lambdalisue/femto">View On GitHub</a></li>
+          <li class="downloads"><a href="https://github.com/lambdalisue/femto/zipball/master">ZIP</a></li>
+          <li class="downloads"><a href="https://github.com/lambdalisue/femto/tarball/master">TAR</a></li>
+          <li class="title">DOWNLOADS</li>
+        </nav>
+      </div><!-- end header -->
+
+    <div class="wrapper">
+
+      <section>
+        <div id="title">
+          <h1>Femto</h1>
+          <p>A simple JavaScript Text Editor</p>
+          <hr>
+          <span class="credits left">Project maintained by <a href="https://github.com/lambdalisue">lambdalisue</a></span>
+          <span class="credits right">Hosted on GitHub Pages &mdash; Theme by <a href="http://twitter.com/#!/michigangraham">mattgraham</a></span>
+        </div>
+
+        <h1>femto <a href="https://travis-ci.org/lambdalisue/femto"><img src="https://travis-ci.org/lambdalisue/femto.png" alt="Build Status"></a>
+</h1>
+
+<p>A well tested simple and powerful web based text editor.</p>
+
+<p><strong>femto</strong> allow you to add a simple and powerful text editor on your web site.
+It is assumed to use for writing a Markup text.
+It helps user to write these kind of text with the following features:</p>
+
+<ul>
+<li>
+<p>[x] Preview panel (bundle)</p>
+
+<p>With <code>previewPanel</code> plugin, femto add preview panel to check the output of
+the current text.
+It is under developping now</p>
+</li>
+<li>
+<p>[x] <code>TAB</code> indent and <code>SHIFT + TAB</code> outdent (features)</p>
+
+<p><code>TAB</code> key move the focus to the next object in browser default <code>textarea</code>.
+However most desktop text editor use <code>TAB</code> key for indent.</p>
+</li>
+<li>
+<p>[x] Auto indent (Keep indent) (features)</p>
+
+<p>Some desktop text editor automatically keep indent level when user hit
+<code>RETURN</code> key. It is useful when user write a kind of Markup text which use
+indent as a blockquote or code block.</p>
+</li>
+<li>
+<p>[ ] Smart indent (plugin)</p>
+
+<p>With <code>smartIndent</code> plugin, femto automatically insert a Markup specified
+leading characters like <code>&gt;</code> in Markdown or <code>#.</code> in reStructuredText.
+It has not developed yet.</p>
+</li>
+<li>
+<p>[ ] Fullscreen (plugin)</p>
+
+<p>With <code>fullscreen</code> plugin, user can use femto in fullscreen mode.
+It has not developed yet.</p>
+</li>
+<li>
+<p>[ ] Mobile support (plugin)</p>
+
+<p>With <code>mobile</code> plugin, user can use femto in smart phone like iPhone.
+It has not developed yet.</p>
+</li>
+<li>
+<p>[ ] Attachment (plugin)</p>
+
+<p>With <code>attachment</code> plugin, user can attach files like Image or Zip to the
+text. It use some free upload services or user specified upload services to
+store files.
+It has not developed yet.</p>
+</li>
+</ul><h2>Usage</h2>
+
+<p>femto is under developped yet. If you want to try femto, you can follow the
+steps below:</p>
+
+<ol>
+<li>
+<p>Clone git repository on your hard disc with</p>
+
+<pre><code>% git clone https://github.com/lambdalisue/femto.git
+% cd femto
+</code></pre>
+</li>
+<li>
+<p>Install required library to build femto with</p>
+
+<pre><code>% npm install
+</code></pre>
+</li>
+<li>
+<p>Build femto with</p>
+
+<pre><code>% ./node_modules/coffee-script/bin/cake release
+</code></pre>
+</li>
+<li>
+<p>Copy and rename <code>femto.js</code> and <code>femto.css</code> to your project</p>
+
+<pre><code>% mkdir -p ~/femto
+% copy ./www/js/femto.js ~/femto/femto.0.0.0.js
+% copy ./www/css/femto.css ~/femto/femto.0.0.0.css
+</code></pre>
+</li>
+<li>
+<p>Write HTML as:</p>
+
+<pre><code>&lt;html&gt;
+    &lt;head&gt;
+        &lt;link rel="stylesheet" href="femto/femto.0.0.0.css"&gt;
+    &lt;/head&gt;
+    &lt;body&gt;
+        &lt;textarea id="femto-demo"&gt;&lt;/textarea&gt;
+        &lt;script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"&gt;&lt;/script&gt;
+        &lt;script src="femto/femto.0.0.0.js"&gt;&lt;/script&gt;
+        &lt;script&gt;
+            $(function() {
+                var textarea;
+                textarea = $('textarea#femto-demo');
+                textarea = Femto.transform(textarea);
+            });
+        &lt;/script&gt;
+    &lt;/body&gt;
+&lt;/html&gt;
+</code></pre>
+</li>
+</ol><h3>Disable features of each femto instance</h3>
+
+<p>If you want to disable features of each femto instance, follow the steps below:</p>
+
+<pre><code>var textarea;
+textarea = $('textarea#femto-demo');
+textarea = Femto.transform(textarea);
+# if you want to disable `indent` feature
+textarea.features.indent.disable();
+</code></pre>
+
+<h3>Disable features globally</h3>
+
+<p>If you want to disable features of all femto instance, follow the steps below:</p>
+
+<pre><code># You have to disable features before you make the instance
+del Femto.features.indent;
+var textarea;
+textarea = $('textarea#femto-demo');
+textarea = Femto.transform(textarea);
+</code></pre>
+
+<h2>Supported browsers</h2>
+
+<p>The following browsers are (or will be) supported.</p>
+
+<ul>
+<li>  [x] Google Chrome</li>
+<li>  [ ] Mozilla Firefox</li>
+<li>  [ ] Safari</li>
+<li>  [ ] Opera</li>
+<li>  [ ] Internet Explorer 8 (and over 8)</li>
+</ul><h2>Test</h2>
+
+<p>You can check the test result at
+<a href="https://travis-ci.org/lambdalisue/femto">femto Travis-ci</a>.</p>
+
+<h2>License</h2>
+
+<p>MIT License</p>
+
+<p>Copyright(c) 2012 lambdalisue, hashnote.net all right reserved.</p>
+      </section>
+
+    </div>
+    <!--[if !IE]><script>fixScale(document);</script><![endif]-->
+              <script type="text/javascript">
+            var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+            document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+          </script>
+          <script type="text/javascript">
+            try {
+              var pageTracker = _gat._getTracker("UA-38256811-1");
+            pageTracker._trackPageview();
+            } catch(err) {}
+          </script>
+
+  </body>
+</html>
