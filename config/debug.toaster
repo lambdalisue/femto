@@ -11,6 +11,7 @@ toast
   vendors: [
     'vendors/shortcut.js',
     'vendors/namespace.js',
+    'vendors/mocha_ie_patch.js',
   ]
 
   # => OPTIONS (optional, default values listed)
