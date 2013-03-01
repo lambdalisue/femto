@@ -28,7 +28,6 @@ transform = (textarea, options) ->
       shortcut.add options.editingModeShortcut, elem.editingMode,
         target: elem.viewer.iframe.contents().get(0)
 
-
     # show femto
     @editingMode()
     @show()
@@ -51,6 +50,10 @@ transform = (textarea, options) ->
   elem.editingMode = ->
     # restore caret position
     elem.editor.selection.caret caret_start, caret_end
+    #
+    # TODO: (Issue) textarea can not get focus back from iframe with the
+    #       following code
+    #
     # focus back to the editor
     elem.editor.focus()
     # switch to editing mode
