@@ -7,12 +7,18 @@ A well tested simple and powerful web based text editor.
 It is assumed to use for writing a Markup text.
 It helps user to write these kind of text with the following features:
 
--	[x] `TAB` indent and `SHIFT + TAB` outdent
+-	[x] Preview panel (bundle)
+
+	With `previewPanel` plugin, femto add preview panel to check the output of
+	the current text.
+	It is under developping now
+
+-	[x] `TAB` indent and `SHIFT + TAB` outdent (features)
 
 	`TAB` key move the focus to the next object in browser default `textarea`.
 	However most desktop text editor use `TAB` key for indent.
 
--	[x] Auto indent (Keep indent)
+-	[x] Auto indent (Keep indent) (features)
 
 	Some desktop text editor automatically keep indent level when user hit
 	`RETURN` key. It is useful when user write a kind of Markup text which use
@@ -22,12 +28,6 @@ It helps user to write these kind of text with the following features:
 
 	With `smartIndent` plugin, femto automatically insert a Markup specified
 	leading characters like `>` in Markdown or `#.` in reStructuredText.
-	It has not developed yet.
-
--	[ ] Preview panel (plugin)
-
-	With `previewPanel` plugin, femto add preview panel to check the output of
-	the current text.
 	It has not developed yet.
 
 -	[ ] Fullscreen (plugin)
@@ -65,11 +65,11 @@ steps below:
 
 		% ./node_modules/coffee-script/bin/cake release
 
-4.	Copy and rename `app.js` and `app.css` to your project
+4.	Copy and rename `femto.js` and `femto.css` to your project
 
 		% mkdir -p ~/femto
-		% copy ./www/js/app.js ~/femto/femto.0.0.0.js
-		% copy ./www/css/app.css ~/femto/femto.0.0.0.css
+		% copy ./www/js/femto.js ~/femto/femto.0.0.0.js
+		% copy ./www/css/femto.css ~/femto/femto.0.0.0.css
 
 5.	Write HTML as:
 
@@ -83,8 +83,9 @@ steps below:
 				<script src="femto/femto.0.0.0.js"></script>
 				<script>
 					$(function() {
-						var textarea = $('textarea#femto-demo');
-						Femto(textarea);
+						var textarea;
+						textarea = $('textarea#femto-demo');
+						textarea = Femto.transform(textarea);
 					});
 				</script>
 			</body>
@@ -94,19 +95,21 @@ steps below:
 
 If you want to disable features of each femto instance, follow the steps below:
 
-	var textarea = $('textarea#femto-demo');
-	var femto = Femto(textarea);
+	var textarea;
+	textarea = $('textarea#femto-demo');
+	textarea = Femto.transform(textarea);
 	# if you want to disable `indent` feature
-	femto.plugins.indent.disable();
+	textarea.features.indent.disable();
 
 ### Disable features globally
 
 If you want to disable features of all femto instance, follow the steps below:
 
 	# You have to disable features before you make the instance
-	del Femto.plugins.indent;
-	var textarea = $('textarea#femto-demo');
-	Femto(textarea);
+	del Femto.features.indent;
+	var textarea;
+	textarea = $('textarea#femto-demo');
+	textarea = Femto.transform(textarea);
 
 Supported browsers
 --------------------------------------------------------------------------------
