@@ -54,8 +54,12 @@
 
 <div id="demo">
   <textarea id="femto-demo"></textarea>
-  <p><small><code>Shift + Right</code> to show the preview panel. <code>Shift +
-      Left</code> to show the editor panel.</small></p>
+  <p><small>
+    <code>TAB</code> to Indent. <code>Shift + TAB</code> to Outdent.<br>
+    <code>RETURN</code> to Keep Indent. <code>Shift + RETURN</code> to Not.<br>
+    <code>Ctrl + Z</code> to Undo. <code>Ctrl + Shift + Z</code> to Redo.<br>
+    <code>Shift + Right</code> to preview. <code>Shift + Left</code> to edit.
+  </small></p>
 </div>
 
 <p><strong>femto</strong> allow you to add a simple and powerful text editor on your web site.
@@ -66,9 +70,17 @@ It helps user to write these kind of text with the following features:</p>
 <li>
 <p>Preview panel (bundle)</p>
 
-<p>With <code>previewPanel</code> plugin, femto add preview panel to check the output of
-the current text.
+<p>femto has viewer panel to check the output of the current text.
+It support Template system so you can change the looks of the preview.
+It also support Render system so you can use Markdown, reStructuredText or so
+on.
 It is under developping now</p>
+</li>
+<li>
+<p>Undo &amp; Redo (bundle)</p>
+
+<p>femto has its own Undo &amp; Redo system. Everything can be undo with
+<code>Ctrl+Z</code> and redo with <code>Ctrl+Shift+Z</code>.</p>
 </li>
 <li>
 <p><code>TAB</code> indent and <code>SHIFT + TAB</code> outdent (features)</p>
