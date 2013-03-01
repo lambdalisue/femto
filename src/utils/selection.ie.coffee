@@ -1,5 +1,6 @@
 #<< utils/selection
 if document.selection?
+  """use strict"""
   # http://stackoverflow.com/questions/4009756/how-to-count-string-occurrence-in-string
   occurrences = (str, subStr, allowOverlapping) ->
     str += ""
@@ -16,7 +17,7 @@ if document.selection?
       else
         break
     return n
-  utils.Selection = class utils.IESelection extends utils.W3CSelection
+  class IESelection extends W3CSelection
     constructor: (@textarea) ->
       @_document = @textarea.ownerDocument
 
@@ -42,3 +43,7 @@ if document.selection?
       range.moveEnd('character', e - s)
       range.select()
       return @
+
+  namespace 'Femto.utils', (exports) ->
+    exports.IESelection = IESelection
+    exports.Selection = IESelection

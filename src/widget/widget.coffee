@@ -1,5 +1,4 @@
 #<< utils/type
-
 Widget = (selector='<div>', context) ->
   if selector instanceof jQuery
     elem = selector
@@ -12,7 +11,7 @@ Widget = (selector='<div>', context) ->
   elem.nonContentHeight = (includeMargin=false) ->
     return _outerHeight.call(@, includeMargin) - @height()
   elem.outerWidth = (includeMargin, value) ->
-    if utils.type(includeMargin) is 'number'
+    if Femto.utils.type(includeMargin) is 'number'
       value = includeMargin
       includeMargin = false
     if not value?
@@ -21,8 +20,7 @@ Widget = (selector='<div>', context) ->
     return @width(value - offset)
   elem._outerHeight = elem.outerHeight
   elem.outerHeight = (includeMargin, value) ->
-
-    if utils.type(includeMargin) is 'number'
+    if Femto.utils.type(includeMargin) is 'number'
       value = includeMargin
       includeMargin = false
     if not value?
@@ -31,3 +29,6 @@ Widget = (selector='<div>', context) ->
     return @height(value - offset)
   elem.widget = true
   return elem
+
+namespace 'Femto.widget', (exports) ->
+  exports.Widget = Widget

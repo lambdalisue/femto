@@ -1,8 +1,7 @@
-#<< utils/indenty
-
-describe 'utils.AutoIndenty', ->
+describe 'Femto.utils.AutoIndenty', ->
   textarea = instance = selection = value = null
-  AutoIndenty = utils.AutoIndenty
+  AutoIndenty = Femto.utils.AutoIndenty
+  Selection = Femto.utils.Selection
 
   before ->
     textarea = document.createElement('textarea')
@@ -17,12 +16,16 @@ describe 'utils.AutoIndenty', ->
     document.body.appendChild textarea
     textarea.focus()
 
+  after ->
+    document.body.removeChild(textarea)
+
+
   afterEach ->
     textarea.rollback()
 
   # check expected private properties
   expected_private_properties = [
-    ['_selection', utils.Selection]
+    ['_selection', Selection]
   ]
   for [name, type] in expected_private_properties then do (name, type) ->
     it "instance should have private `#{name}` property", ->

@@ -1,6 +1,5 @@
-#<< utils/type
-describe 'utils.type', ->
-  type = utils.type
+describe 'Femto.utils.type', ->
+  type = Femto.utils.type
   cases = [
     [0,         'number']
     [1.2,       'number']

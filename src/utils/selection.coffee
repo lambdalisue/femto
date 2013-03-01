@@ -1,4 +1,3 @@
-"use strict"
 ###
 Cross-browser textarea selection class
 
@@ -16,14 +15,15 @@ Cross-browser textarea selection class
   # replace selected text
   textarea.selection.text("HELLO")
 ###
-utils.Selection = class utils.W3CSelection
+class W3CSelection
+  """use strict"""
   ###
   Constructor
 
   @param [DOM element] textarea A target textarea DOM element
   @return [Selection] the new instance
   ###
-  constructor: (@textarea) ->
+  constructor: (@textarea) -> @
 
   # @private
   _getCaret: ->
@@ -302,3 +302,7 @@ utils.Selection = class utils.W3CSelection
       @_setCaret(s, e)
     @textarea.scrollTop = scrollTop
     return @
+
+namespace 'Femto.utils', (exports) ->
+  exports.W3CSelection = W3CSelection
+  exports.Selection = W3CSelection

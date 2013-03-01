@@ -15,11 +15,9 @@ exec = (file, args, done) ->
 option '-w', '--watch', 'watch files'
 
 task 'debug', 'compile coffee file', (options) ->
-  invoke 'style'
-  args = ['-cd', '-f', 'config/debug.toaster.coffee']
+  args = ['-cd', '-f', 'config/debug.toaster']
   args.push('-w') if options.watch?
-  toaster = 'node_modules/coffee-toaster/bin/toaster'
-  proc = exec(toaster, args)
+  proc = exec(COFFEE_TOASTER, args)
 
 task 'develop', 'watches and compiles coffee files', (options) ->
   options.watch = true
@@ -27,10 +25,9 @@ task 'develop', 'watches and compiles coffee files', (options) ->
 
 task 'release', 'compile coffee file', (options) ->
   invoke 'style'
-  args = ['-c', '-f', 'config/release.toaster.coffee']
+  args = ['-cd', '-f', 'config/release.toaster']
   args.push('-w') if options.watch?
-  toaster = 'node_modules/coffee-toaster/bin/toaster'
-  proc = exec(toaster, args)
+  proc = exec(COFFEE_TOASTER, args)
 
 task 'style', 'create css files', ->
   exec(LESS, ['less/core.less', 'www/css/app.css'])

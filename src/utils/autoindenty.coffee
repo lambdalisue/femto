@@ -1,6 +1,5 @@
 #<< utils/selection
 #<< utils/selection.ie
-"use strict"
 ###
 Cross-browser textarea auto indent manager
 
@@ -14,7 +13,8 @@ Cross-browser textarea auto indent manager
   # disable auto indent
   textarea.autoIndenty.disable()
 ###
-class utils.AutoIndenty
+class AutoIndenty
+  """use strict"""
   ###
   Constructor
 
@@ -27,7 +27,7 @@ class utils.AutoIndenty
     if @textarea._selection?
       @_selection = @textarea._selection
     else
-      @_selection = new utils.Selection(@textarea.get(0))
+      @_selection = new Femto.utils.Selection(@textarea.get(0))
       @textarea._selection = @_selection
 
   ###
@@ -79,3 +79,6 @@ class utils.AutoIndenty
   ###
   disable: ->
     @textarea.off 'keydown', (e) => @_keyDownEvent(e)
+
+namespace 'Femto.utils', (exports) ->
+  exports.AutoIndenty = AutoIndenty

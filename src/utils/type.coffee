@@ -14,7 +14,7 @@ Better `typeof` method of javascript
 
 @see http://coffeescriptcookbook.com/chapters/classes_and_objects/type-function
 ###
-utils.type = (obj) ->
+type = (obj) ->
   if obj == undefined or obj == null
     return String obj
   classToType = new Object
@@ -24,3 +24,6 @@ utils.type = (obj) ->
   if myClass of classToType
     return classToType[myClass]
   return "object"
+
+namespace 'Femto.utils', (exports) ->
+  exports.type = type

@@ -1,41 +1,76 @@
-#<< editor
-#<< utils/indenty
-#<< utils/autoindenty
-window.Femto = Femto = (textarea, options) ->
-  elem = Widget($('<div>').insertAfter(textarea).hide())
+#<< utils/template
+#<< widget/widget
+#<< widget/editor
+#<< widget/viewer
+transform = (textarea, options) ->
+  options = jQuery.extend({
+      'template': new Femto.utils.Template()
+      'previewModeShortcut': 'Shift+Right'
+      'editingModeShortcut': 'Shift+Left'
+    }, options)
+  elem = Femto.widget.Widget($('<div>').insertAfter(textarea).hide())
                           .addClass('femto')
-  elem.editor = Editor(textarea)
+  elem.editor = Femto.widget.Editor(textarea)
+  elem.viewer = Femto.widget.Viewer(textarea, options.template)
   elem.caretaker = elem.editor.caretaker
   elem.append elem.editor
+  elem.append elem.viewer
 
   elem.init = ->
     @editor.init?()
+    @viewer.init?()
+
+    # Apply shortcuts
+    if options.previewModeShortcut
+      shortcut.add options.previewModeShortcut, elem.previewMode,
+        target: elem.editor.textarea.get(0)
+    if options.editingModeShortcut
+      shortcut.add options.editingModeShortcut, elem.editingMode,
+        target: elem.viewer.iframe.contents().get(0)
+
+
     # show femto
+    @editingMode()
     @show()
     return @
 
   elem.adjust = ->
-    @editor.outerWidth true, @width()
-    @editor.outerHeight true, @height()
-    @editor.adjust()
+    #@editor.outerWidth true, @width()
+    #@editor.outerHeight true, @height()
+    #@editor.adjust()
     return @
 
-  # Apply plugins
-  elem.plugins = {}
-  for name, plugin of Femto.plugins
-    console.debug "Appling Femto plugin (#{name}) ..."
-    plugin(elem)
+  caret_start = caret_end = 0
+  elem.previewMode = ->
+    # store current caret position
+    [caret_start, caret_end] = elem.editor.selection.caret()
+    # update viewer
+    elem.viewer.val elem.editor.val()
+    elem.viewer.focus()
+    # because the contents are replaced, shortcut must be set again
+    if options.editingModeShortcut
+      shortcut.add options.editingModeShortcut, elem.editingMode,
+        target: elem.viewer.iframe.contents().get(0)
+    # switch to preview mode
+    elem.editor.removeClass('active')
+    elem.viewer.addClass('active')
+  elem.editingMode = ->
+    # restore caret position
+    elem.editor.selection.caret caret_start, caret_end
+    # focus back to the editor
+    elem.editor.focus()
+    # switch to editing mode
+    elem.editor.addClass('active')
+    elem.viewer.removeClass('active')
 
-  return elem.init().adjust()
+  # Apply features
+  elem.features = {}
+  for name, feature of Femto.features
+    feature(elem)
 
-Femto.plugins = {}
+  jQuery(elem).ready ->
+    elem.init().adjust()
+  return elem
 
-Femto.plugins.indenty = (femto) ->
-  textarea = femto.editor.textarea
-  femto.plugins.indenty = new utils.Indenty(textarea)
-  femto.plugins.indenty.enable()
-
-Femto.plugins.autoIndenty = (femto) ->
-  textarea = femto.editor.textarea
-  femto.plugins.autoIndenty = new utils.AutoIndenty(textarea)
-  femto.plugins.autoIndenty.enable()
+namespace 'Femto', (exports) ->
+  exports.transform = transform

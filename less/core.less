@@ -5,14 +5,105 @@
     -o-border-radius: @arguments;
     border-radius: @arguments;
 }
+.box-sizing (...) {
+    -webkit-box-sizing: @arguments;
+    -moz-box-sizing: @arguments;
+    -ms-box-sizing: @arguments;
+    -o-box-sizing: @arguments;
+    box-sizing: @arguments;
+}
+.box-shadow (...) {
+    -webkit-box-shadow: @arguments;
+    -moz-box-shadow: @arguments;
+    -ms-box-shadow: @arguments;
+    -o-box-shadow: @arguments;
+    box-shadow: @arguments;
+}
+.perspective (...) {
+    -webkit-perspective: @arguments;
+    -moz-perspective: @arguments;
+    -ms-perspective: @arguments;
+    -o-perspective: @arguments;
+    perspective: @arguments;
+}
+.transform-style (...) {
+    -webkit-transform-style: @arguments;
+    -moz-transform-style: @arguments;
+    -ms-transform-style: @arguments;
+    -o-transform-style: @arguments;
+    transform-style: @arguments;
+}
+.backface-visibility (...) {
+    -webkit-backface-visibility: @arguments;
+    -moz-backface-visibility: @arguments;
+    -ms-backface-visibility: @arguments;
+    -o-backface-visibility: @arguments;
+    backface-visibility: @arguments;
+}
+.transform (...) {
+    -webkit-transform: @arguments;
+    -moz-transform: @arguments;
+    -ms-transform: @arguments;
+    -o-transform: @arguments;
+    transform: @arguments;
+}
+.transition (...) {
+    -webkit-transition: -webkit-transform @arguments;
+    -moz-transition: -moz-transform @arguments;
+    -ms-transition: -ms-transform @arguments;
+    -o-transition: -o-transform @arguments;
+    transition: -webkit-transform @arguments;
+    transition: -moz-transform @arguments;
+    transition: -ms-transform @arguments;
+    transition: -o-transform @arguments;
+    transition: transform @arguments;
+}
 .femto {
-    width: 80%;
+    margin: 0 auto;
+    width: 500px;
+    height: 400px;
     min-height: 400px;
     position: relative;
 
+    .perspective(600px);
+
     .panel {
-        padding: 0.5em;
-        border: 1px solid #ababab;
+        position: absolute;
+        top: 0;
+        left: 0;
+        .transform-style(preserve-3d);
+        .backface-visibility(hidden);
+        .transition(.4s ease-in-out);
+        .box-sizing(border-box);
+        margin: 0;
+        padding: 5px;
+        width: 100%;
+        height: 100%;
+        border: 1px solid #aaa;
         .border-radius(5px);
+        .box-shadow(1px 1px 3px rgba(0,0,0,0.2) inset);
+    }
+    .editor {
+        z-index: 900;
+        .transform(rotateY(180deg));
+
+        &.active {
+            z-index: 900;
+            .transform(rotateX(0deg) rotateY(0deg));
+        }
+
+        textarea {
+            font-family:Consolas,Monaco,Lucida Console,Liberation Mono,DejaVu Sans Mono,Bitstream Vera Sans Mono,Courier New, monospace;
+        }
+    }
+    .viewer {
+        background: #fff;
+        z-index: 800;
+        .transform(rotateY(-180deg));
+
+        &.active {
+            z-index: 1000;
+            .transform(rotateX(0deg) rotateY(0deg));
+        }
     }
 }

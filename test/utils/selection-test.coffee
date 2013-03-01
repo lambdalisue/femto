@@ -1,8 +1,6 @@
-#<< utils/selection
-#<< utils/selection.ie
-describe 'utils.Selection', ->
+describe 'Femto.utils.Selection', ->
   textarea = instance = value = null
-  Selection = utils.Selection
+  Selection = Femto.utils.Selection
 
   before ->
     textarea = document.createElement('textarea')
@@ -15,6 +13,9 @@ describe 'utils.Selection', ->
     instance = new Selection(textarea)
     document.body.appendChild textarea
     textarea.focus()
+
+  after ->
+    document.body.removeChild(textarea)
 
   afterEach ->
     textarea.rollback()

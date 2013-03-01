@@ -1,6 +1,5 @@
-#<< editor
-
-describe 'Editor', ->
+describe 'Femto.widget.Editor', ->
+  Editor = Femto.widget.Editor
   textarea = instance = null
 
   before ->
@@ -24,7 +23,7 @@ describe 'Editor', ->
 
   expected_properties = [
     ['textarea', jQuery]
-    ['caretaker', utils.Caretaker]
+    ['caretaker', Femto.utils.Caretaker]
   ]
   for [name, type] in expected_properties then do (name, type) ->
     it "return instance should have `#{name}` property as `#{type.name}`", ->

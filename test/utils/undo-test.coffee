@@ -1,22 +1,22 @@
-#<< utils/undo
-#
-describe 'utils.Originator', ->
+Originator = Femto.utils.Originator
+Caretaker = Femto.utils.Caretaker
+describe 'Femto.utils.Originator', ->
   expected_methods = [
     'createMemento', 'setMemento'
   ]
   for method in expected_methods then do (method) ->
     it "instance should have `#{method}` method", ->
-      instance = new utils.Originator()
+      instance = new Originator()
       expect(instance).to.have.property(method)
       expect(instance[method]).to.be.a('function')
 
 
 describe 'utils.Caretaker', ->
-  class Dummy extends utils.Originator
+  class Dummy extends Originator
     createMemento: -> return @memento
     setMemento: (memento) -> @memento = memento
   dummy = new Dummy()
-  instance = new utils.Caretaker(dummy)
+  instance = new Caretaker(dummy)
 
   expected_methods = [
     'originator', 'save', 'undo', 'redo',

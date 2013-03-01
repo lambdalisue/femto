@@ -1,5 +1,5 @@
-#<< widget
-describe 'Widget', ->
+describe 'Femto.widget.Widget', ->
+  Widget = Femto.widget.Widget
   it 'should return jQuery instance', ->
     instance = Widget()
     expect(instance).to.be.a(jQuery)

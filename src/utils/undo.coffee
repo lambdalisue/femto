@@ -8,7 +8,8 @@ Base class for Originator
     createMemento: -> @value
     setMemento: (memento) -> @value = memento
 ###
-class utils.Originator
+class Originator
+  """use strict"""
   ###
   Create memento of the instance
 
@@ -43,7 +44,8 @@ Caretaker of `Originator`
   # redo the changes
   notebook.caretaker.redo()
 ###
-class utils.Caretaker
+class Caretaker
+  """use strict"""
   ###
   Constructor
 
@@ -142,3 +144,7 @@ class utils.Caretaker
 if exports?
   exports.Originator = Originator
   exports.Caretaker = Caretaker
+if namespace?
+  namespace 'Femto.utils', (exports) ->
+    exports.Originator = Originator
+    exports.Caretaker = Caretaker
