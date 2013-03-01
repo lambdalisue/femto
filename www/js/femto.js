@@ -2984,7 +2984,7 @@ Cross-browser textarea selection class
         return expect(selection.caret()).to.be.eql([0, 71]);
       });
     });
-    return describe('#outdent() -> instance', function() {
+    describe('#outdent() -> instance', function() {
       it('should return the instance', function() {
         var r;
         r = instance.outdent();
@@ -3120,6 +3120,37 @@ Cross-browser textarea selection class
         selection.caret(30, 50);
         instance.outdent();
         return expect(selection.caret()).to.be.eql([20, 51]);
+      });
+    });
+    return describe('!KeyDown event', function() {
+      it('should call `indent()` when user hit TAB', function() {
+        var e;
+        e = jQuery.Event('keydown', {
+          which: 9
+        });
+        indent = instance.indent;
+        instance.indent = function() {
+          return this.indent.called = true;
+        };
+        instance.indent.called = false;
+        $(textarea).trigger(e);
+        expect(instance.indent.called).to.be["true"];
+        return instance.indent = indent;
+      });
+      return it('should call `outdent()` when user hit Shift+TAB', function() {
+        var e, outdent;
+        e = jQuery.Event('keydown', {
+          which: 9,
+          shiftKey: true
+        });
+        outdent = instance.outdent;
+        instance.outdent = function() {
+          return this.outdent.called = true;
+        };
+        instance.outdent.called = false;
+        $(textarea).trigger(e);
+        expect(instance.outdent.called).to.be["true"];
+        return instance.outdent = outdent;
       });
     });
   });

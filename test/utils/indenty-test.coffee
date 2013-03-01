@@ -395,3 +395,29 @@ describe 'Femto.utils.Indenty', ->
       instance.outdent()
       expect(selection.caret()).to.be.eql([20,51])
 
+  describe '!KeyDown event', ->
+    it 'should call `indent()` when user hit TAB', ->
+      # TAB = 9
+      e = jQuery.Event('keydown', {which: 9})
+      indent = instance.indent
+      instance.indent = -> @indent.called = true
+      instance.indent.called = false
+      # trigger
+      $(textarea).trigger(e)
+      # the method should be called
+      expect(instance.indent.called).to.be.true
+      # reset the method
+      instance.indent = indent
+
+    it 'should call `outdent()` when user hit Shift+TAB', ->
+      # TAB = 9
+      e = jQuery.Event('keydown', {which: 9, shiftKey: true})
+      outdent = instance.outdent
+      instance.outdent = -> @outdent.called = true
+      instance.outdent.called = false
+      # trigger
+      $(textarea).trigger(e)
+      # the method should be called
+      expect(instance.outdent.called).to.be.true
+      # reset the method
+      instance.outdent = outdent
