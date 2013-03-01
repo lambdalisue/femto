@@ -1084,10 +1084,9 @@ Cross-browser textarea selection class
   });
 
   Editor = function(textarea) {
-    var caretaker, elem, raw;
+    var elem, raw;
     raw = textarea.get(0);
     textarea = Femto.widget.Widget(textarea);
-    textarea._selection = new Femto.utils.Selection(raw);
     textarea.css({
       margin: '0',
       padding: '0',
@@ -1097,13 +1096,17 @@ Cross-browser textarea selection class
       width: '100%',
       height: '100%'
     });
-    textarea.createMemento = textarea.val;
     textarea.setMemento = textarea.val;
+    textarea.createMemento = textarea.val;
+    textarea._caretaker = new Femto.utils.Caretaker(textarea);
+    textarea._caretaker.save();
+    textarea._selection = new Femto.utils.Selection(raw);
     elem = Femto.widget.Widget();
     elem.addClass('panel').addClass('editor');
     elem.append(textarea);
     elem.textarea = textarea;
     elem.selection = textarea._selection;
+    elem.caretaker = textarea._caretaker;
     elem.focus = function() {
       textarea.focus();
       return this;
@@ -1115,15 +1118,25 @@ Cross-browser textarea selection class
     elem.val = function() {
       return textarea.val.apply(textarea, arguments);
     };
-    elem.caretaker = caretaker = (new Femto.utils.Caretaker(textarea)).save();
     textarea.on('keydown', function(e) {
       var _ref;
       if ((_ref = e.which) === 13 || _ref === 9 || _ref === 8 || _ref === 46) {
-        return caretaker.save();
+        textarea._caretaker.save();
+      }
+      if (e.which === 90 && e.ctrlKey) {
+        if (e.shiftKey) {
+          textarea._caretaker.redo();
+        } else {
+          textarea._caretaker.undo();
+        }
+        e.stopPropagation();
+        e.stopImmediatePropagation();
+        e.preventDefault();
+        return false;
       }
     });
     textarea.on('paste,drop', function(e) {
-      return caretaker.save();
+      return textarea._caretaker.save();
     });
     return elem;
   };
@@ -1221,7 +1234,7 @@ Cross-browser textarea selection class
         this.textarea._selection = this._selection;
       }
       if (this.expandTab) {
-        tabString = Femto.utils.Indenty._makeTabString(indentLevel);
+        tabString = Femto.utils.Indenty._makeTabString(this.indentLevel);
       } else {
         tabString = "\t";
       }
@@ -1249,7 +1262,7 @@ Cross-browser textarea selection class
     };
 
     AutoIndenty.prototype._keyDownEvent = function(e) {
-      var RETURN;
+      var RETURN, _ref;
       RETURN = 13;
       if (e.which !== RETURN) {
         return;
@@ -1258,6 +1271,9 @@ Cross-browser textarea selection class
         return;
       }
       this.insertNewLine();
+      if ((_ref = this.textarea._caretaker) != null) {
+        _ref.save();
+      }
       e.stopPropagation();
       e.stopImmediatePropagation();
       e.preventDefault();
@@ -1499,6 +1515,7 @@ Cross-browser textarea selection class
     };
 
     Indenty.prototype._keyDownEvent = function(e) {
+      var _ref;
       if (e.which !== 9) {
         return;
       }
@@ -1506,6 +1523,9 @@ Cross-browser textarea selection class
         this.outdent();
       } else {
         this.indent();
+      }
+      if ((_ref = this.textarea._caretaker) != null) {
+        _ref.save();
       }
       e.stopPropagation();
       e.stopImmediatePropagation();

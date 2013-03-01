@@ -62,6 +62,8 @@ class AutoIndenty
     return if e.shiftKey
     # insert newline with appropriate indent characters
     @insertNewLine()
+    # save memento if available
+    @textarea._caretaker?.save()
     # cancel bubbling
     e.stopPropagation()
     e.stopImmediatePropagation()

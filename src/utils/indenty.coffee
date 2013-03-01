@@ -115,6 +115,8 @@ class Indenty
       @outdent()
     else
       @indent()
+    # save memento if available
+    @textarea._caretaker?.save()
     # cancel bubbling
     e.stopPropagation()
     e.stopImmediatePropagation()
