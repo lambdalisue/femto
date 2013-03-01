@@ -31,7 +31,7 @@ class AutoIndenty
       @_selection = new Femto.utils.Selection(@textarea.get(0))
       @textarea._selection = @_selection
     if @expandTab
-      tabString = Femto.utils.Indenty._makeTabString(indentLevel)
+      tabString = Femto.utils.Indenty._makeTabString(@indentLevel)
     else
       tabString = "\t"
     @_pattern = new RegExp "^(?:#{tabString})*"
