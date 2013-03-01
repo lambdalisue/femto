@@ -11,7 +11,7 @@ describe 'Femto.utils.Indenty', ->
     value = ->
       # IE use \r\n so replace it
       textarea.value.replace(/\r\n/g, "\n")
-    instance = new Indenty(jQuery(textarea), '    ')
+    instance = new Indenty(jQuery(textarea), true, 4)
     selection = instance._selection
     document.body.appendChild textarea
     textarea.focus()
@@ -34,7 +34,8 @@ describe 'Femto.utils.Indenty', ->
   # check expected public properties
   expected_properties = [
     ['textarea', null]
-    ['tabString', 'string']
+    ['expandTab', 'boolean']
+    ['indentLevel', 'number']
   ]
   for [name, type] in expected_properties then do (name, type) ->
     it "instance should have public `#{name}` property", ->
@@ -66,7 +67,8 @@ describe 'Femto.utils.Indenty', ->
       expect(r).to.be.a(Indenty)
       expect(r).to.be.eql(instance)
 
-    it 'should insert 4 spaces before the caret', ->
+    #it 'should insert 4 spaces before the caret', ->
+    it 'should insert appropriate number of spaces before the caret', ->
       selection.caret(0, 0)
       instance.indent()
       expect(value()).to.be.eql("    AAAAABBBBBCCCCC\naaaaabbbbbccccc\n111112222233333")
@@ -76,16 +78,30 @@ describe 'Femto.utils.Indenty', ->
 
       selection.caret(5, 5)
       instance.indent()
-      expect(value()).to.be.eql("AAAAA    BBBBBCCCCC\naaaaabbbbbccccc\n111112222233333")
+      #
+      # Note:
+      #   Caret start from 5 so only 3 spaces (indentLevel - 5 % 4 = 3) are
+      #   inserted before the caret
+      #
+      #expect(value()).to.be.eql("AAAAA    BBBBBCCCCC\naaaaabbbbbccccc\n111112222233333")
+      expect(value()).to.be.eql("AAAAA   BBBBBCCCCC\naaaaabbbbbccccc\n111112222233333")
       instance.indent()
-      expect(value()).to.be.eql("AAAAA        BBBBBCCCCC\naaaaabbbbbccccc\n111112222233333")
+      #expect(value()).to.be.eql("AAAAA        BBBBBCCCCC\naaaaabbbbbccccc\n111112222233333")
+      expect(value()).to.be.eql("AAAAA       BBBBBCCCCC\naaaaabbbbbccccc\n111112222233333")
       textarea.rollback()
 
       selection.caret(15, 15)
       instance.indent()
-      expect(value()).to.be.eql("AAAAABBBBBCCCCC    \naaaaabbbbbccccc\n111112222233333")
+      #
+      # Note:
+      #   Caret start from 15 so only 1 space (indentLevel - 15 % 4 = 1) is
+      #   inserted before the caret
+      #
+      #expect(value()).to.be.eql("AAAAABBBBBCCCCC    \naaaaabbbbbccccc\n111112222233333")
+      expect(value()).to.be.eql("AAAAABBBBBCCCCC \naaaaabbbbbccccc\n111112222233333")
       instance.indent()
-      expect(value()).to.be.eql("AAAAABBBBBCCCCC        \naaaaabbbbbccccc\n111112222233333")
+      #expect(value()).to.be.eql("AAAAABBBBBCCCCC        \naaaaabbbbbccccc\n111112222233333")
+      expect(value()).to.be.eql("AAAAABBBBBCCCCC     \naaaaabbbbbccccc\n111112222233333")
       textarea.rollback()
 
       selection.caret(16, 16)
@@ -95,7 +111,8 @@ describe 'Femto.utils.Indenty', ->
       expect(value()).to.be.eql("AAAAABBBBBCCCCC\n        aaaaabbbbbccccc\n111112222233333")
       textarea.rollback()
 
-    it 'should insert 4 spaces before the selection when selection is in single line', ->
+    #it 'should insert 4 spaces before the selection when selection is in single line', ->
+    it 'should insert appropriate number of spaces before the selection when selection is in single line', ->
       selection.caret(0, 5)
       instance.indent()
       expect(value()).to.be.eql("    AAAAABBBBBCCCCC\naaaaabbbbbccccc\n111112222233333")
@@ -105,9 +122,23 @@ describe 'Femto.utils.Indenty', ->
 
       selection.caret(5, 10)
       instance.indent()
-      expect(value()).to.be.eql("AAAAA    BBBBBCCCCC\naaaaabbbbbccccc\n111112222233333")
+      #
+      # Note:
+      #   Caret start from 5 so only 3 spaces (indentLevel - 5 % 4 = 3) are
+      #   inserted before the caret
+      #
+      #expect(value()).to.be.eql("AAAAA    BBBBBCCCCC\naaaaabbbbbccccc\n111112222233333")
+      expect(value()).to.be.eql("AAAAA   BBBBBCCCCC\naaaaabbbbbccccc\n111112222233333")
       instance.indent()
-      expect(value()).to.be.eql("AAAAA        BBBBBCCCCC\naaaaabbbbbccccc\n111112222233333")
+      #
+      # Note:
+      #   Caret indicate the RANGE so `indent()` does not move the start point
+      #   of the selection, that's why even after calling `indent()`, caret
+      #   start from 5 so only 3 spaces (indentLevel - 5 % 4 = 3) are inserted
+      #   before the caret. This is a little bit tricky behavior
+      #
+      #expect(value()).to.be.eql("AAAAA        BBBBBCCCCC\naaaaabbbbbccccc\n111112222233333")
+      expect(value()).to.be.eql("AAAAA      BBBBBCCCCC\naaaaabbbbbccccc\n111112222233333")
       textarea.rollback()
 
       selection.caret(16, 21)
@@ -148,18 +179,34 @@ describe 'Femto.utils.Indenty', ->
 
       selection.caret(5, 5)
       instance.indent()
-      expect(selection.caret()).to.be.eql([9, 9])
+      #
+      # Note:
+      #   Caret start from 5 so only 3 spaces (indentLevel - 5 % 4 = 3) are
+      #   inserted before the caret.
+      #
+      #expect(selection.caret()).to.be.eql([9, 9])
+      expect(selection.caret()).to.be.eql([8, 8])
       instance.indent()
-      expect(selection.caret()).to.be.eql([13, 13])
+      #expect(selection.caret()).to.be.eql([13, 13])
+      expect(selection.caret()).to.be.eql([12, 12])
       textarea.rollback()
 
       selection.caret(15, 15)
       instance.indent()
-      expect(value()).to.be.eql("AAAAABBBBBCCCCC    \naaaaabbbbbccccc\n111112222233333")
-      expect(selection.caret()).to.be.eql([19, 19])
+      #
+      # Note:
+      #   Caret start from 15 so only 1 space (indentLevel - 15 % 4 = 3) is
+      #   inserted before the caret.
+      #
+      #expect(value()).to.be.eql("AAAAABBBBBCCCCC    \naaaaabbbbbccccc\n111112222233333")
+      expect(value()).to.be.eql("AAAAABBBBBCCCCC \naaaaabbbbbccccc\n111112222233333")
+      #expect(selection.caret()).to.be.eql([19, 19])
+      expect(selection.caret()).to.be.eql([16, 16])
       instance.indent()
-      expect(value()).to.be.eql("AAAAABBBBBCCCCC        \naaaaabbbbbccccc\n111112222233333")
-      expect(selection.caret()).to.be.eql([23, 23])
+      #expect(value()).to.be.eql("AAAAABBBBBCCCCC        \naaaaabbbbbccccc\n111112222233333")
+      expect(value()).to.be.eql("AAAAABBBBBCCCCC     \naaaaabbbbbccccc\n111112222233333")
+      #expect(selection.caret()).to.be.eql([23, 23])
+      expect(selection.caret()).to.be.eql([20, 20])
       textarea.rollback()
 
       selection.caret(16, 16)

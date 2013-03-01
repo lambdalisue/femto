@@ -263,7 +263,7 @@ Cross-browser textarea selection class
 
 
 (function() {
-  var AutoIndenty, Caretaker, Curtain, DEFAULT_TEMPLATE, Editor, IESelection, IFrame, Indenty, Originator, Template, Viewer, W3CSelection, Widget, autoIndent, indent, occurrences, transform, type,
+  var AutoIndenty, Caretaker, Curtain, DEFAULT_TEMPLATE, Editor, IESelection, IFrame, Indenty, Originator, Template, Viewer, W3CSelection, Widget, autoIndent, indent, makeTabString, occurrences, transform, type,
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
     __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
@@ -1360,6 +1360,15 @@ Cross-browser textarea selection class
   */
 
 
+  makeTabString = function(level) {
+    var cache;
+    cache = "" + level + "Cache";
+    if (!(makeTabString[cache] != null)) {
+      makeTabString[cache] = new Array(level + 1).join(" ");
+    }
+    return makeTabString[cache];
+  };
+
   Indenty = (function() {
     "use strict";
 
@@ -1367,12 +1376,14 @@ Cross-browser textarea selection class
       Constructor
     
       @param [jQuery] textarea A target textarea DOM element
-      @param [String] tabString a tab string used to insert (default: '    ')
+      @param [bool] expandTab When true, use SPACE insted of TAB for indent
+      @param [integer] indentLevel An indent level. Enable only when expandTab is `true`
     */
 
-    function Indenty(textarea, tabString) {
+    function Indenty(textarea, expandTab, indentLevel) {
       this.textarea = textarea;
-      this.tabString = tabString != null ? tabString : '    ';
+      this.expandTab = expandTab != null ? expandTab : true;
+      this.indentLevel = indentLevel != null ? indentLevel : 4;
       this._keyDownEvent = __bind(this._keyDownEvent, this);
 
       if (!(this.textarea instanceof jQuery)) {
@@ -1395,9 +1406,14 @@ Cross-browser textarea selection class
 
 
     Indenty.prototype.indent = function() {
-      var keepSelection, l, modified, selected;
+      var cs, diff, keepSelection, l, ls, modified, rels, selected, tabString;
       selected = this._selection.text();
       if (__indexOf.call(selected, "\n") >= 0) {
+        if (this.expandTab) {
+          tabString = makeTabString(this.indentLevel);
+        } else {
+          tabString = "\t";
+        }
         selected = this._selection.lineText();
         modified = (function() {
           var _i, _len, _ref, _results;
@@ -1405,14 +1421,23 @@ Cross-browser textarea selection class
           _results = [];
           for (_i = 0, _len = _ref.length; _i < _len; _i++) {
             l = _ref[_i];
-            _results.push(this.tabString + l);
+            _results.push(tabString + l);
           }
           return _results;
-        }).call(this);
+        })();
         this._selection.lineText(modified.join("\n"), true);
       } else {
         keepSelection = !this._selection.isCollapsed();
-        this._selection.text(this.tabString + selected, keepSelection);
+        if (this.expandTab) {
+          cs = this._selection.caret()[0];
+          ls = this._selection.lineCaret()[0];
+          rels = cs - ls;
+          diff = rels % this.indentLevel;
+          tabString = makeTabString(this.indentLevel - diff);
+        } else {
+          tabString = "\t";
+        }
+        this._selection.text(tabString + selected, keepSelection);
       }
       return this;
     };
@@ -1428,8 +1453,13 @@ Cross-browser textarea selection class
 
 
     Indenty.prototype.outdent = function() {
-      var a, b, cs, index, l, line, ls, modified, pattern, selected;
-      pattern = new RegExp("^" + this.tabString);
+      var a, b, cs, index, l, line, ls, modified, pattern, selected, tabString;
+      if (this.expandTab) {
+        tabString = makeTabString(this.indentLevel);
+      } else {
+        tabString = "\t";
+      }
+      pattern = new RegExp("^" + tabString);
       selected = this._selection.text();
       if (__indexOf.call(selected, "\n") >= 0) {
         selected = this._selection.lineText();
@@ -1448,12 +1478,12 @@ Cross-browser textarea selection class
         cs = this._selection.caret()[0];
         ls = this._selection.lineCaret()[0];
         line = this._selection.lineText();
-        index = line.lastIndexOf(this.tabString, cs - ls);
+        index = line.lastIndexOf(tabString, cs - ls);
         if (index === -1) {
           return this;
         }
         b = line.substring(0, index);
-        a = line.substring(index + this.tabString.length);
+        a = line.substring(index + tabString.length);
         this._selection.lineText(b + a, false);
         this._selection.caret(ls + index, ls + index);
       }
@@ -2541,7 +2571,7 @@ Cross-browser textarea selection class
       value = function() {
         return textarea.value.replace(/\r\n/g, "\n");
       };
-      instance = new Indenty(jQuery(textarea), '    ');
+      instance = new Indenty(jQuery(textarea), true, 4);
       selection = instance._selection;
       document.body.appendChild(textarea);
       return textarea.focus();
@@ -2563,7 +2593,7 @@ Cross-browser textarea selection class
       _ref = expected_private_properties[_i], name = _ref[0], type = _ref[1];
       _fn(name, type);
     }
-    expected_properties = [['textarea', null], ['tabString', 'string']];
+    expected_properties = [['textarea', null], ['expandTab', 'boolean'], ['indentLevel', 'number']];
     _fn1 = function(name, type) {
       return it("instance should have public `" + name + "` property", function() {
         expect(instance).to.have.property(name);
@@ -2605,7 +2635,7 @@ Cross-browser textarea selection class
         expect(r).to.be.a(Indenty);
         return expect(r).to.be.eql(instance);
       });
-      it('should insert 4 spaces before the caret', function() {
+      it('should insert appropriate number of spaces before the caret', function() {
         selection.caret(0, 0);
         instance.indent();
         expect(value()).to.be.eql("    AAAAABBBBBCCCCC\naaaaabbbbbccccc\n111112222233333");
@@ -2614,15 +2644,15 @@ Cross-browser textarea selection class
         textarea.rollback();
         selection.caret(5, 5);
         instance.indent();
-        expect(value()).to.be.eql("AAAAA    BBBBBCCCCC\naaaaabbbbbccccc\n111112222233333");
+        expect(value()).to.be.eql("AAAAA   BBBBBCCCCC\naaaaabbbbbccccc\n111112222233333");
         instance.indent();
-        expect(value()).to.be.eql("AAAAA        BBBBBCCCCC\naaaaabbbbbccccc\n111112222233333");
+        expect(value()).to.be.eql("AAAAA       BBBBBCCCCC\naaaaabbbbbccccc\n111112222233333");
         textarea.rollback();
         selection.caret(15, 15);
         instance.indent();
-        expect(value()).to.be.eql("AAAAABBBBBCCCCC    \naaaaabbbbbccccc\n111112222233333");
+        expect(value()).to.be.eql("AAAAABBBBBCCCCC \naaaaabbbbbccccc\n111112222233333");
         instance.indent();
-        expect(value()).to.be.eql("AAAAABBBBBCCCCC        \naaaaabbbbbccccc\n111112222233333");
+        expect(value()).to.be.eql("AAAAABBBBBCCCCC     \naaaaabbbbbccccc\n111112222233333");
         textarea.rollback();
         selection.caret(16, 16);
         instance.indent();
@@ -2631,7 +2661,7 @@ Cross-browser textarea selection class
         expect(value()).to.be.eql("AAAAABBBBBCCCCC\n        aaaaabbbbbccccc\n111112222233333");
         return textarea.rollback();
       });
-      it('should insert 4 spaces before the selection when selection is in single line', function() {
+      it('should insert appropriate number of spaces before the selection when selection is in single line', function() {
         selection.caret(0, 5);
         instance.indent();
         expect(value()).to.be.eql("    AAAAABBBBBCCCCC\naaaaabbbbbccccc\n111112222233333");
@@ -2640,9 +2670,9 @@ Cross-browser textarea selection class
         textarea.rollback();
         selection.caret(5, 10);
         instance.indent();
-        expect(value()).to.be.eql("AAAAA    BBBBBCCCCC\naaaaabbbbbccccc\n111112222233333");
+        expect(value()).to.be.eql("AAAAA   BBBBBCCCCC\naaaaabbbbbccccc\n111112222233333");
         instance.indent();
-        expect(value()).to.be.eql("AAAAA        BBBBBCCCCC\naaaaabbbbbccccc\n111112222233333");
+        expect(value()).to.be.eql("AAAAA      BBBBBCCCCC\naaaaabbbbbccccc\n111112222233333");
         textarea.rollback();
         selection.caret(16, 21);
         instance.indent();
@@ -2679,17 +2709,17 @@ Cross-browser textarea selection class
         textarea.rollback();
         selection.caret(5, 5);
         instance.indent();
-        expect(selection.caret()).to.be.eql([9, 9]);
+        expect(selection.caret()).to.be.eql([8, 8]);
         instance.indent();
-        expect(selection.caret()).to.be.eql([13, 13]);
+        expect(selection.caret()).to.be.eql([12, 12]);
         textarea.rollback();
         selection.caret(15, 15);
         instance.indent();
-        expect(value()).to.be.eql("AAAAABBBBBCCCCC    \naaaaabbbbbccccc\n111112222233333");
-        expect(selection.caret()).to.be.eql([19, 19]);
+        expect(value()).to.be.eql("AAAAABBBBBCCCCC \naaaaabbbbbccccc\n111112222233333");
+        expect(selection.caret()).to.be.eql([16, 16]);
         instance.indent();
-        expect(value()).to.be.eql("AAAAABBBBBCCCCC        \naaaaabbbbbccccc\n111112222233333");
-        expect(selection.caret()).to.be.eql([23, 23]);
+        expect(value()).to.be.eql("AAAAABBBBBCCCCC     \naaaaabbbbbccccc\n111112222233333");
+        expect(selection.caret()).to.be.eql([20, 20]);
         textarea.rollback();
         selection.caret(16, 16);
         instance.indent();
