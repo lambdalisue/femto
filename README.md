@@ -9,8 +9,7 @@ It helps user to write these kind of text with the following features:
 
 -   Preview panel (bundle)
 
-    With `previewPanel` plugin, femto add preview panel to check the output of
-    the current text.
+    femto has a preview panel to check the output of the current text.
     It is under developping now
 
 -   `TAB` indent and `SHIFT + TAB` outdent (features)
@@ -52,7 +51,7 @@ Usage
 femto is under developped yet. If you want to try femto, you can follow the
 steps below:
 
-1.  Clone git repository on your hard disc with
+1.  Clone git repository on your hard disk with
 
 
     ```sh
