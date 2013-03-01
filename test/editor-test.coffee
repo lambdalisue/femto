@@ -58,14 +58,34 @@ describe 'Femto.widget.Editor', ->
       ['Delete',    46]
     ]
     for [name, key] in save_trigger_keys then do (name, key) ->
-      it "should call `caretaker.save()` method when user press #{name}"
+      it "should call `caretaker.save()` method when user press #{name}", ->
+        e = jQuery.Event('keydown', {which: key})
+        save = instance.save
+        instance.save = -> @save.called = true
+        instance.save.called = false
+        # trigger
+        instance.textarea.trigger(e)
+        # should be called
+        expect(instance.save.called).to.be.true
+        # reset the method
+        instance.save = save
 
     save_trigger_actions = [
       ['paste',     null]
       ['drop',      null]
     ]
     for [name, action] in save_trigger_actions then do (name, action) ->
-      it "should call `caretaker.save()` method when user #{name} text"
+      it "should call `caretaker.save()` method when user #{name} text", ->
+        e = jQuery.Event(name)
+        save = instance.save
+        instance.save = -> @save.called = true
+        instance.save.called = false
+        # trigger
+        instance.textarea.trigger(e)
+        # should be called
+        expect(instance.save.called).to.be.true
+        # reset the method
+        instance.save = save
 
     describe '#createMemento() -> value', ->
       it 'should return current value of the textarea', ->

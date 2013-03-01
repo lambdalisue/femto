@@ -2724,7 +2724,20 @@ Cross-browser textarea selection class
       }
       save_trigger_keys = [['Return', 13], ['Tab', 9], ['Backspace', 8], ['Delete', 46]];
       _fn4 = function(name, key) {
-        return it("should call `caretaker.save()` method when user press " + name);
+        return it("should call `caretaker.save()` method when user press " + name, function() {
+          var e, save;
+          e = jQuery.Event('keydown', {
+            which: key
+          });
+          save = instance.save;
+          instance.save = function() {
+            return this.save.called = true;
+          };
+          instance.save.called = false;
+          instance.textarea.trigger(e);
+          expect(instance.save.called).to.be["true"];
+          return instance.save = save;
+        });
       };
       for (_m = 0, _len4 = save_trigger_keys.length; _m < _len4; _m++) {
         _ref1 = save_trigger_keys[_m], name = _ref1[0], key = _ref1[1];
@@ -2732,7 +2745,18 @@ Cross-browser textarea selection class
       }
       save_trigger_actions = [['paste', null], ['drop', null]];
       _fn5 = function(name, action) {
-        return it("should call `caretaker.save()` method when user " + name + " text");
+        return it("should call `caretaker.save()` method when user " + name + " text", function() {
+          var e, save;
+          e = jQuery.Event(name);
+          save = instance.save;
+          instance.save = function() {
+            return this.save.called = true;
+          };
+          instance.save.called = false;
+          instance.textarea.trigger(e);
+          expect(instance.save.called).to.be["true"];
+          return instance.save = save;
+        });
       };
       for (_n = 0, _len5 = save_trigger_actions.length; _n < _len5; _n++) {
         _ref2 = save_trigger_actions[_n], name = _ref2[0], action = _ref2[1];
