@@ -128,7 +128,7 @@ class W3CSelection
   Get caret of the line on the specified caret when called with two arguments.
 
   @param [Integer] s a start index of the caret
-  @param [Integer] e a end index of the caret
+  @param [Integer] e an end index of the caret
   @return [Array] return [s, e] array
   ###
   lineCaret: (s, e) ->
