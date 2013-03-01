@@ -1,0 +1,3 @@
+[submodule "javascripts/femto"]
+	path = javascripts/femto
+	url = git://github.com/lambdalisue/femto.git

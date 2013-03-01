@@ -6,6 +6,15 @@
     <title>Femto by lambdalisue</title>
     <link rel="stylesheet" href="stylesheets/styles.css">
     <link rel="stylesheet" href="stylesheets/pygment_trac.css">
+    <link rel="stylesheet" href="javascripts/femto/www/css/app.css">
+    <style>
+      #demo {
+        text-align: center;
+      }
+      .femto .panel {
+        background: #fff;
+      }
+    </style>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
     <script src="javascripts/respond.js"></script>
     <!--[if lt IE 9]>
@@ -41,7 +50,13 @@
         <h1>femto <a href="https://travis-ci.org/lambdalisue/femto"><img src="https://travis-ci.org/lambdalisue/femto.png" alt="Build Status"></a>
 </h1>
 
-<p>A well tested simple and powerful web based text editor.</p>
+<p>A well tested simple and powerful web based text editor. Try the demo below</p>
+
+<div id="demo">
+  <textarea id="femto-demo"></textarea>
+  <p><small><code>Shift + Right</code> to show the preview panel. <code>Shift +
+      Left</code> to show the editor panel.</small></p>
+</div>
 
 <p><strong>femto</strong> allow you to add a simple and powerful text editor on your web site.
 It is assumed to use for writing a Markup text.
@@ -201,6 +216,17 @@ steps below:</p>
       </section>
 
     </div>
+    <!-- fake `describe` function to prevent run-time error with test version of
+         femto (in case) -->
+    <script>window.describe = function(){};</script>
+    <script src="javascripts/femto/www/js/femto.js"></script>
+    <script>
+      $(function() {
+        var textarea;
+        textarea = $('textarea#femto-demo');
+        textarea = Femto.transform(textarea);
+      });
+    </script>
     <!--[if !IE]><script>fixScale(document);</script><![endif]-->
               <script type="text/javascript">
             var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
