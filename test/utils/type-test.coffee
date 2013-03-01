@@ -1,5 +1,4 @@
 describe 'Femto.utils.type', ->
-  type = Femto.utils.type
   cases = [
     [0,         'number']
     [1.2,       'number']
@@ -13,4 +12,4 @@ describe 'Femto.utils.type', ->
 
   for [obj, result] in cases then do (obj, result) ->
     it "should return '#{result}' for `#{obj}`", ->
-      expect(type obj ).to.be.eql(result)
+      expect(Femto.utils.type(obj)).to.be.eql(result)

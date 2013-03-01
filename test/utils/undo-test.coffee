@@ -1,6 +1,6 @@
-Originator = Femto.utils.Originator
-Caretaker = Femto.utils.Caretaker
 describe 'Femto.utils.Originator', ->
+  Originator = Femto.utils.Originator
+  Caretaker = Femto.utils.Caretaker
   expected_methods = [
     'createMemento', 'setMemento'
   ]
@@ -11,7 +11,9 @@ describe 'Femto.utils.Originator', ->
       expect(instance[method]).to.be.a('function')
 
 
-describe 'utils.Caretaker', ->
+describe 'Femto.utils.Caretaker', ->
+  Originator = Femto.utils.Originator
+  Caretaker = Femto.utils.Caretaker
   class Dummy extends Originator
     createMemento: -> return @memento
     setMemento: (memento) -> @memento = memento

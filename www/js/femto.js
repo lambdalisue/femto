@@ -270,8 +270,6 @@ Cross-browser textarea selection class
     __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
   W3CSelection = (function() {
-    "use strict";
-
     /*
       Constructor
     
@@ -408,7 +406,7 @@ Cross-browser textarea selection class
       Get caret of the line on the specified caret when called with two arguments.
     
       @param [Integer] s a start index of the caret
-      @param [Integer] e a end index of the caret
+      @param [Integer] e an end index of the caret
       @return [Array] return [s, e] array
     */
 
@@ -627,8 +625,6 @@ Cross-browser textarea selection class
   });
 
   if (document.selection != null) {
-    "use strict";
-
     occurrences = function(str, subStr, allowOverlapping) {
       var n, pos, step;
       str += "";
@@ -740,7 +736,6 @@ Cross-browser textarea selection class
 
 
   Originator = (function() {
-    "use strict";
 
     function Originator() {}
 
@@ -793,8 +788,6 @@ Cross-browser textarea selection class
 
 
   Caretaker = (function() {
-    "use strict";
-
     /*
       Constructor
     
@@ -1083,6 +1076,25 @@ Cross-browser textarea selection class
     return exports.IFrame = IFrame;
   });
 
+  /*
+  Femto Editor widget
+  
+  @param [jQuery] textarea A jQuery instance of target textarea DOM element
+  @return [jQuery extend] extended jQuery instance which contains the textarea
+  
+  @example
+    textarea = document.createElement('textarea')
+    textarea = jQuery(textarea)
+    editor = Femto.widget.Editor(textarea)
+    # set focus
+    editor.focus()
+    # set value
+    editor.val("Hello")
+    # get value
+    console.log editor.val()
+  */
+
+
   Editor = function(textarea) {
     var elem, raw;
     raw = textarea.get(0);
@@ -1107,14 +1119,18 @@ Cross-browser textarea selection class
     elem.textarea = textarea;
     elem.selection = textarea._selection;
     elem.caretaker = textarea._caretaker;
+    /*
+      Focus the widget
+    */
+
     elem.focus = function() {
       textarea.focus();
       return this;
     };
-    elem.adjust = function() {
-      textarea.outerWidth(true, this.width());
-      return textarea.outerHeight(true, this.height());
-    };
+    /*
+      Get or set the value of the widget
+    */
+
     elem.val = function() {
       return textarea.val.apply(textarea, arguments);
     };
@@ -1160,11 +1176,6 @@ Cross-browser textarea selection class
       this.iframe.init();
       return this;
     };
-    elem.adjust = function() {
-      iframe.outerWidth(true, this.width());
-      iframe.outerHeight(true, this.height());
-      return this;
-    };
     elem.focus = function() {
       iframe.focus();
       return this;
@@ -1207,12 +1218,10 @@ Cross-browser textarea selection class
 
 
   AutoIndenty = (function() {
-    "use strict";
-
     /*
       Constructor
     
-      @param [jQuery] textarea A target textarea DOM element
+      @param [jQuery] textarea A jQuery instance of target textarea DOM element
       @param [bool] expandTab When true, use SPACE insted of TAB for indent
       @param [integer] indentLevel An indent level. Enable only when expandTab is `true`
     */
@@ -1384,18 +1393,7 @@ Cross-browser textarea selection class
   */
 
 
-  makeTabString = function(level) {
-    var cache;
-    cache = "" + level + "Cache";
-    if (!(makeTabString[cache] != null)) {
-      makeTabString[cache] = new Array(level + 1).join(" ");
-    }
-    return makeTabString[cache];
-  };
-
   Indenty = (function() {
-    "use strict";
-
     /*
       Constructor
     
@@ -1561,7 +1559,14 @@ Cross-browser textarea selection class
 
   })();
 
-  Indenty._makeTabString = makeTabString;
+  Indenty._makeTabString = makeTabString = function(level) {
+    var cache;
+    cache = "" + level + "Cache";
+    if (!(makeTabString[cache] != null)) {
+      makeTabString[cache] = new Array(level + 1).join(" ");
+    }
+    return makeTabString[cache];
+  };
 
   namespace('Femto.utils', function(exports) {
     return exports.Indenty = Indenty;
@@ -1624,9 +1629,6 @@ Cross-browser textarea selection class
       this.show();
       return this;
     };
-    elem.adjust = function() {
-      return this;
-    };
     caret_start = caret_end = 0;
     elem.previewMode = function() {
       var _ref;
@@ -1654,7 +1656,7 @@ Cross-browser textarea selection class
       feature(elem);
     }
     jQuery(elem).ready(function() {
-      return elem.init().adjust();
+      return elem.init();
     });
     return elem;
   };
@@ -1663,12 +1665,10 @@ Cross-browser textarea selection class
     return exports.transform = transform;
   });
 
-  Originator = Femto.utils.Originator;
-
-  Caretaker = Femto.utils.Caretaker;
-
   describe('Femto.utils.Originator', function() {
     var expected_methods, method, _i, _len, _results;
+    Originator = Femto.utils.Originator;
+    Caretaker = Femto.utils.Caretaker;
     expected_methods = ['createMemento', 'setMemento'];
     _results = [];
     for (_i = 0, _len = expected_methods.length; _i < _len; _i++) {
@@ -1687,6 +1687,8 @@ Cross-browser textarea selection class
 
   describe('utils.Caretaker', function() {
     var Dummy, dummy, expected_methods, instance, method, _fn, _i, _len;
+    Originator = Femto.utils.Originator;
+    Caretaker = Femto.utils.Caretaker;
     Dummy = (function(_super) {
 
       __extends(Dummy, _super);
@@ -2040,7 +2042,6 @@ Cross-browser textarea selection class
 
   describe('Femto.utils.type', function() {
     var cases, obj, result, _i, _len, _ref, _results;
-    type = Femto.utils.type;
     cases = [
       [0, 'number'], [1.2, 'number'], [[0, 1], 'array'], [new Array, 'array'], [
         {
@@ -2053,7 +2054,7 @@ Cross-browser textarea selection class
       _ref = cases[_i], obj = _ref[0], result = _ref[1];
       _results.push((function(obj, result) {
         return it("should return '" + result + "' for `" + obj + "`", function() {
-          return expect(type(obj)).to.be.eql(result);
+          return expect(Femto.utils.type(obj)).to.be.eql(result);
         });
       })(obj, result));
     }
@@ -2992,7 +2993,7 @@ Cross-browser textarea selection class
       _ref = expected_properties[_j], name = _ref[0], type = _ref[1];
       _fn1(name, type);
     }
-    expected_methods = ['adjust', 'val'];
+    expected_methods = ['val'];
     _fn2 = function(method) {
       return it("return instance should have `" + method + "` method", function() {
         expect(instance).to.have.property(method);
@@ -3070,7 +3071,7 @@ Cross-browser textarea selection class
         return expect(originator).to.be.eql(instance.textarea);
       });
     });
-    describe('#val(value) -> value | instance', function() {
+    return describe('#val(value) -> value | instance', function() {
       it('should return current value of the textarea when called without any argument', function() {
         var r;
         instance.textarea.val("HELLO");
@@ -3087,22 +3088,6 @@ Cross-browser textarea selection class
         instance.val("HELLO2");
         expect(instance.val()).to.be.eql("HELLO2");
         return instance.textarea.val("");
-      });
-    });
-    return describe('#adjust() -> instance', function() {
-      it('should resize `outerWidth` of textarea to `width` of the instance', function() {
-        var outerWidth, width;
-        instance.adjust();
-        width = instance.width();
-        outerWidth = instance.textarea.outerWidth(true);
-        return expect(outerWidth).to.be.eql(width);
-      });
-      return it('should resize `outerHeight` of textarea to `height` of the instance', function() {
-        var height, outerHeight;
-        instance.adjust();
-        height = instance.height();
-        outerHeight = instance.textarea.outerHeight(true);
-        return expect(outerHeight).to.be.eql(height);
       });
     });
   });

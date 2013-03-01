@@ -142,6 +142,7 @@ class Caretaker
 if exports?
   exports.Originator = Originator
   exports.Caretaker = Caretaker
+
 if namespace?
   namespace 'Femto.utils', (exports) ->
     exports.Originator = Originator

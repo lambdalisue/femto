@@ -31,7 +31,7 @@ describe 'Femto.widget.Editor', ->
       expect(instance[name]).to.be.a(type)
 
   expected_methods = [
-    'adjust', 'val',
+    'val',
   ]
   for method in expected_methods then do (method) ->
     it "return instance should have `#{method}` method", ->
@@ -114,16 +114,3 @@ describe 'Femto.widget.Editor', ->
       expect(instance.val()).to.be.eql("HELLO2")
       # reset
       instance.textarea.val("")
-
-
-  describe '#adjust() -> instance', ->
-    it 'should resize `outerWidth` of textarea to `width` of the instance', ->
-      instance.adjust()
-      width = instance.width()
-      outerWidth = instance.textarea.outerWidth(true)
-      expect(outerWidth).to.be.eql(width)
-    it 'should resize `outerHeight` of textarea to `height` of the instance', ->
-      instance.adjust()
-      height = instance.height()
-      outerHeight = instance.textarea.outerHeight(true)
-      expect(outerHeight).to.be.eql(height)
