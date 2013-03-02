@@ -40,13 +40,13 @@ if document.selection?
         endRange.collapse(false)
 
         if textInputRange.compareEndPoints("StartToEnd", endRange) > -1
-          s = e = normalizedText.length
+          s = e = length
         else
           s = -textInputRange.moveStart("character", -length)
           s += getRegulationOffset(normalizedText, s)
 
           if textInputRange.compareEndPoints("EndToEnd", endRange) > -1
-            e = normalizedText.length
+            e = length
           else
             e = -textInputRange.moveEnd("character", -length)
             e += getRegulationOffset(normalizedText, e)

@@ -8,10 +8,10 @@ Viewer = (textarea, template) ->
   elem.iframe = iframe
   elem.textarea = textarea
   elem.template = template
-  elem.curtain = iframe.curtain
+  elem.curtain = Femto.utils.Curtain(elem)
   elem.parser = null
   elem.init = ->
-    @iframe.init()
+    iframe.init()
     return @
   elem.focus = ->
     iframe.focus()

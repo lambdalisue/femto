@@ -242,34 +242,36 @@ shortcut = {
 
 }).call(this);
 
-process.nextTick = (function(){
-  var timeouts = []
-  // postMessage behaves badly on IE8
-  if (window.ActiveXObject || !window.postMessage) {
-    return function(fn){
-      timeouts.push(fn);
-      setTimeout(function(){
+if (typeof process !== "undefined") {
+    process.nextTick = (function(){
+    var timeouts = []
+    // postMessage behaves badly on IE8
+    if (window.ActiveXObject || !window.postMessage) {
+        return function(fn){
+        timeouts.push(fn);
+        setTimeout(function(){
+            if (timeouts.length) timeouts.shift()();
+        }, 0);
+        }
+    }
+
+    // based on setZeroTimeout by David Baron
+    // - http://dbaron.org/log/20100309-faster-timeouts
+    var name = 'mocha-zero-timeout'
+
+    window.addEventListener('message', function(e){
+        if (e.source == window && e.data == name) {
+        if (e.stopPropagation) e.stopPropagation();
         if (timeouts.length) timeouts.shift()();
-      }, 0);
+        }
+    }, true);
+
+    return function(fn){
+        timeouts.push(fn);
+        window.postMessage(name, '*');
     }
-  }
-
-  // based on setZeroTimeout by David Baron
-  // - http://dbaron.org/log/20100309-faster-timeouts
-  var name = 'mocha-zero-timeout'
-
-  window.addEventListener('message', function(e){
-    if (e.source == window && e.data == name) {
-      if (e.stopPropagation) e.stopPropagation();
-      if (timeouts.length) timeouts.shift()();
-    }
-  }, true);
-
-  return function(fn){
-    timeouts.push(fn);
-    window.postMessage(name, '*');
-  }
-})();
+    })();
+}
 
 
 /*
@@ -695,12 +697,12 @@ Cross-browser textarea selection class
           endRange = this.textarea.createTextRange();
           endRange.collapse(false);
           if (textInputRange.compareEndPoints("StartToEnd", endRange) > -1) {
-            s = e = normalizedText.length;
+            s = e = length;
           } else {
             s = -textInputRange.moveStart("character", -length);
             s += getRegulationOffset(normalizedText, s);
             if (textInputRange.compareEndPoints("EndToEnd", endRange) > -1) {
-              e = normalizedText.length;
+              e = length;
             } else {
               e = -textInputRange.moveEnd("character", -length);
               e += getRegulationOffset(normalizedText, e);
@@ -1108,7 +1110,6 @@ Cross-browser textarea selection class
       }
       return this;
     };
-    elem.curtain = Femto.utils.Curtain(elem);
     return elem;
   };
 
@@ -1210,10 +1211,10 @@ Cross-browser textarea selection class
     elem.iframe = iframe;
     elem.textarea = textarea;
     elem.template = template;
-    elem.curtain = iframe.curtain;
+    elem.curtain = Femto.utils.Curtain(elem);
     elem.parser = null;
     elem.init = function() {
-      this.iframe.init();
+      iframe.init();
       return this;
     };
     elem.focus = function() {
@@ -1311,6 +1312,7 @@ Cross-browser textarea selection class
           this._selection.caret(1);
         }
         this._selection.insertBefore("\n" + indent, false);
+        this._selection.caret(indent.length + 1);
       }
       return this;
     };

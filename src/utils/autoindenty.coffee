@@ -56,6 +56,7 @@ class AutoIndenty
         @_selection.caret(1)
       # insert newline and indent before to simulate RETURN press
       @_selection.insertBefore "\n#{indent}", false
+      @_selection.caret(indent.length+1)
     return @
 
   # @private

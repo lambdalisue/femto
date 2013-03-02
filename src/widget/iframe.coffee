@@ -42,7 +42,6 @@ IFrame = ->
       $(doc).find('a').attr('target', '_blank')
       doc.documentElement.scrollTop = scrollTop
     return @
-  elem.curtain = Femto.utils.Curtain(elem)
   return elem
 
 namespace 'Femto.widget', (exports) ->
