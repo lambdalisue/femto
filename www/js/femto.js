@@ -292,11 +292,10 @@ Cross-browser textarea selection class
 
 
 (function() {
-  var AutoIndenty, Caretaker, Curtain, DEFAULT_TEMPLATE, Editor, IESelection, IFrame, Indenty, Originator, Template, Viewer, W3CSelection, Widget, autoIndent, indent, makeTabString, occurrences, transform, type,
+  var AutoIndenty, Caretaker, Curtain, DEFAULT_TEMPLATE, Editor, IESelection, IFrame, Indenty, Originator, Template, Viewer, W3CSelection, Widget, autoIndent, getRegulationOffset, indent, makeTabString, normalizeText, transform, type,
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
-    __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
-    __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
+    __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
 
   W3CSelection = (function() {
     /*
@@ -654,26 +653,23 @@ Cross-browser textarea selection class
   });
 
   if (document.selection != null) {
-    occurrences = function(str, subStr, allowOverlapping) {
-      var n, pos, step;
-      str += "";
-      subStr += "";
-      if (subStr.length <= 0) {
-        return str.length + 1;
-      }
-      n = pos = 0;
-      step = allowOverlapping ? 1 : subStr.length;
-      while (true) {
-        pos = str.indexOf(subStr, pos);
-        if (pos >= 0) {
-          n++;
-          pos += step;
-        } else {
-          break;
-        }
-      }
-      return n;
+    normalizeText = function(rawText) {
+      return rawText.replace(/\r\n/g, '\n');
     };
+    /*
+      Get regulation offset
+    */
+
+    getRegulationOffset = function(normalizedText, caret) {
+      var leadingText;
+      leadingText = normalizedText.slice(0, caret);
+      leadingText = leadingText.replace(/\n$/, '');
+      return leadingText.split("\n").length - 1;
+    };
+    /*
+      Textarea selection class for IE
+    */
+
     IESelection = (function(_super) {
 
       __extends(IESelection, _super);
@@ -684,37 +680,52 @@ Cross-browser textarea selection class
       }
 
       IESelection.prototype._getWholeText = function() {
-        var value;
-        value = this.textarea.value;
-        value = value.replace(/\r\n/g, "\n");
-        return value;
+        return this.textarea.value.replace(/\r\n/g, '\n');
       };
 
       IESelection.prototype._getCaret = function() {
-        var clone, e, range, s;
+        var e, endRange, length, normalizedText, range, s, textInputRange;
+        s = e = 0;
         range = this._document.selection.createRange();
-        clone = range.duplicate();
-        clone.moveToElementText(this.textarea);
-        clone.setEndPoint('EndToEnd', range);
-        s = clone.text.length - range.text.length;
-        e = s + range.text.length;
-        e -= occurrences(range.text, "\r\n");
+        if (range && range.parentElement() === this.textarea) {
+          length = this.textarea.value.length;
+          normalizedText = this._getWholeText();
+          textInputRange = this.textarea.createTextRange();
+          textInputRange.moveToBookmark(range.getBookmark());
+          endRange = this.textarea.createTextRange();
+          endRange.collapse(false);
+          if (textInputRange.compareEndPoints("StartToEnd", endRange) > -1) {
+            s = e = normalizedText.length;
+          } else {
+            s = -textInputRange.moveStart("character", -length);
+            s += getRegulationOffset(normalizedText, s);
+            if (textInputRange.compareEndPoints("EndToEnd", endRange) > -1) {
+              e = normalizedText.length;
+            } else {
+              e = -textInputRange.moveEnd("character", -length);
+              e += getRegulationOffset(normalizedText, e);
+            }
+          }
+        }
         return [s, e];
       };
 
       IESelection.prototype._setCaret = function(s, e) {
-        var range;
+        var normalizedText, range;
+        normalizedText = this._getWholeText();
+        s -= getRegulationOffset(normalizedText, s);
+        e -= getRegulationOffset(normalizedText, e);
         range = this.textarea.createTextRange();
         range.collapse(true);
+        range.moveEnd('character', e);
         range.moveStart('character', s);
-        range.moveEnd('character', e - s);
         range.select();
         return this;
       };
 
       return IESelection;
 
-    })(W3CSelection);
+    })(Femto.utils.W3CSelection);
     namespace('Femto.utils', function(exports) {
       exports.IESelection = IESelection;
       return exports.Selection = IESelection;
@@ -1288,14 +1299,19 @@ Cross-browser textarea selection class
 
 
     AutoIndenty.prototype.insertNewLine = function() {
-      var cs, indent, line;
+      var cs, indent, line, text;
       cs = this._selection.caret()[0];
+      text = this._selection._getWholeText();
       line = this._selection.lineText().split("\n")[0];
       indent = line.match(this._pattern);
-      if (this._selection._getWholeText().substring(cs, cs + 1) === "\n") {
-        this._selection.caret(1);
+      if (cs === text.length) {
+        this._selection.insertAfter("\n" + indent, false);
+      } else {
+        if (text[cs] === "\n") {
+          this._selection.caret(1);
+        }
+        this._selection.insertBefore("\n" + indent, false);
       }
-      this._selection.insertAfter("\n" + indent, false);
       return this;
     };
 
@@ -1459,7 +1475,7 @@ Cross-browser textarea selection class
     Indenty.prototype.indent = function() {
       var cs, diff, keepSelection, l, ls, modified, rels, selected, tabString;
       selected = this._selection.text();
-      if (__indexOf.call(selected, "\n") >= 0) {
+      if (selected.indexOf("\n") !== -1) {
         if (this.expandTab) {
           tabString = makeTabString(this.indentLevel);
         } else {
@@ -1512,7 +1528,7 @@ Cross-browser textarea selection class
       }
       pattern = new RegExp("^" + tabString);
       selected = this._selection.text();
-      if (__indexOf.call(selected, "\n") >= 0) {
+      if (selected.indexOf("\n") !== -1) {
         selected = this._selection.lineText();
         modified = (function() {
           var _i, _len, _ref, _results;
@@ -2109,7 +2125,11 @@ Cross-browser textarea selection class
         textarea.rollback();
         selection.caret(21, 21);
         instance.insertNewLine();
-        return expect(value()).to.be.eql("AAAAABBBBBCCCCC\naaaaa\nbbbbbccccc\n111112222233333");
+        expect(value()).to.be.eql("AAAAABBBBBCCCCC\naaaaa\nbbbbbccccc\n111112222233333");
+        textarea.rollback();
+        selection.caret(47, 47);
+        instance.insertNewLine();
+        return expect(value()).to.be.eql("AAAAABBBBBCCCCC\naaaaabbbbbccccc\n111112222233333\n");
       });
       return it('should insert leading tabString and newline after the current caret if the current line starts from tabString', function() {
         textarea.value = "    AAAAABBBBBCCCCC\naaaaabbbbbccccc\n111112222233333";
@@ -2119,7 +2139,11 @@ Cross-browser textarea selection class
         textarea.value = "AAAAABBBBBCCCCC\n    aaaaabbbbbccccc\n111112222233333";
         selection.caret(25, 25);
         instance.insertNewLine();
-        return expect(value()).to.be.eql("AAAAABBBBBCCCCC\n    aaaaa\n    bbbbbccccc\n111112222233333");
+        expect(value()).to.be.eql("AAAAABBBBBCCCCC\n    aaaaa\n    bbbbbccccc\n111112222233333");
+        textarea.value = "AAAAABBBBBCCCCC\naaaaabbbbbccccc\n    111112222233333";
+        selection.caret(51, 51);
+        instance.insertNewLine();
+        return expect(value()).to.be.eql("AAAAABBBBBCCCCC\naaaaabbbbbccccc\n    111112222233333\n    ");
       });
     });
     return describe('!KeyDown event', function() {

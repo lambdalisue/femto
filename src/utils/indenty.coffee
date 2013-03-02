@@ -40,7 +40,7 @@ class Indenty
   ###
   indent: ->
     selected = @_selection.text()
-    if "\n" in selected
+    if selected.indexOf("\n") isnt -1
       # multiline mode
       if @expandTab
         tabString = makeTabString(@indentLevel)
@@ -79,7 +79,7 @@ class Indenty
       tabString = "\t"
     pattern = new RegExp("^#{tabString}")
     selected = @_selection.text()
-    if "\n" in selected
+    if selected.indexOf("\n") isnt -1
       # multiline mode
       selected = @_selection.lineText()
       modified = (l.replace(pattern, "") for l in selected.split("\n"))

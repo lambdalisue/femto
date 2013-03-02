@@ -78,6 +78,11 @@ describe 'Femto.utils.AutoIndenty', ->
       instance.insertNewLine()
       expect(value()).to.be.eql("AAAAABBBBBCCCCC\naaaaa\nbbbbbccccc\n111112222233333")
 
+      textarea.rollback()
+      selection.caret(47, 47)
+      instance.insertNewLine()
+      expect(value()).to.be.eql("AAAAABBBBBCCCCC\naaaaabbbbbccccc\n111112222233333\n")
+
 
     it 'should insert leading tabString and newline after the current caret if the current line starts from tabString', ->
       textarea.value = "    AAAAABBBBBCCCCC\naaaaabbbbbccccc\n111112222233333"
@@ -89,6 +94,11 @@ describe 'Femto.utils.AutoIndenty', ->
       selection.caret(25, 25)
       instance.insertNewLine()
       expect(value()).to.be.eql("AAAAABBBBBCCCCC\n    aaaaa\n    bbbbbccccc\n111112222233333")
+
+      textarea.value = "AAAAABBBBBCCCCC\naaaaabbbbbccccc\n    111112222233333"
+      selection.caret(51, 51)
+      instance.insertNewLine()
+      expect(value()).to.be.eql("AAAAABBBBBCCCCC\naaaaabbbbbccccc\n    111112222233333\n    ")
 
   describe '!KeyDown event', ->
     it 'should call `insertNewLine()` when user hit RETURN', ->

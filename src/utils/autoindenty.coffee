@@ -44,13 +44,18 @@ class AutoIndenty
   insertNewLine: ->
     [cs] = @_selection.caret()
     # get current indent level with regexp
+    text = @_selection._getWholeText()
     line = @_selection.lineText().split("\n")[0]
     indent = line.match(@_pattern)
     # move caret forward if the caret stands just before the newline
-    if @_selection._getWholeText().substring(cs, cs+1) is "\n"
-      @_selection.caret(1)
-    # insert newline and indent after to simulate RETURN press
-    @_selection.insertAfter "\n#{indent}", false
+    if cs is text.length
+      # insert newline and indent after to simulate RETURN press
+      @_selection.insertAfter "\n#{indent}", false
+    else
+      if text[cs] is "\n"
+        @_selection.caret(1)
+      # insert newline and indent before to simulate RETURN press
+      @_selection.insertBefore "\n#{indent}", false
     return @
 
   # @private
