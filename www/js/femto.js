@@ -2204,18 +2204,19 @@ Cross-browser textarea selection class
   });
 
   describe('Femto.utils.Selection', function() {
-    var Selection, expected_methods, expected_private_methods, instance, method, textarea, value, _fn, _fn1, _i, _j, _len, _len1;
-    textarea = instance = value = null;
+    var Selection, expected_methods, expected_private_methods, instance, isIE, method, normalizedValue, rollback, textarea, _fn, _fn1, _i, _j, _len, _len1;
     Selection = Femto.utils.Selection;
+    textarea = instance = null;
+    isIE = document.selection != null;
+    normalizedValue = function() {
+      return textarea.value.replace(/\r\n/g, '\n');
+    };
+    rollback = function() {
+      return textarea.value = 'aaaa\nbbbb\ncccc\n';
+    };
     before(function() {
       textarea = document.createElement('textarea');
-      textarea.rollback = function() {
-        return this.value = 'AAAAABBBBBCCCCC\naaaaabbbbbccccc\n111112222233333';
-      };
-      textarea.rollback();
-      value = function() {
-        return textarea.value.replace(/\r\n/g, "\n");
-      };
+      rollback();
       instance = new Selection(textarea);
       document.body.appendChild(textarea);
       return textarea.focus();
@@ -2224,7 +2225,7 @@ Cross-browser textarea selection class
       return document.body.removeChild(textarea);
     });
     afterEach(function() {
-      return textarea.rollback();
+      return rollback();
     });
     expected_private_methods = ['_getCaret', '_setCaret', '_replace'];
     _fn = function(method) {
@@ -2270,11 +2271,34 @@ Cross-browser textarea selection class
         caret = instance.caret(1, 2).caret();
         return expect(caret).to.be.eql([1, 2]);
       });
-      return it('should change caret position with specified offset when called with one argument', function() {
+      it('should change caret position with specified offset when called with one argument', function() {
         var ncaret, pcaret;
         pcaret = instance.caret(0, 0).caret();
         ncaret = instance.caret(5).caret();
         return expect(ncaret).to.be.eql([pcaret[0] + 5, pcaret[1] + 5]);
+      });
+      return it('should return correct caret position', function() {
+        var caret;
+        instance.caret(0, 2);
+        caret = instance.caret();
+        expect(caret).to.be.eql([0, 2]);
+        instance.caret(2, 4);
+        caret = instance.caret();
+        expect(caret).to.be.eql([2, 4]);
+        instance.caret(5, 5);
+        caret = instance.caret();
+        if (isIE) {
+          expect(caret).to.be.eql([6, 6]);
+        } else {
+          expect(caret).to.be.eql([5, 5]);
+        }
+        instance.caret(4, 5);
+        caret = instance.caret();
+        if (isIE) {
+          return expect(caret).to.be.eql([4, 6]);
+        } else {
+          return expect(caret).to.be.eql([4, 5]);
+        }
       });
     });
     describe('#isCollapsed() -> boolean', function() {
@@ -2302,7 +2326,7 @@ Cross-browser textarea selection class
         expect(s).to.be.eql(10);
         return expect(e).to.be.eql(10);
       });
-      return it('should moves the start point of the selection to its end point and return the instance when called with argument', function() {
+      return it('should moves the end point of the selection to its start point and return the instance when called with argument (True)', function() {
         var e, r, s, _ref;
         instance.caret(0, 10);
         r = instance.collapse(true);
@@ -2320,9 +2344,9 @@ Cross-browser textarea selection class
         text = instance.text();
         expect(text).to.be.a('string');
         expect(text).to.be.eql('');
-        instance.caret(5, 25 + 1);
+        instance.caret(3, 7);
         text = instance.text();
-        return expect(text).to.be.eql("BBBBBCCCCC\naaaaabbbbb");
+        return expect(text).to.be.eql("a\nbb");
       });
       it('should return the instance when called with arguments', function() {
         var result;
@@ -2330,54 +2354,61 @@ Cross-browser textarea selection class
         result = instance.text('HELLO');
         expect(result).to.be.a(Selection);
         expect(result).to.be.eql(instance);
-        textarea.rollback();
+        rollback();
         result = instance.text('HELLO', true);
         expect(result).to.be.a(Selection);
         return expect(result).to.be.eql(instance);
       });
       it('should insert text before the caret when no text is selected and called with one argument', function() {
-        var result;
+        var caret, result;
         instance.caret(0, 0);
         result = instance.text("HELLO");
-        return expect(value()).to.be.eql("HELLOAAAAABBBBBCCCCC\naaaaabbbbbccccc\n111112222233333");
+        expect(normalizedValue()).to.be.eql("HELLOaaaa\nbbbb\ncccc\n");
+        caret = instance.caret();
+        return expect(caret).to.be.eql([5, 5]);
       });
       it("should insert text before the caret and select insertion when no text is selected and called with two arguments", function() {
         var caret, result;
         instance.caret(0, 0);
         result = instance.text("HELLO", true);
-        expect(value()).to.be.eql("HELLOAAAAABBBBBCCCCC\naaaaabbbbbccccc\n111112222233333");
+        expect(normalizedValue()).to.be.eql("HELLOaaaa\nbbbb\ncccc\n");
         caret = instance.caret();
         return expect(caret).to.be.eql([0, 5]);
       });
       it("should replace text of selected when text is selected and called with one argument", function() {
-        var result;
-        instance.caret(3, 12);
+        var caret, result;
+        instance.caret(2, 11);
         result = instance.text("HELLO");
-        return expect(value()).to.be.eql("AAAHELLOCCC\naaaaabbbbbccccc\n111112222233333");
+        expect(normalizedValue()).to.be.eql("aaHELLOccc\n");
+        caret = instance.caret();
+        return expect(caret).to.be.eql([7, 7]);
       });
       return it("should replace text of selected and select replacement when text is selected and called with two arguments", function() {
         var caret, result;
-        instance.caret(3, 12);
+        instance.caret(2, 11);
         result = instance.text("HELLO", true);
-        expect(value()).to.be.eql("AAAHELLOCCC\naaaaabbbbbccccc\n111112222233333");
+        expect(normalizedValue()).to.be.eql("aaHELLOccc\n");
         caret = instance.caret();
-        return expect(caret).to.be.eql([3, 8]);
+        return expect(caret).to.be.eql([2, 7]);
       });
     });
     describe("#lineCaret(s, e) -> [s, e]", function() {
       it("should return current line caret position as a list when called without any arguments", function() {
         var lcaret;
-        instance.caret(5, 25 + 1);
+        instance.caret(2, 2);
         lcaret = instance.lineCaret();
         expect(lcaret).to.be.a("array");
-        return expect(lcaret).to.be.eql([0, 30 + 1]);
+        expect(lcaret).to.be.eql([0, 4]);
+        instance.caret(6, 11);
+        lcaret = instance.lineCaret();
+        return expect(lcaret).to.be.eql([5, 14]);
       });
       return it("should return specified line caret position as a list when called with arguments", function() {
         var lcaret;
         instance.caret(0, 0);
-        lcaret = instance.lineCaret(5, 25 + 1);
+        lcaret = instance.lineCaret(2, 2);
         expect(lcaret).to.be.a("array");
-        expect(lcaret).to.be.eql([0, 30 + 1]);
+        expect(lcaret).to.be.eql([0, 4]);
         return expect(instance.caret()).to.be.eql([0, 0]);
       });
     });
@@ -2387,10 +2418,10 @@ Cross-browser textarea selection class
         instance.caret(0, 0);
         text = instance.lineText();
         expect(text).to.be.a("string");
-        expect(text).to.be.eql("AAAAABBBBBCCCCC");
-        instance.caret(5, 25 + 1);
+        expect(text).to.be.eql("aaaa");
+        instance.caret(2, 7);
         text = instance.lineText();
-        return expect(text).to.be.eql("AAAAABBBBBCCCCC\naaaaabbbbbccccc");
+        return expect(text).to.be.eql("aaaa\nbbbb");
       });
       it("should return the instance when called with arguments", function() {
         var result;
@@ -2398,36 +2429,46 @@ Cross-browser textarea selection class
         result = instance.lineText("HELLO");
         expect(result).to.be.a(Selection);
         expect(result).to.be.eql(instance);
-        textarea.rollback();
+        rollback();
         result = instance.lineText("HELLO", true);
         expect(result).to.be.a(Selection);
         return expect(result).to.be.eql(instance);
       });
       it("should replace single line of caret position when no text is selected and called with one argument", function() {
-        var result;
+        var caret, result;
         instance.caret(0, 0);
         result = instance.lineText("HELLO");
-        return expect(value()).to.be.eql("HELLO\naaaaabbbbbccccc\n111112222233333");
+        expect(normalizedValue()).to.be.eql("HELLO\nbbbb\ncccc\n");
+        caret = instance.caret();
+        expect(caret).to.be.eql([5, 5]);
+        rollback();
+        instance.caret(7, 7);
+        result = instance.lineText("HELLO");
+        expect(normalizedValue()).to.be.eql("aaaa\nHELLO\ncccc\n");
+        caret = instance.caret();
+        return expect(caret).to.be.eql([10, 10]);
       });
       it("should replace single line of caret position and select insertion when no text is selected and called with two arguments", function() {
         var caret, result;
         instance.caret(0, 0);
         result = instance.lineText("HELLO", true);
-        expect(value()).to.be.eql("HELLO\naaaaabbbbbccccc\n111112222233333");
+        expect(normalizedValue()).to.be.eql("HELLO\nbbbb\ncccc\n");
         caret = instance.caret();
         return expect(caret).to.be.eql([0, 5]);
       });
       it("should replace lines of selection when text is selected and called with one argument", function() {
-        var result;
-        instance.caret(5, 25 + 1);
+        var caret, result;
+        instance.caret(2, 8);
         result = instance.lineText("HELLO");
-        return expect(value()).to.be.eql("HELLO\n111112222233333");
+        expect(normalizedValue()).to.be.eql("HELLO\ncccc\n");
+        caret = instance.caret();
+        return expect(caret).to.be.eql([5, 5]);
       });
       return it("should replace lines of selection and select replacement when text is selected and called with two arguments", function() {
         var caret, result;
-        instance.caret(5, 25 + 1);
+        instance.caret(2, 8);
         result = instance.lineText("HELLO", true);
-        expect(value()).to.be.eql("HELLO\n111112222233333");
+        expect(normalizedValue()).to.be.eql("HELLO\ncccc\n");
         caret = instance.caret();
         return expect(caret).to.be.eql([0, 5]);
       });
@@ -2439,38 +2480,42 @@ Cross-browser textarea selection class
         result = instance.insertBefore("HELLO");
         expect(result).to.be.a(Selection);
         expect(result).to.be.eql(instance);
-        textarea.rollback();
+        rollback();
         result = instance.insertBefore("HELLO", true);
         expect(result).to.be.a(Selection);
         return expect(result).to.be.eql(instance);
       });
       it("should insert text before the caret when no text is selected and called with one argument", function() {
-        var result;
+        var caret, result;
         instance.caret(0, 0);
         result = instance.insertBefore("HELLO");
-        return expect(value()).to.be.eql("HELLOAAAAABBBBBCCCCC\naaaaabbbbbccccc\n111112222233333");
+        expect(normalizedValue()).to.be.eql("HELLOaaaa\nbbbb\ncccc\n");
+        caret = instance.caret();
+        return expect(caret).to.be.eql([5, 5]);
       });
       it("should insert text before the caret and select insertion when no text is selected and called with two arguments", function() {
         var caret, result;
         instance.caret(0, 0);
         result = instance.insertBefore("HELLO", true);
-        expect(value()).to.be.eql("HELLOAAAAABBBBBCCCCC\naaaaabbbbbccccc\n111112222233333");
+        expect(normalizedValue()).to.be.eql("HELLOaaaa\nbbbb\ncccc\n");
         caret = instance.caret();
         return expect(caret).to.be.eql([0, 5]);
       });
       it("should insert text before the selection when text is selected and called with one argument", function() {
-        var result;
-        instance.caret(0, 5);
+        var caret, result;
+        instance.caret(2, 4);
         result = instance.insertBefore("HELLO");
-        return expect(value()).to.be.eql("HELLOAAAAABBBBBCCCCC\naaaaabbbbbccccc\n111112222233333");
+        expect(normalizedValue()).to.be.eql("aaHELLOaa\nbbbb\ncccc\n");
+        caret = instance.caret();
+        return expect(caret).to.be.eql([7, 7]);
       });
       return it("should insert text before the selection and select insertion when text is selected and called with two arguments", function() {
         var caret, result;
-        instance.caret(0, 5);
+        instance.caret(2, 4);
         result = instance.insertBefore("HELLO", true);
-        expect(value()).to.be.eql("HELLOAAAAABBBBBCCCCC\naaaaabbbbbccccc\n111112222233333");
+        expect(normalizedValue()).to.be.eql("aaHELLOaa\nbbbb\ncccc\n");
         caret = instance.caret();
-        return expect(caret).to.be.eql([0, 5]);
+        return expect(caret).to.be.eql([2, 7]);
       });
     });
     describe("#insertAfter(text, keepSelection) -> instance", function() {
@@ -2480,38 +2525,42 @@ Cross-browser textarea selection class
         result = instance.insertAfter("HELLO");
         expect(result).to.be.a(Selection);
         expect(result).to.be.eql(instance);
-        textarea.rollback();
+        rollback();
         result = instance.insertAfter("HELLO", true);
         expect(result).to.be.a(Selection);
         return expect(result).to.be.eql(instance);
       });
       it("should insert text after the caret when no text is selected and called with one argument", function() {
-        var result;
+        var caret, result;
         instance.caret(0, 0);
         result = instance.insertAfter("HELLO");
-        return expect(value()).to.be.eql("HELLOAAAAABBBBBCCCCC\naaaaabbbbbccccc\n111112222233333");
+        expect(normalizedValue()).to.be.eql("HELLOaaaa\nbbbb\ncccc\n");
+        caret = instance.caret();
+        return expect(caret).to.be.eql([5, 5]);
       });
       it("should insert text after the caret and select insertion when no text is selected and called with two arguments", function() {
         var caret, result;
         instance.caret(0, 0);
         result = instance.insertAfter("HELLO", true);
-        expect(value()).to.be.eql("HELLOAAAAABBBBBCCCCC\naaaaabbbbbccccc\n111112222233333");
+        expect(normalizedValue()).to.be.eql("HELLOaaaa\nbbbb\ncccc\n");
         caret = instance.caret();
         return expect(caret).to.be.eql([0, 5]);
       });
       it("should insert text after the selection when text is selected and called with one argument", function() {
-        var result;
-        instance.caret(0, 5);
+        var caret, result;
+        instance.caret(1, 3);
         result = instance.insertAfter("HELLO");
-        return expect(value()).to.be.eql("AAAAAHELLOBBBBBCCCCC\naaaaabbbbbccccc\n111112222233333");
+        expect(normalizedValue()).to.be.eql("aaaHELLOa\nbbbb\ncccc\n");
+        caret = instance.caret();
+        return expect(caret).to.be.eql([8, 8]);
       });
       return it("should insert text after the selection and select insertion when text is selected and called with two arguments", function() {
         var caret, result;
-        instance.caret(0, 5);
+        instance.caret(1, 3);
         result = instance.insertAfter("HELLO", true);
-        expect(value()).to.be.eql("AAAAAHELLOBBBBBCCCCC\naaaaabbbbbccccc\n111112222233333");
+        expect(normalizedValue()).to.be.eql("aaaHELLOa\nbbbb\ncccc\n");
         caret = instance.caret();
-        return expect(caret).to.be.eql([5, 10]);
+        return expect(caret).to.be.eql([3, 8]);
       });
     });
     describe("#enclose(lhs, rhs, keepSelection) -> instance", function() {
@@ -2521,63 +2570,66 @@ Cross-browser textarea selection class
         result = instance.enclose("HELLO", "WORLD");
         expect(result).to.be.a(Selection);
         expect(result).to.be.eql(instance);
-        textarea.rollback();
+        rollback();
         result = instance.enclose("HELLO", "WORLD", true);
         expect(result).to.be.a(Selection);
         return expect(result).to.be.eql(instance);
       });
       it("should insert both text before the caret when no text is selected and called with two arguments", function() {
-        var result;
+        var caret, result;
         instance.caret(0, 0);
         result = instance.enclose("HELLO", "WORLD");
-        return expect(value()).to.be.eql("HELLOWORLDAAAAABBBBBCCCCC\naaaaabbbbbccccc\n111112222233333");
+        expect(normalizedValue()).to.be.eql("HELLOWORLDaaaa\nbbbb\ncccc\n");
+        caret = instance.caret();
+        return expect(caret).to.be.eql([10, 10]);
       });
       it("should insert both text before the caret and select insertion when no text is selected and called with three arguments", function() {
         var caret, result;
         instance.caret(0, 0);
         result = instance.enclose("HELLO", "WORLD", true);
-        expect(value()).to.be.eql("HELLOWORLDAAAAABBBBBCCCCC\naaaaabbbbbccccc\n111112222233333");
+        expect(normalizedValue()).to.be.eql("HELLOWORLDaaaa\nbbbb\ncccc\n");
         caret = instance.caret();
         return expect(caret).to.be.eql([0, 10]);
       });
       it("should enclose the selection with specified when text is selected and called with two arguments", function() {
-        var result;
-        instance.caret(0, 5);
+        var caret, result;
+        instance.caret(1, 3);
         result = instance.enclose("HELLO", "WORLD");
-        return expect(value()).to.be.eql("HELLOAAAAAWORLDBBBBBCCCCC\naaaaabbbbbccccc\n111112222233333");
+        expect(normalizedValue()).to.be.eql("aHELLOaaWORLDa\nbbbb\ncccc\n");
+        caret = instance.caret();
+        return expect(caret).to.be.eql([13, 13]);
       });
       it("should enclose the selection with specified and select text include insertion when text is selected and called with two arguments", function() {
         var caret, result;
-        instance.caret(0, 5);
+        instance.caret(1, 3);
         result = instance.enclose("HELLO", "WORLD", true);
-        expect(value()).to.be.eql("HELLOAAAAAWORLDBBBBBCCCCC\naaaaabbbbbccccc\n111112222233333");
+        expect(normalizedValue()).to.be.eql("aHELLOaaWORLDa\nbbbb\ncccc\n");
         caret = instance.caret();
-        return expect(caret).to.be.eql([0, 15]);
+        return expect(caret).to.be.eql([1, 13]);
       });
       it("should remove specified when selected text (or caret) is enclosed and called with two arguments", function() {
-        instance.caret(0, 0);
-        instance.enclose("HELLO", "WORLD", true);
-        instance.enclose("HELLO", "WORLD");
-        expect(value()).to.be.eql("AAAAABBBBBCCCCC\naaaaabbbbbccccc\n111112222233333");
-        instance.caret(5, 10);
-        instance.enclose("HELLO", "WORLD", true);
-        instance.enclose("HELLO", "WORLD");
-        return expect(value()).to.be.eql("AAAAABBBBBCCCCC\naaaaabbbbbccccc\n111112222233333");
-      });
-      return it("should remove specified and select text when selected text (or caret) is enclosed and called with three arguments", function() {
         var caret;
         instance.caret(0, 0);
         instance.enclose("HELLO", "WORLD", true);
-        instance.enclose("HELLO", "WORLD", true);
-        expect(value()).to.be.eql("AAAAABBBBBCCCCC\naaaaabbbbbccccc\n111112222233333");
+        instance.enclose("HELLO", "WORLD");
+        expect(normalizedValue()).to.be.eql("aaaa\nbbbb\ncccc\n");
         caret = instance.caret();
         expect(caret).to.be.eql([0, 0]);
-        instance.caret(5, 10);
+        instance.caret(2, 7);
         instance.enclose("HELLO", "WORLD", true);
-        instance.enclose("HELLO", "WORLD", true);
-        expect(value()).to.be.eql("AAAAABBBBBCCCCC\naaaaabbbbbccccc\n111112222233333");
+        instance.enclose("HELLO", "WORLD");
+        expect(normalizedValue()).to.be.eql("aaaa\nbbbb\ncccc\n");
         caret = instance.caret();
-        return expect(caret).to.be.eql([5, 10]);
+        return expect(caret).to.be.eql([7, 7]);
+      });
+      return it("should remove specified and select text when selected text (or caret) is enclosed and called with three arguments", function() {
+        var caret;
+        instance.caret(2, 7);
+        instance.enclose("HELLO", "WORLD", true);
+        instance.enclose("HELLO", "WORLD", true);
+        expect(normalizedValue()).to.be.eql("aaaa\nbbbb\ncccc\n");
+        caret = instance.caret();
+        return expect(caret).to.be.eql([2, 7]);
       });
     });
     describe("#insertBeforeLine(text, keepSelection) -> instance", function() {
@@ -2587,38 +2639,42 @@ Cross-browser textarea selection class
         result = instance.insertBeforeLine("HELLO");
         expect(result).to.be.a(Selection);
         expect(result).to.be.eql(instance);
-        textarea.rollback();
+        rollback();
         result = instance.insertBeforeLine("HELLO", true);
         expect(result).to.be.a(Selection);
         return expect(result).to.be.eql(instance);
       });
       it("should insert text before the current line when no text is selected and called with one argument", function() {
-        var result;
-        instance.caret(0, 0);
+        var caret, result;
+        instance.caret(7, 7);
         result = instance.insertBeforeLine("HELLO");
-        return expect(value()).to.be.eql("HELLOAAAAABBBBBCCCCC\naaaaabbbbbccccc\n111112222233333");
+        expect(normalizedValue()).to.be.eql("aaaa\nHELLObbbb\ncccc\n");
+        caret = instance.caret();
+        return expect(caret).to.be.eql([10, 10]);
       });
       it("should insert text before the current line and select insertion when no text is selected and called with two arguments", function() {
         var caret, result;
-        instance.caret(0, 0);
+        instance.caret(7, 7);
         result = instance.insertBeforeLine("HELLO", true);
-        expect(value()).to.be.eql("HELLOAAAAABBBBBCCCCC\naaaaabbbbbccccc\n111112222233333");
+        expect(normalizedValue()).to.be.eql("aaaa\nHELLObbbb\ncccc\n");
         caret = instance.caret();
-        return expect(caret).to.be.eql([0, 5]);
+        return expect(caret).to.be.eql([5, 10]);
       });
       it("should insert text before the line of the selection when text is selected and called with one argument", function() {
-        var result;
-        instance.caret(0, 5);
+        var caret, result;
+        instance.caret(7, 13);
         result = instance.insertBeforeLine("HELLO");
-        return expect(value()).to.be.eql("HELLOAAAAABBBBBCCCCC\naaaaabbbbbccccc\n111112222233333");
+        expect(normalizedValue()).to.be.eql("aaaa\nHELLObbbb\ncccc\n");
+        caret = instance.caret();
+        return expect(caret).to.be.eql([10, 10]);
       });
       return it("should insert text before the line of the selection and select insertion when text is selected and called with two arguments", function() {
         var caret, result;
-        instance.caret(0, 5);
+        instance.caret(7, 13);
         result = instance.insertBeforeLine("HELLO", true);
-        expect(value()).to.be.eql("HELLOAAAAABBBBBCCCCC\naaaaabbbbbccccc\n111112222233333");
+        expect(normalizedValue()).to.be.eql("aaaa\nHELLObbbb\ncccc\n");
         caret = instance.caret();
-        return expect(caret).to.be.eql([0, 5]);
+        return expect(caret).to.be.eql([5, 10]);
       });
     });
     describe("#insertAfterLine(text, keepSelection) -> instance", function() {
@@ -2628,38 +2684,42 @@ Cross-browser textarea selection class
         result = instance.insertAfterLine("HELLO");
         expect(result).to.be.a(Selection);
         expect(result).to.be.eql(instance);
-        textarea.rollback();
+        rollback();
         result = instance.insertAfterLine("HELLO", true);
         expect(result).to.be.a(Selection);
         return expect(result).to.be.eql(instance);
       });
       it("should insert text after the current line when no text is selected and called with one argument", function() {
-        var result;
-        instance.caret(0, 0);
+        var caret, result;
+        instance.caret(7, 7);
         result = instance.insertAfterLine("HELLO");
-        return expect(value()).to.be.eql("AAAAABBBBBCCCCCHELLO\naaaaabbbbbccccc\n111112222233333");
+        expect(normalizedValue()).to.be.eql("aaaa\nbbbbHELLO\ncccc\n");
+        caret = instance.caret();
+        return expect(caret).to.be.eql([14, 14]);
       });
       it("should insert text after the current line and select insertion when no text is selected and called with two arguments", function() {
         var caret, result;
-        instance.caret(0, 0);
+        instance.caret(7, 7);
         result = instance.insertAfterLine("HELLO", true);
-        expect(value()).to.be.eql("AAAAABBBBBCCCCCHELLO\naaaaabbbbbccccc\n111112222233333");
+        expect(normalizedValue()).to.be.eql("aaaa\nbbbbHELLO\ncccc\n");
         caret = instance.caret();
-        return expect(caret).to.be.eql([15, 20]);
+        return expect(caret).to.be.eql([9, 14]);
       });
       it("should insert text after the line of the selection when text is selected and called with one argument", function() {
-        var result;
-        instance.caret(0, 5);
+        var caret, result;
+        instance.caret(2, 7);
         result = instance.insertAfterLine("HELLO");
-        return expect(value()).to.be.eql("AAAAABBBBBCCCCCHELLO\naaaaabbbbbccccc\n111112222233333");
+        expect(normalizedValue()).to.be.eql("aaaa\nbbbbHELLO\ncccc\n");
+        caret = instance.caret();
+        return expect(caret).to.be.eql([14, 14]);
       });
       return it("should insert text after the line of the selection and select insertion when text is selected and called with two arguments", function() {
         var caret, result;
-        instance.caret(0, 5);
+        instance.caret(2, 7);
         result = instance.insertAfterLine("HELLO", true);
-        expect(value()).to.be.eql("AAAAABBBBBCCCCCHELLO\naaaaabbbbbccccc\n111112222233333");
+        expect(normalizedValue()).to.be.eql("aaaa\nbbbbHELLO\ncccc\n");
         caret = instance.caret();
-        return expect(caret).to.be.eql([15, 20]);
+        return expect(caret).to.be.eql([9, 14]);
       });
     });
     return describe("#encloseLine(lhs, rhs, keepSelection) -> instance", function() {
@@ -2669,63 +2729,62 @@ Cross-browser textarea selection class
         result = instance.encloseLine("HELLO", "WORLD");
         expect(result).to.be.a(Selection);
         expect(result).to.be.eql(instance);
-        textarea.rollback();
+        rollback();
         result = instance.encloseLine("HELLO", "WORLD", true);
         expect(result).to.be.a(Selection);
         return expect(result).to.be.eql(instance);
       });
-      it("should insert both text before the current line when no text is selected and called with two arguments", function() {
-        var result;
-        instance.caret(0, 0);
-        result = instance.encloseLine("HELLO", "WORLD");
-        return expect(value()).to.be.eql("HELLOAAAAABBBBBCCCCCWORLD\naaaaabbbbbccccc\n111112222233333");
-      });
-      it("should insert both text before the current line and select insertion when no text is selected and called with three arguments", function() {
-        var caret, result;
-        instance.caret(0, 0);
-        result = instance.encloseLine("HELLO", "WORLD", true);
-        expect(value()).to.be.eql("HELLOAAAAABBBBBCCCCCWORLD\naaaaabbbbbccccc\n111112222233333");
-        caret = instance.caret();
-        return expect(caret).to.be.eql([0, 25]);
-      });
       it("should encloseLine the line of the selection with specified when text is selected and called with two arguments", function() {
-        var result;
-        instance.caret(0, 5);
+        var caret, result;
+        instance.caret(2, 2);
         result = instance.encloseLine("HELLO", "WORLD");
-        return expect(value()).to.be.eql("HELLOAAAAABBBBBCCCCCWORLD\naaaaabbbbbccccc\n111112222233333");
+        expect(normalizedValue()).to.be.eql("HELLOaaaaWORLD\nbbbb\ncccc\n");
+        caret = instance.caret();
+        expect(caret).to.be.eql([14, 14]);
+        rollback();
+        instance.caret(2, 6);
+        result = instance.encloseLine("HELLO", "WORLD");
+        expect(normalizedValue()).to.be.eql("HELLOaaaa\nbbbbWORLD\ncccc\n");
+        caret = instance.caret();
+        return expect(caret).to.be.eql([19, 19]);
       });
       it("should encloseLine the line of the selection with specified and select text include insertion when text is selected and called with two arguments", function() {
         var caret, result;
-        instance.caret(0, 5);
+        instance.caret(2, 2);
         result = instance.encloseLine("HELLO", "WORLD", true);
-        expect(value()).to.be.eql("HELLOAAAAABBBBBCCCCCWORLD\naaaaabbbbbccccc\n111112222233333");
+        expect(normalizedValue()).to.be.eql("HELLOaaaaWORLD\nbbbb\ncccc\n");
         caret = instance.caret();
-        return expect(caret).to.be.eql([0, 25]);
+        expect(caret).to.be.eql([0, 14]);
+        rollback();
+        instance.caret(2, 6);
+        result = instance.encloseLine("HELLO", "WORLD", true);
+        expect(normalizedValue()).to.be.eql("HELLOaaaa\nbbbbWORLD\ncccc\n");
+        caret = instance.caret();
+        return expect(caret).to.be.eql([0, 19]);
       });
       it("should remove specified when selected text (or caret) is encloseLined and called with two arguments", function() {
-        instance.caret(0, 0);
+        var caret;
+        instance.caret(2, 2);
         instance.encloseLine("HELLO", "WORLD", true);
         instance.encloseLine("HELLO", "WORLD");
-        expect(value()).to.be.eql("AAAAABBBBBCCCCC\naaaaabbbbbccccc\n111112222233333");
-        instance.caret(5, 10);
+        expect(normalizedValue()).to.be.eql("aaaa\nbbbb\ncccc\n");
+        caret = instance.caret();
+        expect(caret).to.be.eql([4, 4]);
+        instance.caret(2, 6);
         instance.encloseLine("HELLO", "WORLD", true);
         instance.encloseLine("HELLO", "WORLD");
-        return expect(value()).to.be.eql("AAAAABBBBBCCCCC\naaaaabbbbbccccc\n111112222233333");
+        expect(normalizedValue()).to.be.eql("aaaa\nbbbb\ncccc\n");
+        caret = instance.caret();
+        return expect(caret).to.be.eql([9, 9]);
       });
       return it("should remove specified and select text when selected text (or caret) is encloseLined and called with three arguments", function() {
         var caret;
-        instance.caret(0, 0);
+        instance.caret(2, 6);
         instance.encloseLine("HELLO", "WORLD", true);
         instance.encloseLine("HELLO", "WORLD", true);
-        expect(value()).to.be.eql("AAAAABBBBBCCCCC\naaaaabbbbbccccc\n111112222233333");
+        expect(normalizedValue()).to.be.eql("aaaa\nbbbb\ncccc\n");
         caret = instance.caret();
-        expect(caret).to.be.eql([0, 15]);
-        instance.caret(5, 10);
-        instance.encloseLine("HELLO", "WORLD", true);
-        instance.encloseLine("HELLO", "WORLD", true);
-        expect(value()).to.be.eql("AAAAABBBBBCCCCC\naaaaabbbbbccccc\n111112222233333");
-        caret = instance.caret();
-        return expect(caret).to.be.eql([0, 15]);
+        return expect(caret).to.be.eql([0, 9]);
       });
     });
   });
