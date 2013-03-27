@@ -3,14 +3,16 @@ describe 'Femto.utils.Indenty', ->
   Indenty = Femto.utils.Indenty
   Selection = Femto.utils.Selection
 
+  isIE = document.selection?
+
+  normalizedValue = ->
+    textarea.value.replace(/\r\n/g, '\n')
+  rollback = ->
+    textarea.value = 'aaaa\nbbbb\ncccc\n'
+
   before ->
     textarea = document.createElement('textarea')
-    textarea.rollback = ->
-      @value = 'AAAAABBBBBCCCCC\naaaaabbbbbccccc\n111112222233333'
-    textarea.rollback()
-    value = ->
-      # IE use \r\n so replace it
-      textarea.value.replace(/\r\n/g, "\n")
+    rollback()
     instance = new Indenty(jQuery(textarea), true, 4)
     selection = instance._selection
     document.body.appendChild textarea
@@ -20,7 +22,7 @@ describe 'Femto.utils.Indenty', ->
     document.body.removeChild(textarea)
 
   afterEach ->
-    textarea.rollback()
+    rollback()
 
   # check expected private properties
   expected_private_properties = [
@@ -67,177 +69,187 @@ describe 'Femto.utils.Indenty', ->
       expect(r).to.be.a(Indenty)
       expect(r).to.be.eql(instance)
 
-    #it 'should insert 4 spaces before the caret', ->
-    it 'should insert appropriate number of spaces before the caret', ->
+    it 'should insert 4 spaces before the caret [0, 0] and move the caret to [4, 4], [8, 8]', ->
+      #  a a a a N b b b b N c c c c N
+      # 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5
+      # |
       selection.caret(0, 0)
+      #  _ _ _ _ a a a a N b b b b N c c c c N
+      # 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5
+      #         |
       instance.indent()
-      expect(value()).to.be.eql("    AAAAABBBBBCCCCC\naaaaabbbbbccccc\n111112222233333")
-      instance.indent()
-      expect(value()).to.be.eql("        AAAAABBBBBCCCCC\naaaaabbbbbccccc\n111112222233333")
-      textarea.rollback()
+      caret = selection.caret()
+      expect(normalizedValue()).to.be.eql("    aaaa\nbbbb\ncccc\n")
+      expect(caret).to.be.eql([4,4])
 
+      #  _ _ _ _ _ _ _ _ a a a a N b b b b N c c c c N
+      # 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5
+      #                 |
+      instance.indent()
+      caret = selection.caret()
+      expect(normalizedValue()).to.be.eql("        aaaa\nbbbb\ncccc\n")
+      expect(caret).to.be.eql([8,8])
+
+    it 'should insert 2, 4 spaces before the caret [2, 2] and move the caret to [4, 4], [8, 8]', ->
+      #  a a a a N b b b b N c c c c N
+      # 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5
+      #     |
+      selection.caret(2, 2)
+      #
+      # Note:
+      #   Caret start from 2 so only 2 spaces (indentLevel - 2 % 4 = 2) are
+      #   inserted before the caret
+      #
+      #  a a _ _ a a N b b b b N c c c c N
+      # 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5
+      #         |
+      instance.indent()
+      caret = selection.caret()
+      expect(normalizedValue()).to.be.eql("aa  aa\nbbbb\ncccc\n")
+      expect(caret).to.be.eql([4,4])
+
+      #  a a _ _ _ _ _ _ a a N b b b b N c c c c N
+      # 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5
+      #                 |
+      instance.indent()
+      caret = selection.caret()
+      expect(normalizedValue()).to.be.eql("aa      aa\nbbbb\ncccc\n")
+      expect(caret).to.be.eql([8,8])
+
+    it 'should insert 4 spaces before the caret [4, 4] (before Newline) and move the caret to [8, 8]', ->
+      #  a a a a N b b b b N c c c c N
+      # 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5
+      #         |
+      selection.caret(4, 4)
+      #  a a a a _ _ _ _ N b b b b N c c c c N
+      # 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5
+      #                 |
+      instance.indent()
+      caret = selection.caret()
+      expect(normalizedValue()).to.be.eql("aaaa    \nbbbb\ncccc\n")
+      expect(caret).to.be.eql([8,8])
+
+    it 'should insert 4 spaces before the caret [5, 5] (after Newline) and move the caret to [9, 9]', ->
+      #  a a a a N b b b b N c c c c N
+      # 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5
+      #           |
       selection.caret(5, 5)
+      #  a a a a N _ _ _ _ b b b b N c c c c N
+      # 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5
+      #                   |
       instance.indent()
-      #
-      # Note:
-      #   Caret start from 5 so only 3 spaces (indentLevel - 5 % 4 = 3) are
-      #   inserted before the caret
-      #
-      #expect(value()).to.be.eql("AAAAA    BBBBBCCCCC\naaaaabbbbbccccc\n111112222233333")
-      expect(value()).to.be.eql("AAAAA   BBBBBCCCCC\naaaaabbbbbccccc\n111112222233333")
-      instance.indent()
-      #expect(value()).to.be.eql("AAAAA        BBBBBCCCCC\naaaaabbbbbccccc\n111112222233333")
-      expect(value()).to.be.eql("AAAAA       BBBBBCCCCC\naaaaabbbbbccccc\n111112222233333")
-      textarea.rollback()
+      caret = selection.caret()
+      expect(normalizedValue()).to.be.eql("aaaa\n    bbbb\ncccc\n")
+      expect(caret).to.be.eql([9,9])
 
-      selection.caret(15, 15)
+    it 'should insert 4 spaces before the single line selection [0, 4] and move the caret to [4, 8], [8, 12]', ->
+      #  a a a a N b b b b N c c c c N
+      # 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5
+      # |-------|
+      selection.caret(0, 4)
+      #  _ _ _ _ a a a a N b b b b N c c c c N
+      # 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5
+      #         |-------|
       instance.indent()
-      #
-      # Note:
-      #   Caret start from 15 so only 1 space (indentLevel - 15 % 4 = 1) is
-      #   inserted before the caret
-      #
-      #expect(value()).to.be.eql("AAAAABBBBBCCCCC    \naaaaabbbbbccccc\n111112222233333")
-      expect(value()).to.be.eql("AAAAABBBBBCCCCC \naaaaabbbbbccccc\n111112222233333")
-      instance.indent()
-      #expect(value()).to.be.eql("AAAAABBBBBCCCCC        \naaaaabbbbbccccc\n111112222233333")
-      expect(value()).to.be.eql("AAAAABBBBBCCCCC     \naaaaabbbbbccccc\n111112222233333")
-      textarea.rollback()
+      caret = selection.caret()
+      expect(normalizedValue()).to.be.eql("    aaaa\nbbbb\ncccc\n")
+      expect(caret).to.be.eql([4,8])
 
-      selection.caret(16, 16)
+      #  _ _ _ _ _ _ _ _ a a a a N b b b b N c c c c N
+      # 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5
+      #                 |-------|
       instance.indent()
-      expect(value()).to.be.eql("AAAAABBBBBCCCCC\n    aaaaabbbbbccccc\n111112222233333")
-      instance.indent()
-      expect(value()).to.be.eql("AAAAABBBBBCCCCC\n        aaaaabbbbbccccc\n111112222233333")
-      textarea.rollback()
+      caret = selection.caret()
+      expect(normalizedValue()).to.be.eql("        aaaa\nbbbb\ncccc\n")
+      expect(caret).to.be.eql([8,12])
 
-    #it 'should insert 4 spaces before the selection when selection is in single line', ->
-    it 'should insert appropriate number of spaces before the selection when selection is in single line', ->
-      selection.caret(0, 5)
+    it 'should insert 3, 4 spaces before the selection within a single line [1, 3] and move the caret to [4, 6], [8, 10]', ->
+      #  a a a a N b b b b N c c c c N
+      # 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5
+      #   |---|
+      selection.caret(1, 3)
+      #  a _ _ _ a a a N b b b b N c c c c N
+      # 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5
+      #         |---|
       instance.indent()
-      expect(value()).to.be.eql("    AAAAABBBBBCCCCC\naaaaabbbbbccccc\n111112222233333")
+      caret = selection.caret()
+      expect(normalizedValue()).to.be.eql("a   aaa\nbbbb\ncccc\n")
+      expect(caret).to.be.eql([4,6])
+      #  a _ _ _ _ _ _ _ a a a N b b b b N c c c c N
+      # 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5
+      #                 |---|
       instance.indent()
-      expect(value()).to.be.eql("        AAAAABBBBBCCCCC\naaaaabbbbbccccc\n111112222233333")
-      textarea.rollback()
+      caret = selection.caret()
+      expect(normalizedValue()).to.be.eql("a       aaa\nbbbb\ncccc\n")
+      expect(caret).to.be.eql([8,10])
 
-      selection.caret(5, 10)
+    it 'should insert 4 spaces before each selected lines [0, 9] and move the caret to [0, 17], [0, 25]', ->
+      #  a a a a N b b b b N c c c c N
+      # 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5
+      # |-----------------|
+      selection.caret(0, 9)
+      #  _ _ _ _ a a a a N _ _ _ _ b b b b N c c c c N
+      # 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7
+      # |---------------------------------|
       instance.indent()
-      #
-      # Note:
-      #   Caret start from 5 so only 3 spaces (indentLevel - 5 % 4 = 3) are
-      #   inserted before the caret
-      #
-      #expect(value()).to.be.eql("AAAAA    BBBBBCCCCC\naaaaabbbbbccccc\n111112222233333")
-      expect(value()).to.be.eql("AAAAA   BBBBBCCCCC\naaaaabbbbbccccc\n111112222233333")
+      caret = selection.caret()
+      expect(normalizedValue()).to.be.eql("    aaaa\n    bbbb\ncccc\n")
+      expect(caret).to.be.eql([0,17])
+      #  _ _ _ _ _ _ _ _ a a a a N _ _ _ _ _ _ _ _ b b b b N c c c c N
+      # 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6
+      # |-------------------------------------------------|
       instance.indent()
-      #
-      # Note:
-      #   Caret indicate the RANGE so `indent()` does not move the start point
-      #   of the selection, that's why even after calling `indent()`, caret
-      #   start from 5 so only 3 spaces (indentLevel - 5 % 4 = 3) are inserted
-      #   before the caret. This is a little bit tricky behavior
-      #
-      #expect(value()).to.be.eql("AAAAA        BBBBBCCCCC\naaaaabbbbbccccc\n111112222233333")
-      expect(value()).to.be.eql("AAAAA      BBBBBCCCCC\naaaaabbbbbccccc\n111112222233333")
-      textarea.rollback()
+      caret = selection.caret()
+      expect(normalizedValue()).to.be.eql("        aaaa\n        bbbb\ncccc\n")
+      expect(caret).to.be.eql([0,25])
 
-      selection.caret(16, 21)
+    it 'should insert 4 spaces before each lines contains the selection [2, 7] and move the caret to [6, 15], [10, 23]', ->
+      #  a a a a N b b b b N c c c c N
+      # 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5
+      #     |---------|
+      selection.caret(2, 7)
+      #  _ _ _ _ a a a a N _ _ _ _ b b b b N c c c c N
+      # 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7
+      #             |-----------------|
       instance.indent()
-      expect(value()).to.be.eql("AAAAABBBBBCCCCC\n    aaaaabbbbbccccc\n111112222233333")
+      caret = selection.caret()
+      expect(normalizedValue()).to.be.eql("    aaaa\n    bbbb\ncccc\n")
+      expect(caret).to.be.eql([6,15])
+      #  _ _ _ _ _ _ _ _ a a a a N _ _ _ _ _ _ _ _ b b b b N c c c c N
+      # 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6
+      #                     |-------------------------|
       instance.indent()
-      expect(value()).to.be.eql("AAAAABBBBBCCCCC\n        aaaaabbbbbccccc\n111112222233333")
-      textarea.rollback()
+      caret = selection.caret()
+      expect(normalizedValue()).to.be.eql("        aaaa\n        bbbb\ncccc\n")
+      expect(caret).to.be.eql([10,23])
 
-    it 'should insert 4 spaces before each selected line when selection is in multi lines', ->
-      selection.caret(5, 20)
+    it 'should insert appropriate number of spaces before each selected lines and move the caret to [0, 26]', ->
+      textarea.value = " aaaa\n  bbbb\n   cccc\n"
+      #  _ a a a a N _ _ b b b b N _ _ _ c c c c N
+      # 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+      # |---------------------------------------|
+      selection.caret(0, 20)
+      #  _ _ _ _ a a a a N _ _ _ _ b b b b N _ _ _ _ c c c c N
+      # 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7
+      # |---------------------------------------------------|
       instance.indent()
-      expect(value()).to.be.eql("    AAAAABBBBBCCCCC\n    aaaaabbbbbccccc\n111112222233333")
-      instance.indent()
-      expect(value()).to.be.eql("        AAAAABBBBBCCCCC\n        aaaaabbbbbccccc\n111112222233333")
-      textarea.rollback()
+      caret = selection.caret()
+      expect(normalizedValue()).to.be.eql("    aaaa\n    bbbb\n    cccc\n")
+      expect(caret).to.be.eql([0,26])
 
-      selection.caret(20, 35)
+    it 'should insert appropriate number of spaces before each lines contains selection and move the caret to [6, 24]', ->
+      textarea.value = " aaaa\n  bbbb\n   cccc\n"
+      #  _ a a a a N _ _ b b b b N _ _ _ c c c c N
+      # 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+      #       |-----------------------------|
+      selection.caret(3, 18)
+      #  _ _ _ _ a a a a N _ _ _ _ b b b b N _ _ _ _ c c c c N
+      # 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7
+      #             |-----------------------------------|
       instance.indent()
-      expect(value()).to.be.eql("AAAAABBBBBCCCCC\n    aaaaabbbbbccccc\n    111112222233333")
-      instance.indent()
-      expect(value()).to.be.eql("AAAAABBBBBCCCCC\n        aaaaabbbbbccccc\n        111112222233333")
-      textarea.rollback()
-
-      selection.caret(5, 35)
-      instance.indent()
-      expect(value()).to.be.eql("    AAAAABBBBBCCCCC\n    aaaaabbbbbccccc\n    111112222233333")
-      instance.indent()
-      expect(value()).to.be.eql("        AAAAABBBBBCCCCC\n        aaaaabbbbbccccc\n        111112222233333")
-
-    it 'should move the caret to the end point of the insertion', ->
-      selection.caret(0, 0)
-      instance.indent()
-      expect(selection.caret()).to.be.eql([4, 4])
-      instance.indent()
-      expect(selection.caret()).to.be.eql([8, 8])
-      textarea.rollback()
-
-      selection.caret(5, 5)
-      instance.indent()
-      #
-      # Note:
-      #   Caret start from 5 so only 3 spaces (indentLevel - 5 % 4 = 3) are
-      #   inserted before the caret.
-      #
-      #expect(selection.caret()).to.be.eql([9, 9])
-      expect(selection.caret()).to.be.eql([8, 8])
-      instance.indent()
-      #expect(selection.caret()).to.be.eql([13, 13])
-      expect(selection.caret()).to.be.eql([12, 12])
-      textarea.rollback()
-
-      selection.caret(15, 15)
-      instance.indent()
-      #
-      # Note:
-      #   Caret start from 15 so only 1 space (indentLevel - 15 % 4 = 3) is
-      #   inserted before the caret.
-      #
-      #expect(value()).to.be.eql("AAAAABBBBBCCCCC    \naaaaabbbbbccccc\n111112222233333")
-      expect(value()).to.be.eql("AAAAABBBBBCCCCC \naaaaabbbbbccccc\n111112222233333")
-      #expect(selection.caret()).to.be.eql([19, 19])
-      expect(selection.caret()).to.be.eql([16, 16])
-      instance.indent()
-      #expect(value()).to.be.eql("AAAAABBBBBCCCCC        \naaaaabbbbbccccc\n111112222233333")
-      expect(value()).to.be.eql("AAAAABBBBBCCCCC     \naaaaabbbbbccccc\n111112222233333")
-      #expect(selection.caret()).to.be.eql([23, 23])
-      expect(selection.caret()).to.be.eql([20, 20])
-      textarea.rollback()
-
-      selection.caret(16, 16)
-      instance.indent()
-      expect(selection.caret()).to.be.eql([20, 20])
-      instance.indent()
-      expect(selection.caret()).to.be.eql([24, 24])
-      textarea.rollback()
-
-
-    it 'should move the selection when selection is in multi lines', ->
-      selection.caret(5, 20)
-      instance.indent()
-      expect(selection.caret()).to.be.eql([0, 39])
-      instance.indent()
-      expect(selection.caret()).to.be.eql([0, 47])
-      textarea.rollback()
-
-      selection.caret(20, 35)
-      instance.indent()
-      expect(selection.caret()).to.be.eql([16, 55])
-      instance.indent()
-      expect(selection.caret()).to.be.eql([16, 63])
-
-      textarea.rollback()
-      selection.caret(5, 35)
-      instance.indent()
-      expect(selection.caret()).to.be.eql([0, 59])
-      instance.indent()
-      expect(selection.caret()).to.be.eql([0, 71])
-
+      caret = selection.caret()
+      expect(normalizedValue()).to.be.eql("    aaaa\n    bbbb\n    cccc\n")
+      expect(caret).to.be.eql([6,24])
 
   describe '#outdent() -> instance', ->
     it 'should return the instance', ->
@@ -245,155 +257,166 @@ describe 'Femto.utils.Indenty', ->
       expect(r).to.be.a(Indenty)
       expect(r).to.be.eql(instance)
 
-    it 'should not do anything when no tabString exists', ->
-      caret_set = [
-        [0, 0]
-        [5, 5]
-        [0, 5]
-        [5, 10]
-        [16, 21]
-      ]
-      for [s, e] in caret_set
-        selection.caret(s, e)
-        instance.outdent()
-        expect(value()).to.be.eql("AAAAABBBBBCCCCC\naaaaabbbbbccccc\n111112222233333")
-
-    it 'should remove tabString when the start point of the selection stands on the tabString and the selection is in single line', ->
-      textarea.value = "    AAAAABBBBBCCCCC"
-      selection.caret(2, 2)
-      instance.outdent()
-      expect(value()).to.be.eql("AAAAABBBBBCCCCC")
-
-      textarea.value = "    AAAAABBBBBCCCCC"
-      selection.caret(2, 8)
-      instance.outdent()
-      expect(value()).to.be.eql("AAAAABBBBBCCCCC")
-
-      textarea.value = "    AAAAABBBBBCCCCC\n    aaaaabbbbbccccc"
-      selection.caret(22, 22)
-      instance.outdent()
-      expect(value()).to.be.eql("    AAAAABBBBBCCCCC\naaaaabbbbbccccc")
-
-      textarea.value = "    AAAAABBBBBCCCCC\n    aaaaabbbbbccccc"
-      selection.caret(22, 28)
-      instance.outdent()
-      expect(value()).to.be.eql("    AAAAABBBBBCCCCC\naaaaabbbbbccccc")
-
-    it 'should remove only one tabString even there are two when the start point of the selection stands on the tabString and the selection is in single line', ->
-      textarea.value = "        AAAAABBBBBCCCCC"
-      selection.caret(2, 2)
-      instance.outdent()
-      expect(value()).to.be.eql("    AAAAABBBBBCCCCC")
-
-      textarea.value = "        AAAAABBBBBCCCCC"
-      selection.caret(2, 8)
-      instance.outdent()
-      expect(value()).to.be.eql("    AAAAABBBBBCCCCC")
-
-      textarea.value = "    AAAAABBBBBCCCCC\n        aaaaabbbbbccccc"
-      selection.caret(22, 22)
-      instance.outdent()
-      expect(value()).to.be.eql("    AAAAABBBBBCCCCC\n    aaaaabbbbbccccc")
-
-      textarea.value = "    AAAAABBBBBCCCCC\n        aaaaabbbbbccccc"
-      selection.caret(22, 28)
-      instance.outdent()
-      expect(value()).to.be.eql("    AAAAABBBBBCCCCC\n    aaaaabbbbbccccc")
-
-    it 'should remove tabString of the left hand side of the selection is in single line', ->
-      textarea.value = "    AAAAABBBBBCCCCC"
-      selection.caret(5, 5)
-      instance.outdent()
-      expect(value()).to.be.eql("AAAAABBBBBCCCCC")
-
-      textarea.value = "    AAAAABBBBBCCCCC"
+    it 'should remove 4 spaces before the caret [8, 8] and move the caret to [4, 4], [0, 0]', ->
+      textarea.value = "        aaaa\nbbbb\ncccc\n"
+      #  _ _ _ _ _ _ _ _ a a a a N b b b b N c c c c N
+      # 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5
+      #                 |
       selection.caret(8, 8)
+      #  _ _ _ _ a a a a N b b b b N c c c c N
+      # 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7
+      #         |
       instance.outdent()
-      expect(value()).to.be.eql("AAAAABBBBBCCCCC")
-
-      textarea.value = "    AAAAABBBBBCCCCC"
-      selection.caret(5, 8)
+      caret = selection.caret()
+      expect(normalizedValue()).to.be.eql("    aaaa\nbbbb\ncccc\n")
+      expect(caret).to.be.eql([4,4])
+      #  a a a a N b b b b N c c c c N
+      # 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7
+      # |
       instance.outdent()
-      expect(value()).to.be.eql("AAAAABBBBBCCCCC")
+      caret = selection.caret()
+      expect(normalizedValue()).to.be.eql("aaaa\nbbbb\ncccc\n")
+      expect(caret).to.be.eql([0,0])
 
-      textarea.value = "    AAAAABBBBBCCCCC\n    aaaaabbbbbccccc"
-      selection.caret(25, 25)
+    it 'should remove 2, 4 spaces before the caret [6, 6] and move the caret to [2, 2], [0, 0]', ->
+      textarea.value = "      aaaa\nbbbb\ncccc\n"
+      #  _ _ _ _ _ _ a a a a N b b b b N c c c c N
+      # 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5
+      #             |
+      selection.caret(6, 6)
+      #  _ _ _ _ a a a a N _ _ _ _ b b b b N c c c c N
+      # 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7
+      #         |
       instance.outdent()
-      expect(value()).to.be.eql("    AAAAABBBBBCCCCC\naaaaabbbbbccccc")
-
-      textarea.value = "    AAAAABBBBBCCCCC\n    aaaaabbbbbccccc"
-      selection.caret(25, 28)
+      caret = selection.caret()
+      expect(normalizedValue()).to.be.eql("    aaaa\nbbbb\ncccc\n")
+      expect(caret).to.be.eql([4,4])
+      #  a a a a N b b b b N c c c c N
+      # 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7
+      # |
       instance.outdent()
-      expect(value()).to.be.eql("    AAAAABBBBBCCCCC\naaaaabbbbbccccc")
+      caret = selection.caret()
+      expect(normalizedValue()).to.be.eql("aaaa\nbbbb\ncccc\n")
+      expect(caret).to.be.eql([0,0])
 
-    it 'should remove only one tabString of the left hand side of the selection even there are two and when the selection is in single line', ->
-      textarea.value = "        AAAAABBBBBCCCCC"
+    it 'should remove 4 spaces before the caret [8, 8] (before Newline) and move the caret to [4, 4]', ->
+      textarea.value = "aaaa    \nbbbb\ncccc\n"
+      #  a a a a _ _ _ _ N b b b b N c c c c N
+      # 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5
+      #                 |
+      selection.caret(8, 8)
+      #  a a a a N b b b b N c c c c N
+      # 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7
+      #         |
+      instance.outdent()
+      caret = selection.caret()
+      expect(normalizedValue()).to.be.eql("aaaa\nbbbb\ncccc\n")
+      expect(caret).to.be.eql([4,4])
+
+    it 'should remove 4 spaces before the caret [9, 9] (after Newline) and move the caret to [5, 5]', ->
+      textarea.value = "aaaa\n    bbbb\ncccc\n"
+      #  a a a a N _ _ _ _ b b b b N c c c c N
+      # 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5
+      #                   |
       selection.caret(9, 9)
+      #  a a a a N b b b b N c c c c N
+      # 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7
+      #           |
       instance.outdent()
-      expect(value()).to.be.eql("    AAAAABBBBBCCCCC")
+      caret = selection.caret()
+      expect(normalizedValue()).to.be.eql("aaaa\nbbbb\ncccc\n")
+      expect(caret).to.be.eql([5,5])
 
-      textarea.value = "        AAAAABBBBBCCCCC"
-      selection.caret(12, 12)
+    it 'should remove 4 spaces before the single line selection [8, 12] and move the caret to [4, 8], [0, 4]', ->
+      textarea.value = "        aaaa\nbbbb\ncccc\n"
+      #  _ _ _ _ _ _ _ _ a a a a N b b b b N c c c c N
+      # 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5
+      #                 |-------|
+      selection.caret(8, 12)
+      #  _ _ _ _ a a a a N b b b b N c c c c N
+      # 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7
+      #         |-------|
       instance.outdent()
-      expect(value()).to.be.eql("    AAAAABBBBBCCCCC")
+      caret = selection.caret()
+      expect(normalizedValue()).to.be.eql("    aaaa\nbbbb\ncccc\n")
+      expect(caret).to.be.eql([4,8])
+      #  a a a a N b b b b N c c c c N
+      # 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7
+      # |-------|
+      instance.outdent()
+      caret = selection.caret()
+      expect(normalizedValue()).to.be.eql("aaaa\nbbbb\ncccc\n")
+      expect(caret).to.be.eql([0,4])
 
-      textarea.value = "        AAAAABBBBBCCCCC"
-      selection.caret(9, 12)
+    it 'should remove 3, 4 spaces before the single line selection [5, 9] and move the caret to [1, 5], [0, 1]', ->
+      textarea.value = "        aaaa\nbbbb\ncccc\n"
+      #  _ _ _ _ _ _ _ _ a a a a N b b b b N c c c c N
+      # 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5
+      #           |-------|
+      selection.caret(5, 9)
+      #  _ _ _ _ a a a a N b b b b N c c c c N
+      # 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7
+      #   |-------|
       instance.outdent()
-      expect(value()).to.be.eql("    AAAAABBBBBCCCCC")
+      caret = selection.caret()
+      expect(normalizedValue()).to.be.eql("    aaaa\nbbbb\ncccc\n")
+      expect(caret).to.be.eql([1,5])
+      #  a a a a N b b b b N c c c c N
+      # 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7
+      # |-|
+      instance.outdent()
+      caret = selection.caret()
+      expect(normalizedValue()).to.be.eql("aaaa\nbbbb\ncccc\n")
+      expect(caret).to.be.eql([0,1])
 
-      textarea.value = "    AAAAABBBBBCCCCC\n        aaaaabbbbbccccc"
-      selection.caret(29, 29)
+    it 'should remove 4 spaces before each selected lines [0, 25] and move the caret to [0, 17], [0, 9]', ->
+      textarea.value = "        aaaa\n        bbbb\ncccc\n"
+      #  _ _ _ _ _ _ _ _ a a a a N _ _ _ _ _ _ _ _ b b b b N c c c c N
+      # 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6
+      # |-------------------------------------------------|
+      selection.caret(0, 25)
+      #  _ _ _ _ a a a a N _ _ _ _ b b b b N c c c c N
+      # 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6
+      # |---------------------------------|
       instance.outdent()
-      expect(value()).to.be.eql("    AAAAABBBBBCCCCC\n    aaaaabbbbbccccc")
+      caret = selection.caret()
+      expect(normalizedValue()).to.be.eql("    aaaa\n    bbbb\ncccc\n")
+      expect(caret).to.be.eql([0,17])
+      #  a a a a N b b b b N c c c c N
+      # 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6
+      # |-----------------|
+      instance.outdent()
+      caret = selection.caret()
+      expect(normalizedValue()).to.be.eql("aaaa\nbbbb\ncccc\n")
+      expect(caret).to.be.eql([0,9])
 
-      textarea.value = "    AAAAABBBBBCCCCC\n        aaaaabbbbbccccc"
-      selection.caret(29, 32)
+    it 'should remove 2, 4 spaces before each lines contains [0, 29] and move the caret to [0, 25], [0, 17], [0, 9]', ->
+      textarea.value = "          aaaa\n          bbbb\ncccc\n"
+      #  _ _ _ _ _ _ _ _ _ _ a a a a N _ _ _ _ _ _ _ _ _ _ b b b b N c c c c N
+      # 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0
+      # |---------------------------------------------------------|
+      selection.caret(0, 29)
+      #  _ _ _ _ _ _ _ _ a a a a N _ _ _ _ _ _ _ _ b b b b N c c c c N
+      # 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6
+      # |-------------------------------------------------|
       instance.outdent()
-      expect(value()).to.be.eql("    AAAAABBBBBCCCCC\n    aaaaabbbbbccccc")
-
-    it 'should remove tabString of the left and side of the each lines when the selection is in multi line', ->
-      textarea.value = "    AAAAABBBBBCCCCC\n    aaaaabbbbbccccc\n    111112222233333"
-      selection.caret(10, 30)
+      caret = selection.caret()
+      expect(normalizedValue()).to.be.eql("        aaaa\n        bbbb\ncccc\n")
+      expect(caret).to.be.eql([0,25])
+      #  _ _ _ _ a a a a N _ _ _ _ b b b b N c c c c N
+      # 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6
+      # |---------------------------------|
       instance.outdent()
-      expect(value()).to.be.eql("AAAAABBBBBCCCCC\naaaaabbbbbccccc\n    111112222233333")
-
-      textarea.value = "    AAAAABBBBBCCCCC\n    aaaaabbbbbccccc\n    111112222233333"
-      selection.caret(30, 50)
+      caret = selection.caret()
+      expect(normalizedValue()).to.be.eql("    aaaa\n    bbbb\ncccc\n")
+      expect(caret).to.be.eql([0,17])
+      #  a a a a N b b b b N c c c c N
+      # 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6
+      # |-----------------|
       instance.outdent()
-      expect(value()).to.be.eql("    AAAAABBBBBCCCCC\naaaaabbbbbccccc\n111112222233333")
-
-    it 'should move the caret to the removed point when the selection is in single line', ->
-      textarea.value = "    AAAAABBBBBCCCCC"
-      selection.caret(2, 2)
-      instance.outdent()
-      expect(selection.caret()).to.be.eql([0, 0])
-
-      textarea.value = "    AAAAABBBBBCCCCC"
-      selection.caret(2, 8)
-      instance.outdent()
-      expect(selection.caret()).to.be.eql([0, 0])
-
-      textarea.value = "    AAAAABBBBBCCCCC\n    aaaaabbbbbccccc"
-      selection.caret(22, 22)
-      instance.outdent()
-      expect(selection.caret()).to.be.eql([20, 20])
-
-      textarea.value = "    AAAAABBBBBCCCCC\n    aaaaabbbbbccccc"
-      selection.caret(22, 28)
-      instance.outdent()
-      expect(selection.caret()).to.be.eql([20, 20])
-
-    it 'should move the line selection after outdent when the selection is in multi line', ->
-      textarea.value = "    AAAAABBBBBCCCCC\n    aaaaabbbbbccccc\n    111112222233333"
-      selection.caret(10, 30)
-      instance.outdent()
-      expect(selection.caret()).to.be.eql([0,31])
-
-      textarea.value = "    AAAAABBBBBCCCCC\n    aaaaabbbbbccccc\n    111112222233333"
-      selection.caret(30, 50)
-      instance.outdent()
-      expect(selection.caret()).to.be.eql([20,51])
+      caret = selection.caret()
+      expect(normalizedValue()).to.be.eql("aaaa\nbbbb\ncccc\n")
+      expect(caret).to.be.eql([0,9])
 
   describe '!KeyDown event', ->
     it 'should call `indent()` when user hit TAB', ->

@@ -39,29 +39,44 @@ class Indenty
   @return [Indenty] the instance
   ###
   indent: ->
+    collapsed = @_selection.isCollapsed()
     selected = @_selection.text()
-    if selected.indexOf("\n") isnt -1
+    [cs, ce] = @_selection.caret()
+    [ls, le] = @_selection.lineCaret()
+    if not collapsed and selected.indexOf("\n") isnt -1
       # multiline mode
-      if @expandTab
-        tabString = makeTabString(@indentLevel)
-      else
-        tabString = "\t"
-      selected = @_selection.lineText()
-      modified = (tabString + l for l in selected.split("\n"))
-      @_selection.lineText(modified.join("\n"), true)
+      indentSingleLine = (lineText) =>
+        if @expandTab
+          leadingSpaces = lineText.length - lineText.replace(/^\s*/, '').length
+          diff = leadingSpaces % @indentLevel
+          tabString = makeTabString(@indentLevel - diff)
+        else
+          tabString = "\t"
+        return tabString + lineText
+      selected = @_selection.lineText().split("\n")
+      modified = (indentSingleLine(l) for l in selected)
+      @_selection.lineText(modified.join("\n"), false)
+      # regulate the selection
+      offset_s = modified[0].length - selected[0].length
+      offset_e = modified.join("").length - selected.join("").length
+      if ls isnt cs
+        # include tabString if the selection starts from the start character
+        # of the line
+        cs += offset_s
+      @_selection.caret(cs, ce + offset_e)
     else
       # singleline mode
-      keepSelection = not @_selection.isCollapsed()
       if @expandTab
         # get current indent level
-        [cs] = @_selection.caret()
-        [ls] = @_selection.lineCaret()
         rels = cs - ls
         diff = rels % @indentLevel
         tabString = makeTabString(@indentLevel - diff)
       else
         tabString = "\t"
-      @_selection.text(tabString+selected, keepSelection)
+      tabLength = tabString.length
+      @_selection.text(tabString+selected, false)
+      # regulate the selection
+      @_selection.caret(cs + tabLength, ce + tabLength)
     return @
 
   ###
@@ -73,31 +88,53 @@ class Indenty
   @return [Indenty] the instance
   ###
   outdent: ->
-    if @expandTab
-      tabString = makeTabString(@indentLevel)
-    else
-      tabString = "\t"
-    pattern = new RegExp("^#{tabString}")
+    collapsed = @_selection.isCollapsed()
     selected = @_selection.text()
-    if selected.indexOf("\n") isnt -1
+    lineText = @_selection.lineText()
+    [cs, ce] = @_selection.caret()
+    [ls, le] = @_selection.lineCaret()
+    if not collapsed and selected.indexOf("\n") isnt -1
       # multiline mode
-      selected = @_selection.lineText()
-      modified = (l.replace(pattern, "") for l in selected.split("\n"))
-      @_selection.lineText(modified.join("\n"), true)
+      outdentSingleLine = (lineText) =>
+        if @expandTab
+          leadingSpaces = lineText.length - lineText.replace(/^\s*/, '').length
+          diff = leadingSpaces % @indentLevel
+          tabString = makeTabString(@indentLevel - diff)
+        else
+          tabString = "\t"
+        return lineText.replace(new RegExp("^#{tabString}"), "")
+      selected = @_selection.lineText().split("\n")
+      modified = (outdentSingleLine(l) for l in selected)
+      @_selection.lineText(modified.join("\n"), false)
+      # regulate the selection
+      offset_s = selected[0].length - modified[0].length
+      offset_e = selected.join("").length - modified.join("").length
+      if ls isnt cs
+        # include tabString if the selection starts from the start character
+        # of the line
+        cs -= offset_s
+      @_selection.caret(cs, ce - offset_e)
     else
-      [cs] = @_selection.caret()
-      [ls] = @_selection.lineCaret()
-      line = @_selection.lineText()
-      index = line.lastIndexOf(tabString, cs-ls)
+      if @expandTab
+        # get the number of leading spaces in selection
+        leadingSpaces = selected.length - selected.replace(/^\s*/, '').length
+        # get current indent level (use the number of leading spaces as offset)
+        rels = cs - ls + leadingSpaces
+        diff = rels % @indentLevel
+        tabString = makeTabString(@indentLevel - diff)
+      else
+        tabString = "\t"
+      tabLength = tabString.length
+      index = lineText.lastIndexOf(tabString, cs-ls)
       # do nothing if no tabString is found
       return @ if index is -1
       # remove tabString from the line
-      b = line.substring 0, index
-      a = line.substring index+tabString.length
+      b = lineText.substring 0, index
+      a = lineText.substring index+tabString.length
       # replace the line
       @_selection.lineText(b+a, false)
       # move caret to the removed point
-      @_selection.caret(ls+index, ls+index)
+      @_selection.caret(cs-tabLength, ce-tabLength)
     return @
 
   # @private

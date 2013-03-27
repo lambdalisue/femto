@@ -1475,38 +1475,52 @@ Cross-browser textarea selection class
 
 
     Indenty.prototype.indent = function() {
-      var cs, diff, keepSelection, l, ls, modified, rels, selected, tabString;
+      var ce, collapsed, cs, diff, indentSingleLine, l, le, ls, modified, offset_e, offset_s, rels, selected, tabLength, tabString, _ref, _ref1,
+        _this = this;
+      collapsed = this._selection.isCollapsed();
       selected = this._selection.text();
-      if (selected.indexOf("\n") !== -1) {
-        if (this.expandTab) {
-          tabString = makeTabString(this.indentLevel);
-        } else {
-          tabString = "\t";
-        }
-        selected = this._selection.lineText();
+      _ref = this._selection.caret(), cs = _ref[0], ce = _ref[1];
+      _ref1 = this._selection.lineCaret(), ls = _ref1[0], le = _ref1[1];
+      if (!collapsed && selected.indexOf("\n") !== -1) {
+        indentSingleLine = function(lineText) {
+          var diff, leadingSpaces, tabString;
+          if (_this.expandTab) {
+            leadingSpaces = lineText.length - lineText.replace(/^\s*/, '').length;
+            diff = leadingSpaces % _this.indentLevel;
+            tabString = makeTabString(_this.indentLevel - diff);
+          } else {
+            tabString = "\t";
+          }
+          return tabString + lineText;
+        };
+        selected = this._selection.lineText().split("\n");
         modified = (function() {
-          var _i, _len, _ref, _results;
-          _ref = selected.split("\n");
+          var _i, _len, _results;
           _results = [];
-          for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-            l = _ref[_i];
-            _results.push(tabString + l);
+          for (_i = 0, _len = selected.length; _i < _len; _i++) {
+            l = selected[_i];
+            _results.push(indentSingleLine(l));
           }
           return _results;
         })();
-        this._selection.lineText(modified.join("\n"), true);
+        this._selection.lineText(modified.join("\n"), false);
+        offset_s = modified[0].length - selected[0].length;
+        offset_e = modified.join("").length - selected.join("").length;
+        if (ls !== cs) {
+          cs += offset_s;
+        }
+        this._selection.caret(cs, ce + offset_e);
       } else {
-        keepSelection = !this._selection.isCollapsed();
         if (this.expandTab) {
-          cs = this._selection.caret()[0];
-          ls = this._selection.lineCaret()[0];
           rels = cs - ls;
           diff = rels % this.indentLevel;
           tabString = makeTabString(this.indentLevel - diff);
         } else {
           tabString = "\t";
         }
-        this._selection.text(tabString + selected, keepSelection);
+        tabLength = tabString.length;
+        this._selection.text(tabString + selected, false);
+        this._selection.caret(cs + tabLength, ce + tabLength);
       }
       return this;
     };
@@ -1522,39 +1536,60 @@ Cross-browser textarea selection class
 
 
     Indenty.prototype.outdent = function() {
-      var a, b, cs, index, l, line, ls, modified, pattern, selected, tabString;
-      if (this.expandTab) {
-        tabString = makeTabString(this.indentLevel);
-      } else {
-        tabString = "\t";
-      }
-      pattern = new RegExp("^" + tabString);
+      var a, b, ce, collapsed, cs, diff, index, l, le, leadingSpaces, lineText, ls, modified, offset_e, offset_s, outdentSingleLine, rels, selected, tabLength, tabString, _ref, _ref1,
+        _this = this;
+      collapsed = this._selection.isCollapsed();
       selected = this._selection.text();
-      if (selected.indexOf("\n") !== -1) {
-        selected = this._selection.lineText();
+      lineText = this._selection.lineText();
+      _ref = this._selection.caret(), cs = _ref[0], ce = _ref[1];
+      _ref1 = this._selection.lineCaret(), ls = _ref1[0], le = _ref1[1];
+      if (!collapsed && selected.indexOf("\n") !== -1) {
+        outdentSingleLine = function(lineText) {
+          var diff, leadingSpaces, tabString;
+          if (_this.expandTab) {
+            leadingSpaces = lineText.length - lineText.replace(/^\s*/, '').length;
+            diff = leadingSpaces % _this.indentLevel;
+            tabString = makeTabString(_this.indentLevel - diff);
+          } else {
+            tabString = "\t";
+          }
+          return lineText.replace(new RegExp("^" + tabString), "");
+        };
+        selected = this._selection.lineText().split("\n");
         modified = (function() {
-          var _i, _len, _ref, _results;
-          _ref = selected.split("\n");
+          var _i, _len, _results;
           _results = [];
-          for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-            l = _ref[_i];
-            _results.push(l.replace(pattern, ""));
+          for (_i = 0, _len = selected.length; _i < _len; _i++) {
+            l = selected[_i];
+            _results.push(outdentSingleLine(l));
           }
           return _results;
         })();
-        this._selection.lineText(modified.join("\n"), true);
+        this._selection.lineText(modified.join("\n"), false);
+        offset_s = selected[0].length - modified[0].length;
+        offset_e = selected.join("").length - modified.join("").length;
+        if (ls !== cs) {
+          cs -= offset_s;
+        }
+        this._selection.caret(cs, ce - offset_e);
       } else {
-        cs = this._selection.caret()[0];
-        ls = this._selection.lineCaret()[0];
-        line = this._selection.lineText();
-        index = line.lastIndexOf(tabString, cs - ls);
+        if (this.expandTab) {
+          leadingSpaces = selected.length - selected.replace(/^\s*/, '').length;
+          rels = cs - ls + leadingSpaces;
+          diff = rels % this.indentLevel;
+          tabString = makeTabString(this.indentLevel - diff);
+        } else {
+          tabString = "\t";
+        }
+        tabLength = tabString.length;
+        index = lineText.lastIndexOf(tabString, cs - ls);
         if (index === -1) {
           return this;
         }
-        b = line.substring(0, index);
-        a = line.substring(index + tabString.length);
+        b = lineText.substring(0, index);
+        a = lineText.substring(index + tabString.length);
         this._selection.lineText(b + a, false);
-        this._selection.caret(ls + index, ls + index);
+        this._selection.caret(cs - tabLength, ce - tabLength);
       }
       return this;
     };
@@ -2790,19 +2825,20 @@ Cross-browser textarea selection class
   });
 
   describe('Femto.utils.Indenty', function() {
-    var Selection, expected_methods, expected_private_methods, expected_private_properties, expected_properties, instance, method, name, selection, textarea, value, _fn, _fn1, _fn2, _fn3, _i, _j, _k, _l, _len, _len1, _len2, _len3, _ref, _ref1;
+    var Selection, expected_methods, expected_private_methods, expected_private_properties, expected_properties, instance, isIE, method, name, normalizedValue, rollback, selection, textarea, value, _fn, _fn1, _fn2, _fn3, _i, _j, _k, _l, _len, _len1, _len2, _len3, _ref, _ref1;
     textarea = instance = selection = value = null;
     Indenty = Femto.utils.Indenty;
     Selection = Femto.utils.Selection;
+    isIE = document.selection != null;
+    normalizedValue = function() {
+      return textarea.value.replace(/\r\n/g, '\n');
+    };
+    rollback = function() {
+      return textarea.value = 'aaaa\nbbbb\ncccc\n';
+    };
     before(function() {
       textarea = document.createElement('textarea');
-      textarea.rollback = function() {
-        return this.value = 'AAAAABBBBBCCCCC\naaaaabbbbbccccc\n111112222233333';
-      };
-      textarea.rollback();
-      value = function() {
-        return textarea.value.replace(/\r\n/g, "\n");
-      };
+      rollback();
       instance = new Indenty(jQuery(textarea), true, 4);
       selection = instance._selection;
       document.body.appendChild(textarea);
@@ -2812,7 +2848,7 @@ Cross-browser textarea selection class
       return document.body.removeChild(textarea);
     });
     afterEach(function() {
-      return textarea.rollback();
+      return rollback();
     });
     expected_private_properties = [['_selection', Selection]];
     _fn = function(name, type) {
@@ -2867,117 +2903,111 @@ Cross-browser textarea selection class
         expect(r).to.be.a(Indenty);
         return expect(r).to.be.eql(instance);
       });
-      it('should insert appropriate number of spaces before the caret', function() {
+      it('should insert 4 spaces before the caret [0, 0] and move the caret to [4, 4], [8, 8]', function() {
+        var caret;
         selection.caret(0, 0);
         instance.indent();
-        expect(value()).to.be.eql("    AAAAABBBBBCCCCC\naaaaabbbbbccccc\n111112222233333");
+        caret = selection.caret();
+        expect(normalizedValue()).to.be.eql("    aaaa\nbbbb\ncccc\n");
+        expect(caret).to.be.eql([4, 4]);
         instance.indent();
-        expect(value()).to.be.eql("        AAAAABBBBBCCCCC\naaaaabbbbbccccc\n111112222233333");
-        textarea.rollback();
+        caret = selection.caret();
+        expect(normalizedValue()).to.be.eql("        aaaa\nbbbb\ncccc\n");
+        return expect(caret).to.be.eql([8, 8]);
+      });
+      it('should insert 2, 4 spaces before the caret [2, 2] and move the caret to [4, 4], [8, 8]', function() {
+        var caret;
+        selection.caret(2, 2);
+        instance.indent();
+        caret = selection.caret();
+        expect(normalizedValue()).to.be.eql("aa  aa\nbbbb\ncccc\n");
+        expect(caret).to.be.eql([4, 4]);
+        instance.indent();
+        caret = selection.caret();
+        expect(normalizedValue()).to.be.eql("aa      aa\nbbbb\ncccc\n");
+        return expect(caret).to.be.eql([8, 8]);
+      });
+      it('should insert 4 spaces before the caret [4, 4] (before Newline) and move the caret to [8, 8]', function() {
+        var caret;
+        selection.caret(4, 4);
+        instance.indent();
+        caret = selection.caret();
+        expect(normalizedValue()).to.be.eql("aaaa    \nbbbb\ncccc\n");
+        return expect(caret).to.be.eql([8, 8]);
+      });
+      it('should insert 4 spaces before the caret [5, 5] (after Newline) and move the caret to [9, 9]', function() {
+        var caret;
         selection.caret(5, 5);
         instance.indent();
-        expect(value()).to.be.eql("AAAAA   BBBBBCCCCC\naaaaabbbbbccccc\n111112222233333");
-        instance.indent();
-        expect(value()).to.be.eql("AAAAA       BBBBBCCCCC\naaaaabbbbbccccc\n111112222233333");
-        textarea.rollback();
-        selection.caret(15, 15);
-        instance.indent();
-        expect(value()).to.be.eql("AAAAABBBBBCCCCC \naaaaabbbbbccccc\n111112222233333");
-        instance.indent();
-        expect(value()).to.be.eql("AAAAABBBBBCCCCC     \naaaaabbbbbccccc\n111112222233333");
-        textarea.rollback();
-        selection.caret(16, 16);
-        instance.indent();
-        expect(value()).to.be.eql("AAAAABBBBBCCCCC\n    aaaaabbbbbccccc\n111112222233333");
-        instance.indent();
-        expect(value()).to.be.eql("AAAAABBBBBCCCCC\n        aaaaabbbbbccccc\n111112222233333");
-        return textarea.rollback();
+        caret = selection.caret();
+        expect(normalizedValue()).to.be.eql("aaaa\n    bbbb\ncccc\n");
+        return expect(caret).to.be.eql([9, 9]);
       });
-      it('should insert appropriate number of spaces before the selection when selection is in single line', function() {
-        selection.caret(0, 5);
+      it('should insert 4 spaces before the single line selection [0, 4] and move the caret to [4, 8], [8, 12]', function() {
+        var caret;
+        selection.caret(0, 4);
         instance.indent();
-        expect(value()).to.be.eql("    AAAAABBBBBCCCCC\naaaaabbbbbccccc\n111112222233333");
+        caret = selection.caret();
+        expect(normalizedValue()).to.be.eql("    aaaa\nbbbb\ncccc\n");
+        expect(caret).to.be.eql([4, 8]);
         instance.indent();
-        expect(value()).to.be.eql("        AAAAABBBBBCCCCC\naaaaabbbbbccccc\n111112222233333");
-        textarea.rollback();
-        selection.caret(5, 10);
-        instance.indent();
-        expect(value()).to.be.eql("AAAAA   BBBBBCCCCC\naaaaabbbbbccccc\n111112222233333");
-        instance.indent();
-        expect(value()).to.be.eql("AAAAA      BBBBBCCCCC\naaaaabbbbbccccc\n111112222233333");
-        textarea.rollback();
-        selection.caret(16, 21);
-        instance.indent();
-        expect(value()).to.be.eql("AAAAABBBBBCCCCC\n    aaaaabbbbbccccc\n111112222233333");
-        instance.indent();
-        expect(value()).to.be.eql("AAAAABBBBBCCCCC\n        aaaaabbbbbccccc\n111112222233333");
-        return textarea.rollback();
+        caret = selection.caret();
+        expect(normalizedValue()).to.be.eql("        aaaa\nbbbb\ncccc\n");
+        return expect(caret).to.be.eql([8, 12]);
       });
-      it('should insert 4 spaces before each selected line when selection is in multi lines', function() {
-        selection.caret(5, 20);
+      it('should insert 3, 4 spaces before the selection within a single line [1, 3] and move the caret to [4, 6], [8, 10]', function() {
+        var caret;
+        selection.caret(1, 3);
         instance.indent();
-        expect(value()).to.be.eql("    AAAAABBBBBCCCCC\n    aaaaabbbbbccccc\n111112222233333");
+        caret = selection.caret();
+        expect(normalizedValue()).to.be.eql("a   aaa\nbbbb\ncccc\n");
+        expect(caret).to.be.eql([4, 6]);
         instance.indent();
-        expect(value()).to.be.eql("        AAAAABBBBBCCCCC\n        aaaaabbbbbccccc\n111112222233333");
-        textarea.rollback();
-        selection.caret(20, 35);
-        instance.indent();
-        expect(value()).to.be.eql("AAAAABBBBBCCCCC\n    aaaaabbbbbccccc\n    111112222233333");
-        instance.indent();
-        expect(value()).to.be.eql("AAAAABBBBBCCCCC\n        aaaaabbbbbccccc\n        111112222233333");
-        textarea.rollback();
-        selection.caret(5, 35);
-        instance.indent();
-        expect(value()).to.be.eql("    AAAAABBBBBCCCCC\n    aaaaabbbbbccccc\n    111112222233333");
-        instance.indent();
-        return expect(value()).to.be.eql("        AAAAABBBBBCCCCC\n        aaaaabbbbbccccc\n        111112222233333");
+        caret = selection.caret();
+        expect(normalizedValue()).to.be.eql("a       aaa\nbbbb\ncccc\n");
+        return expect(caret).to.be.eql([8, 10]);
       });
-      it('should move the caret to the end point of the insertion', function() {
-        selection.caret(0, 0);
+      it('should insert 4 spaces before each selected lines [0, 9] and move the caret to [0, 17], [0, 25]', function() {
+        var caret;
+        selection.caret(0, 9);
         instance.indent();
-        expect(selection.caret()).to.be.eql([4, 4]);
+        caret = selection.caret();
+        expect(normalizedValue()).to.be.eql("    aaaa\n    bbbb\ncccc\n");
+        expect(caret).to.be.eql([0, 17]);
         instance.indent();
-        expect(selection.caret()).to.be.eql([8, 8]);
-        textarea.rollback();
-        selection.caret(5, 5);
-        instance.indent();
-        expect(selection.caret()).to.be.eql([8, 8]);
-        instance.indent();
-        expect(selection.caret()).to.be.eql([12, 12]);
-        textarea.rollback();
-        selection.caret(15, 15);
-        instance.indent();
-        expect(value()).to.be.eql("AAAAABBBBBCCCCC \naaaaabbbbbccccc\n111112222233333");
-        expect(selection.caret()).to.be.eql([16, 16]);
-        instance.indent();
-        expect(value()).to.be.eql("AAAAABBBBBCCCCC     \naaaaabbbbbccccc\n111112222233333");
-        expect(selection.caret()).to.be.eql([20, 20]);
-        textarea.rollback();
-        selection.caret(16, 16);
-        instance.indent();
-        expect(selection.caret()).to.be.eql([20, 20]);
-        instance.indent();
-        expect(selection.caret()).to.be.eql([24, 24]);
-        return textarea.rollback();
+        caret = selection.caret();
+        expect(normalizedValue()).to.be.eql("        aaaa\n        bbbb\ncccc\n");
+        return expect(caret).to.be.eql([0, 25]);
       });
-      return it('should move the selection when selection is in multi lines', function() {
-        selection.caret(5, 20);
+      it('should insert 4 spaces before each lines contains the selection [2, 7] and move the caret to [6, 15], [10, 23]', function() {
+        var caret;
+        selection.caret(2, 7);
         instance.indent();
-        expect(selection.caret()).to.be.eql([0, 39]);
+        caret = selection.caret();
+        expect(normalizedValue()).to.be.eql("    aaaa\n    bbbb\ncccc\n");
+        expect(caret).to.be.eql([6, 15]);
         instance.indent();
-        expect(selection.caret()).to.be.eql([0, 47]);
-        textarea.rollback();
-        selection.caret(20, 35);
+        caret = selection.caret();
+        expect(normalizedValue()).to.be.eql("        aaaa\n        bbbb\ncccc\n");
+        return expect(caret).to.be.eql([10, 23]);
+      });
+      it('should insert appropriate number of spaces before each selected lines and move the caret to [0, 26]', function() {
+        var caret;
+        textarea.value = " aaaa\n  bbbb\n   cccc\n";
+        selection.caret(0, 20);
         instance.indent();
-        expect(selection.caret()).to.be.eql([16, 55]);
+        caret = selection.caret();
+        expect(normalizedValue()).to.be.eql("    aaaa\n    bbbb\n    cccc\n");
+        return expect(caret).to.be.eql([0, 26]);
+      });
+      return it('should insert appropriate number of spaces before each lines contains selection and move the caret to [6, 24]', function() {
+        var caret;
+        textarea.value = " aaaa\n  bbbb\n   cccc\n";
+        selection.caret(3, 18);
         instance.indent();
-        expect(selection.caret()).to.be.eql([16, 63]);
-        textarea.rollback();
-        selection.caret(5, 35);
-        instance.indent();
-        expect(selection.caret()).to.be.eql([0, 59]);
-        instance.indent();
-        return expect(selection.caret()).to.be.eql([0, 71]);
+        caret = selection.caret();
+        expect(normalizedValue()).to.be.eql("    aaaa\n    bbbb\n    cccc\n");
+        return expect(caret).to.be.eql([6, 24]);
       });
     });
     describe('#outdent() -> instance', function() {
@@ -2987,135 +3017,105 @@ Cross-browser textarea selection class
         expect(r).to.be.a(Indenty);
         return expect(r).to.be.eql(instance);
       });
-      it('should not do anything when no tabString exists', function() {
-        var caret_set, e, s, _len4, _m, _ref2, _results;
-        caret_set = [[0, 0], [5, 5], [0, 5], [5, 10], [16, 21]];
-        _results = [];
-        for (_m = 0, _len4 = caret_set.length; _m < _len4; _m++) {
-          _ref2 = caret_set[_m], s = _ref2[0], e = _ref2[1];
-          selection.caret(s, e);
-          instance.outdent();
-          _results.push(expect(value()).to.be.eql("AAAAABBBBBCCCCC\naaaaabbbbbccccc\n111112222233333"));
-        }
-        return _results;
-      });
-      it('should remove tabString when the start point of the selection stands on the tabString and the selection is in single line', function() {
-        textarea.value = "    AAAAABBBBBCCCCC";
-        selection.caret(2, 2);
-        instance.outdent();
-        expect(value()).to.be.eql("AAAAABBBBBCCCCC");
-        textarea.value = "    AAAAABBBBBCCCCC";
-        selection.caret(2, 8);
-        instance.outdent();
-        expect(value()).to.be.eql("AAAAABBBBBCCCCC");
-        textarea.value = "    AAAAABBBBBCCCCC\n    aaaaabbbbbccccc";
-        selection.caret(22, 22);
-        instance.outdent();
-        expect(value()).to.be.eql("    AAAAABBBBBCCCCC\naaaaabbbbbccccc");
-        textarea.value = "    AAAAABBBBBCCCCC\n    aaaaabbbbbccccc";
-        selection.caret(22, 28);
-        instance.outdent();
-        return expect(value()).to.be.eql("    AAAAABBBBBCCCCC\naaaaabbbbbccccc");
-      });
-      it('should remove only one tabString even there are two when the start point of the selection stands on the tabString and the selection is in single line', function() {
-        textarea.value = "        AAAAABBBBBCCCCC";
-        selection.caret(2, 2);
-        instance.outdent();
-        expect(value()).to.be.eql("    AAAAABBBBBCCCCC");
-        textarea.value = "        AAAAABBBBBCCCCC";
-        selection.caret(2, 8);
-        instance.outdent();
-        expect(value()).to.be.eql("    AAAAABBBBBCCCCC");
-        textarea.value = "    AAAAABBBBBCCCCC\n        aaaaabbbbbccccc";
-        selection.caret(22, 22);
-        instance.outdent();
-        expect(value()).to.be.eql("    AAAAABBBBBCCCCC\n    aaaaabbbbbccccc");
-        textarea.value = "    AAAAABBBBBCCCCC\n        aaaaabbbbbccccc";
-        selection.caret(22, 28);
-        instance.outdent();
-        return expect(value()).to.be.eql("    AAAAABBBBBCCCCC\n    aaaaabbbbbccccc");
-      });
-      it('should remove tabString of the left hand side of the selection is in single line', function() {
-        textarea.value = "    AAAAABBBBBCCCCC";
-        selection.caret(5, 5);
-        instance.outdent();
-        expect(value()).to.be.eql("AAAAABBBBBCCCCC");
-        textarea.value = "    AAAAABBBBBCCCCC";
+      it('should remove 4 spaces before the caret [8, 8] and move the caret to [4, 4], [0, 0]', function() {
+        var caret;
+        textarea.value = "        aaaa\nbbbb\ncccc\n";
         selection.caret(8, 8);
         instance.outdent();
-        expect(value()).to.be.eql("AAAAABBBBBCCCCC");
-        textarea.value = "    AAAAABBBBBCCCCC";
-        selection.caret(5, 8);
+        caret = selection.caret();
+        expect(normalizedValue()).to.be.eql("    aaaa\nbbbb\ncccc\n");
+        expect(caret).to.be.eql([4, 4]);
         instance.outdent();
-        expect(value()).to.be.eql("AAAAABBBBBCCCCC");
-        textarea.value = "    AAAAABBBBBCCCCC\n    aaaaabbbbbccccc";
-        selection.caret(25, 25);
-        instance.outdent();
-        expect(value()).to.be.eql("    AAAAABBBBBCCCCC\naaaaabbbbbccccc");
-        textarea.value = "    AAAAABBBBBCCCCC\n    aaaaabbbbbccccc";
-        selection.caret(25, 28);
-        instance.outdent();
-        return expect(value()).to.be.eql("    AAAAABBBBBCCCCC\naaaaabbbbbccccc");
+        caret = selection.caret();
+        expect(normalizedValue()).to.be.eql("aaaa\nbbbb\ncccc\n");
+        return expect(caret).to.be.eql([0, 0]);
       });
-      it('should remove only one tabString of the left hand side of the selection even there are two and when the selection is in single line', function() {
-        textarea.value = "        AAAAABBBBBCCCCC";
+      it('should remove 2, 4 spaces before the caret [6, 6] and move the caret to [2, 2], [0, 0]', function() {
+        var caret;
+        textarea.value = "      aaaa\nbbbb\ncccc\n";
+        selection.caret(6, 6);
+        instance.outdent();
+        caret = selection.caret();
+        expect(normalizedValue()).to.be.eql("    aaaa\nbbbb\ncccc\n");
+        expect(caret).to.be.eql([4, 4]);
+        instance.outdent();
+        caret = selection.caret();
+        expect(normalizedValue()).to.be.eql("aaaa\nbbbb\ncccc\n");
+        return expect(caret).to.be.eql([0, 0]);
+      });
+      it('should remove 4 spaces before the caret [8, 8] (before Newline) and move the caret to [4, 4]', function() {
+        var caret;
+        textarea.value = "aaaa    \nbbbb\ncccc\n";
+        selection.caret(8, 8);
+        instance.outdent();
+        caret = selection.caret();
+        expect(normalizedValue()).to.be.eql("aaaa\nbbbb\ncccc\n");
+        return expect(caret).to.be.eql([4, 4]);
+      });
+      it('should remove 4 spaces before the caret [9, 9] (after Newline) and move the caret to [5, 5]', function() {
+        var caret;
+        textarea.value = "aaaa\n    bbbb\ncccc\n";
         selection.caret(9, 9);
         instance.outdent();
-        expect(value()).to.be.eql("    AAAAABBBBBCCCCC");
-        textarea.value = "        AAAAABBBBBCCCCC";
-        selection.caret(12, 12);
-        instance.outdent();
-        expect(value()).to.be.eql("    AAAAABBBBBCCCCC");
-        textarea.value = "        AAAAABBBBBCCCCC";
-        selection.caret(9, 12);
-        instance.outdent();
-        expect(value()).to.be.eql("    AAAAABBBBBCCCCC");
-        textarea.value = "    AAAAABBBBBCCCCC\n        aaaaabbbbbccccc";
-        selection.caret(29, 29);
-        instance.outdent();
-        expect(value()).to.be.eql("    AAAAABBBBBCCCCC\n    aaaaabbbbbccccc");
-        textarea.value = "    AAAAABBBBBCCCCC\n        aaaaabbbbbccccc";
-        selection.caret(29, 32);
-        instance.outdent();
-        return expect(value()).to.be.eql("    AAAAABBBBBCCCCC\n    aaaaabbbbbccccc");
+        caret = selection.caret();
+        expect(normalizedValue()).to.be.eql("aaaa\nbbbb\ncccc\n");
+        return expect(caret).to.be.eql([5, 5]);
       });
-      it('should remove tabString of the left and side of the each lines when the selection is in multi line', function() {
-        textarea.value = "    AAAAABBBBBCCCCC\n    aaaaabbbbbccccc\n    111112222233333";
-        selection.caret(10, 30);
+      it('should remove 4 spaces before the single line selection [8, 12] and move the caret to [4, 8], [0, 4]', function() {
+        var caret;
+        textarea.value = "        aaaa\nbbbb\ncccc\n";
+        selection.caret(8, 12);
         instance.outdent();
-        expect(value()).to.be.eql("AAAAABBBBBCCCCC\naaaaabbbbbccccc\n    111112222233333");
-        textarea.value = "    AAAAABBBBBCCCCC\n    aaaaabbbbbccccc\n    111112222233333";
-        selection.caret(30, 50);
+        caret = selection.caret();
+        expect(normalizedValue()).to.be.eql("    aaaa\nbbbb\ncccc\n");
+        expect(caret).to.be.eql([4, 8]);
         instance.outdent();
-        return expect(value()).to.be.eql("    AAAAABBBBBCCCCC\naaaaabbbbbccccc\n111112222233333");
+        caret = selection.caret();
+        expect(normalizedValue()).to.be.eql("aaaa\nbbbb\ncccc\n");
+        return expect(caret).to.be.eql([0, 4]);
       });
-      it('should move the caret to the removed point when the selection is in single line', function() {
-        textarea.value = "    AAAAABBBBBCCCCC";
-        selection.caret(2, 2);
+      it('should remove 3, 4 spaces before the single line selection [5, 9] and move the caret to [1, 5], [0, 1]', function() {
+        var caret;
+        textarea.value = "        aaaa\nbbbb\ncccc\n";
+        selection.caret(5, 9);
         instance.outdent();
-        expect(selection.caret()).to.be.eql([0, 0]);
-        textarea.value = "    AAAAABBBBBCCCCC";
-        selection.caret(2, 8);
+        caret = selection.caret();
+        expect(normalizedValue()).to.be.eql("    aaaa\nbbbb\ncccc\n");
+        expect(caret).to.be.eql([1, 5]);
         instance.outdent();
-        expect(selection.caret()).to.be.eql([0, 0]);
-        textarea.value = "    AAAAABBBBBCCCCC\n    aaaaabbbbbccccc";
-        selection.caret(22, 22);
-        instance.outdent();
-        expect(selection.caret()).to.be.eql([20, 20]);
-        textarea.value = "    AAAAABBBBBCCCCC\n    aaaaabbbbbccccc";
-        selection.caret(22, 28);
-        instance.outdent();
-        return expect(selection.caret()).to.be.eql([20, 20]);
+        caret = selection.caret();
+        expect(normalizedValue()).to.be.eql("aaaa\nbbbb\ncccc\n");
+        return expect(caret).to.be.eql([0, 1]);
       });
-      return it('should move the line selection after outdent when the selection is in multi line', function() {
-        textarea.value = "    AAAAABBBBBCCCCC\n    aaaaabbbbbccccc\n    111112222233333";
-        selection.caret(10, 30);
+      it('should remove 4 spaces before each selected lines [0, 25] and move the caret to [0, 17], [0, 9]', function() {
+        var caret;
+        textarea.value = "        aaaa\n        bbbb\ncccc\n";
+        selection.caret(0, 25);
         instance.outdent();
-        expect(selection.caret()).to.be.eql([0, 31]);
-        textarea.value = "    AAAAABBBBBCCCCC\n    aaaaabbbbbccccc\n    111112222233333";
-        selection.caret(30, 50);
+        caret = selection.caret();
+        expect(normalizedValue()).to.be.eql("    aaaa\n    bbbb\ncccc\n");
+        expect(caret).to.be.eql([0, 17]);
         instance.outdent();
-        return expect(selection.caret()).to.be.eql([20, 51]);
+        caret = selection.caret();
+        expect(normalizedValue()).to.be.eql("aaaa\nbbbb\ncccc\n");
+        return expect(caret).to.be.eql([0, 9]);
+      });
+      return it('should remove 2, 4 spaces before each lines contains [0, 29] and move the caret to [0, 25], [0, 17], [0, 9]', function() {
+        var caret;
+        textarea.value = "          aaaa\n          bbbb\ncccc\n";
+        selection.caret(0, 29);
+        instance.outdent();
+        caret = selection.caret();
+        expect(normalizedValue()).to.be.eql("        aaaa\n        bbbb\ncccc\n");
+        expect(caret).to.be.eql([0, 25]);
+        instance.outdent();
+        caret = selection.caret();
+        expect(normalizedValue()).to.be.eql("    aaaa\n    bbbb\ncccc\n");
+        expect(caret).to.be.eql([0, 17]);
+        instance.outdent();
+        caret = selection.caret();
+        expect(normalizedValue()).to.be.eql("aaaa\nbbbb\ncccc\n");
+        return expect(caret).to.be.eql([0, 9]);
       });
     });
     return describe('!KeyDown event', function() {
