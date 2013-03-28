@@ -116,10 +116,20 @@
         <tr>
           <td>Inherits:</td>
           <td>
-            <a href='../classes/W3CSelection.html'>W3CSelection</a>
+            <a href='../classes/Femto/utils/W3CSelection.html'>Femto.utils.W3CSelection</a>
           </td>
         </tr>
       </table>
+      <h2>Overview</h2>
+      <div class='docstring'>
+  <p>Textarea selection class for IE</p><p>Note: You must know the following IE specification to understand this library</p><pre><code>1.  A value of TextRange (`text`) does not contain trailing NEWLINEs
+2.  The NEWLINE is composed with two character &quot;\r\n&quot;
+3.  Caret moving functions (like `moveStart`, `moveEnd`) treat NEWLINEs
+    as ONE character (position), on the other hand text manipulating
+    functions (like `substr`) treat it as TWO character (\r\n)</code></pre><p> And there are several more SPECIFICATION written as comments in code.</p>
+</div>
+<div class='tags'>
+</div>
       <h2>Instance Method Summary</h2>
       <ul class='summary'>
   <li>
@@ -164,28 +174,6 @@
     </span>
   </li>
 </ul>
-      <h2>
-        <small>Inherited Method Summary</small>
-      </h2>
-      <h3 class='inherited'>
-        Methods inherited from
-        <a href='../classes/W3CSelection.html'>W3CSelection</a>
-      </h3>
-      <p class='inherited'>
-                <a href='../classes/W3CSelection.html#constructor-instance'>#constructor</a>,
-                <a href='../classes/W3CSelection.html#caret-instance'>#caret</a>,
-                <a href='../classes/W3CSelection.html#isCollapsed-instance'>#isCollapsed</a>,
-                <a href='../classes/W3CSelection.html#collapse-instance'>#collapse</a>,
-                <a href='../classes/W3CSelection.html#text-instance'>#text</a>,
-                <a href='../classes/W3CSelection.html#lineCaret-instance'>#lineCaret</a>,
-                <a href='../classes/W3CSelection.html#lineText-instance'>#lineText</a>,
-                <a href='../classes/W3CSelection.html#insertBefore-instance'>#insertBefore</a>,
-                <a href='../classes/W3CSelection.html#insertAfter-instance'>#insertAfter</a>,
-                <a href='../classes/W3CSelection.html#enclose-instance'>#enclose</a>,
-                <a href='../classes/W3CSelection.html#insertBeforeLine-instance'>#insertBeforeLine</a>,
-                <a href='../classes/W3CSelection.html#insertAfterLine-instance'>#insertAfterLine</a>,
-        <a href='../classes/W3CSelection.html#encloseLine-instance'>#encloseLine</a>
-      </p>
       <h2>Constructor Details</h2>
       <div class='methods'>
   <div class='method_details'>
@@ -223,7 +211,7 @@
     </div>
     <div id='footer'>
   Generated on
-  Fri Mar 01 2013 21:38:45 GMT+0900 (JST)
+  Fri Mar 29 2013 00:27:32 GMT+0900 (JST)
   by
   <a href='https://github.com/netzpirat/codo' title='CoffeeScript API documentation generator'>Codo</a>
   v1.5.6
