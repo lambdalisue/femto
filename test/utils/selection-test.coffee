@@ -138,11 +138,7 @@ describe 'Femto.utils.Selection', ->
       #         I-I
       instance.caret(4, 5)
       caret = instance.caret()
-      if isIE
-        # IE cannot handle trailing \n correctly
-        expect(caret).to.be.eql([4, 4])
-      else
-        expect(caret).to.be.eql([4, 5])
+      expect(caret).to.be.eql([4, 5])
 
     it 'should return [2, 7] (include Newline) when caret set to', ->
       #  a a a a N b b b b N c c c c N
@@ -270,7 +266,6 @@ describe 'Femto.utils.Selection', ->
       caret = instance.caret()
       expect(caret).to.be.eql([2, 7])
 
-
   describe "#lineCaret(s, e) -> [s, e]", ->
     it "should return current line caret position as a list when called without any arguments", ->
       #  a a a a N b b b b N c c c c N
@@ -284,7 +279,6 @@ describe 'Femto.utils.Selection', ->
       lcaret = instance.lineCaret()
       expect(lcaret).to.be.a("array")
       expect(lcaret).to.be.eql([0, 4])
-
       #  a a a a N b b b b N c c c c N
       # 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5
       #             I---------I
@@ -301,7 +295,6 @@ describe 'Femto.utils.Selection', ->
       # 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5
       # I
       instance.caret(0, 0)  # reset caret
-
       # assumed as below
       #  a a a a N b b b b N c c c c N
       # 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5
@@ -315,6 +308,116 @@ describe 'Femto.utils.Selection', ->
       expect(lcaret).to.be.eql([0, 4])
       # current caret has not changed
       expect(instance.caret()).to.be.eql([0, 0])
+
+    it 'should return line caret [0, 4] for caret [2, 2]', ->
+      #  a a a a N b b b b N c c c c N
+      # 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5
+      #     I
+      instance.caret(2, 2)
+      #  a a a a N b b b b N c c c c N
+      # 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5
+      # I-------I
+      lcaret = instance.lineCaret()
+      expect(lcaret).to.be.eql([0, 4])
+
+    it 'should return line caret [0, 4] for caret [1, 3]', ->
+      #  a a a a N b b b b N c c c c N
+      # 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5
+      #   I---I
+      instance.caret(1, 3)
+      #  a a a a N b b b b N c c c c N
+      # 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5
+      # I-------I
+      lcaret = instance.lineCaret()
+      expect(lcaret).to.be.eql([0, 4])
+
+    it 'should return line caret [0, 4] for caret [0, 4]', ->
+      #  a a a a N b b b b N c c c c N
+      # 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5
+      # I-------I
+      instance.caret(0, 4)
+      #  a a a a N b b b b N c c c c N
+      # 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5
+      # I-------I
+      lcaret = instance.lineCaret()
+      expect(lcaret).to.be.eql([0, 4])
+
+    it 'should return line caret [5, 9] for caret [7, 7]', ->
+      #  a a a a N b b b b N c c c c N
+      # 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5
+      #               I
+      instance.caret(7, 7)
+      #  a a a a N b b b b N c c c c N
+      # 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5
+      #           I-------I
+      lcaret = instance.lineCaret()
+      expect(lcaret).to.be.eql([5, 9])
+
+    it 'should return line caret [5, 9] for caret [6, 8]', ->
+      #  a a a a N b b b b N c c c c N
+      # 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5
+      #             I---I
+      instance.caret(6, 8)
+      #  a a a a N b b b b N c c c c N
+      # 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5
+      #           I-------I
+      lcaret = instance.lineCaret()
+      expect(lcaret).to.be.eql([5, 9])
+
+    it 'should return line caret [5, 9] for caret [5, 9]', ->
+      #  a a a a N b b b b N c c c c N
+      # 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5
+      #           I-------I
+      instance.caret(5, 9)
+      #  a a a a N b b b b N c c c c N
+      # 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5
+      #           I-------I
+      lcaret = instance.lineCaret()
+      expect(lcaret).to.be.eql([5, 9])
+
+    it 'should return line caret [0, 9] for caret [2, 7]', ->
+      #  a a a a N b b b b N c c c c N
+      # 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5
+      #     I---------I
+      instance.caret(2, 7)
+      #  a a a a N b b b b N c c c c N
+      # 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5
+      # I-----------------I
+      lcaret = instance.lineCaret()
+      expect(lcaret).to.be.eql([0, 9])
+
+    it 'should return line caret [0, 9] for caret [0, 9]', ->
+      #  a a a a N b b b b N c c c c N
+      # 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5
+      # I-----------------I
+      instance.caret(0, 9)
+      #  a a a a N b b b b N c c c c N
+      # 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5
+      # I-----------------I
+      lcaret = instance.lineCaret()
+      expect(lcaret).to.be.eql([0, 9])
+
+    it 'should return line caret [0, 9] for caret [0, 5]', ->
+      #  a a a a N b b b b N c c c c N
+      # 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5
+      # I---------I
+      instance.caret(0, 5)
+      #  a a a a N b b b b N c c c c N
+      # 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5
+      # I-----------------I
+      lcaret = instance.lineCaret()
+      expect(lcaret).to.be.eql([0, 9])
+
+    it 'should return line caret [0, 14] for caret [0, 10]', ->
+      #  a a a a N b b b b N c c c c N
+      # 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5
+      # I-------------------I
+      instance.caret(0, 10)
+      #  a a a a N b b b b N c c c c N
+      # 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5
+      # I---------------------------I
+      lcaret = instance.lineCaret()
+      expect(lcaret).to.be.eql([0, 14])
 
 
   describe "#lineText(text, keepSelection) -> string I instance", ->

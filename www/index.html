@@ -18,9 +18,18 @@
 	<script src="js/femto-debug.js"></script>
 	<script>
 		$(function() {
-      window.textarea;
-      textarea = $('textarea#femto');
-			textarea = Femto.transform(textarea);
+		  var femto;
+      femto = $('textarea#femto');
+			femto = Femto.transform(femto);
+			window.femto = femto;
+
+			var Selection, textarea, selection;
+			Selection = Femto.utils.Selection;
+			textarea = $('textarea#femto').get(0);
+			selection = new Selection(textarea);
+			window.Selection = Selection;
+			window.textarea = textarea;
+			window.selection = selection;
 		});
 	</script>
 </body>
