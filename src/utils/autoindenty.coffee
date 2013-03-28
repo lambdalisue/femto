@@ -64,7 +64,7 @@ class AutoIndenty
     RETURN = 13
     return true if e.which isnt RETURN
     # do not use autoIndent if the ShiftKey is pressed
-    return true if e.shiftKey is true
+    return true if e.shiftKey
     # insert newline with appropriate indent characters
     @insertNewLine()
     # save memento if available
