@@ -12,6 +12,7 @@
         "codo": "*",
         "mocha": "*",
         "mocha-phantomjs": "*",
-        "expect.js": "*"
+        "expect.js": "*",
+        "less": "*"
     }
 }

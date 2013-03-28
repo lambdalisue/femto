@@ -16,6 +16,9 @@ IFrame = ->
   elem.focus = ->
     raw.contentWindow.focus()
     return @
+  elem.blur = ->
+    raw.contentWindow.document.body.blur()
+    return @
   elem.init = ->
     raw = @get(0)
     if raw.contentDocument?
@@ -28,6 +31,7 @@ IFrame = ->
     style.padding = '0'
     style.width = '100%'
     style.height = '100%'
+    @document = doc
     return @
   elem.write = (value) ->
     if doc?

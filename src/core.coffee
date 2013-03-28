@@ -23,13 +23,13 @@ transform = (textarea, options) ->
     # Apply shortcuts
     if options.previewModeShortcut
       shortcut.add options.previewModeShortcut, elem.previewMode,
-        target: elem.editor.textarea.get(0)
+        target: document
     if options.editingModeShortcut
       shortcut.add options.editingModeShortcut, elem.editingMode,
-        target: elem.viewer.iframe.contents().get(0)
+        target: elem.viewer.iframe.document
 
     # show femto
-    @editingMode()
+    @editingMode(false)
     @show()
     return @
 
@@ -43,22 +43,27 @@ transform = (textarea, options) ->
     # because the contents are replaced, shortcut must be set again
     if options.editingModeShortcut
       shortcut.add options.editingModeShortcut, elem.editingMode,
-        target: elem.viewer.iframe.contents().get(0)
+        target: elem.viewer.iframe.document
     # switch to preview mode
     elem.editor.removeClass('active')
     elem.viewer.addClass('active')
-  elem.editingMode = ->
-    # restore caret position
-    elem.editor.selection.caret caret_start, caret_end
+
+  elem.editingMode = (focus=true) ->
     #
     # TODO: (Issue) textarea can not get focus back from iframe with the
     #       following code
     #
-    # focus back to the editor
-    elem.editor.focus()
     # switch to editing mode
     elem.editor.addClass('active')
     elem.viewer.removeClass('active')
+    # focus back to the editor
+    if focus
+      # get focus back from iframe
+      window.top.focus()
+      # set focus to the editor
+      elem.editor.focus()
+    # restore caret position
+    elem.editor.selection.caret caret_start, caret_end
 
   # Apply features
   elem.features = {}

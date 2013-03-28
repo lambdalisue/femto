@@ -16,6 +16,9 @@ Viewer = (textarea, template) ->
   elem.focus = ->
     iframe.focus()
     return @
+  elem.blur = ->
+    iframe.blur()
+    return @
   elem.val = (value) ->
     render = (value) =>
       @template.render(value, (value) => @iframe.write(value))
