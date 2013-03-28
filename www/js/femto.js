@@ -294,7 +294,7 @@ Cross-browser textarea selection class
 
 
 (function() {
-  var AutoIndenty, Caretaker, Curtain, DEFAULT_TEMPLATE, Editor, IESelection, IFrame, Indenty, Originator, Template, Viewer, W3CSelection, Widget, autoIndent, getRegulationOffset, indent, makeTabString, normalizeText, transform, type,
+  var AutoIndenty, Caretaker, Curtain, DEFAULT_TEMPLATE, Editor, IESelection, IFrame, Indenty, Originator, Template, Viewer, W3CSelection, Widget, autoIndent, indent, makeTabString, transform, type,
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
     __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
@@ -655,21 +655,19 @@ Cross-browser textarea selection class
   });
 
   if (document.selection != null) {
-    normalizeText = function(rawText) {
-      return rawText.replace(/\r\n/g, '\n');
-    };
-    /*
-      Get regulation offset
-    */
-
-    getRegulationOffset = function(normalizedText, caret) {
-      var leadingText;
-      leadingText = normalizedText.slice(0, caret);
-      leadingText = leadingText.replace(/\n$/, '');
-      return leadingText.split("\n").length - 1;
-    };
     /*
       Textarea selection class for IE
+    
+      Note:
+        You must know the following IE specification to understand this library
+    
+          1.  A value of TextRange (`text`) does not contain trailing NEWLINEs
+          2.  The NEWLINE is composed with two character "\r\n"
+          3.  Caret moving functions (like `moveStart`, `moveEnd`) treat NEWLINEs
+              as ONE character (position), on the other hand text manipulating
+              functions (like `substr`) treat it as TWO character (\r\n)
+    
+        And there are several more SPECIFICATION written as comments in code.
     */
 
     IESelection = (function(_super) {
@@ -682,41 +680,25 @@ Cross-browser textarea selection class
       }
 
       IESelection.prototype._getWholeText = function() {
-        return this.textarea.value.replace(/\r\n/g, '\n');
+        return this.textarea.value.replace(/\r/g, '');
       };
 
       IESelection.prototype._getCaret = function() {
-        var e, endRange, length, normalizedText, range, s, textInputRange;
-        s = e = 0;
+        var e, entirel, range, s, selectl, trange;
+        this.textarea.focus();
         range = this._document.selection.createRange();
-        if (range && range.parentElement() === this.textarea) {
-          length = this.textarea.value.length;
-          normalizedText = this._getWholeText();
-          textInputRange = this.textarea.createTextRange();
-          textInputRange.moveToBookmark(range.getBookmark());
-          endRange = this.textarea.createTextRange();
-          endRange.collapse(false);
-          if (textInputRange.compareEndPoints("StartToEnd", endRange) > -1) {
-            s = e = length;
-          } else {
-            s = -textInputRange.moveStart("character", -length);
-            s += getRegulationOffset(normalizedText, s);
-            if (textInputRange.compareEndPoints("EndToEnd", endRange) > -1) {
-              e = length;
-            } else {
-              e = -textInputRange.moveEnd("character", -length);
-              e += getRegulationOffset(normalizedText, e);
-            }
-          }
-        }
+        selectl = range.text.replace(/\r/g, '').length;
+        trange = this._document.body.createTextRange();
+        trange.moveToElementText(this.textarea);
+        entirel = trange.text.replace(/\r/g, '').length;
+        trange.setEndPoint('StartToStart', range);
+        s = entirel - trange.text.replace(/\r/g, '').length;
+        e = s + selectl;
         return [s, e];
       };
 
       IESelection.prototype._setCaret = function(s, e) {
-        var normalizedText, range;
-        normalizedText = this._getWholeText();
-        s -= getRegulationOffset(normalizedText, s);
-        e -= getRegulationOffset(normalizedText, e);
+        var range;
         range = this.textarea.createTextRange();
         range.collapse(true);
         range.moveEnd('character', e);
@@ -2284,7 +2266,7 @@ Cross-browser textarea selection class
       method = expected_methods[_j];
       _fn1(method);
     }
-    describe('#caret(s, e) -> [s, e] | instance', function() {
+    describe('#caret(s, e) -> [s, e] I instance', function() {
       it('should return current caret position as a list when called without any arguments', function() {
         var caret;
         instance.caret(0, 0);
@@ -2312,28 +2294,69 @@ Cross-browser textarea selection class
         ncaret = instance.caret(5).caret();
         return expect(ncaret).to.be.eql([pcaret[0] + 5, pcaret[1] + 5]);
       });
-      return it('should return correct caret position', function() {
+      it('should return [2, 2] when caret set to', function() {
         var caret;
-        instance.caret(0, 2);
+        instance.caret(2, 2);
         caret = instance.caret();
-        expect(caret).to.be.eql([0, 2]);
+        return expect(caret).to.be.eql([2, 2]);
+      });
+      it('should return [2, 4] when caret set to', function() {
+        var caret;
         instance.caret(2, 4);
         caret = instance.caret();
-        expect(caret).to.be.eql([2, 4]);
+        return expect(caret).to.be.eql([2, 4]);
+      });
+      it('should return [4, 4] (before Newline) when caret set to', function() {
+        var caret;
+        instance.caret(4, 4);
+        caret = instance.caret();
+        return expect(caret).to.be.eql([4, 4]);
+      });
+      it('should return [5, 5] (after Newline) when caret set to', function() {
+        var caret;
         instance.caret(5, 5);
         caret = instance.caret();
-        if (isIE) {
-          expect(caret).to.be.eql([6, 6]);
-        } else {
-          expect(caret).to.be.eql([5, 5]);
-        }
+        return expect(caret).to.be.eql([5, 5]);
+      });
+      it('should return [6, 6] (two char after from Newline) when caret set to', function() {
+        var caret;
+        instance.caret(6, 6);
+        caret = instance.caret();
+        return expect(caret).to.be.eql([6, 6]);
+      });
+      it('should return [10, 10] (before 2nd Newline) when caret set to', function() {
+        var caret;
+        instance.caret(10, 10);
+        caret = instance.caret();
+        return expect(caret).to.be.eql([10, 10]);
+      });
+      it('should return [11, 11] (after 2nd Newline) when caret set to', function() {
+        var caret;
+        instance.caret(11, 11);
+        caret = instance.caret();
+        return expect(caret).to.be.eql([11, 11]);
+      });
+      it('should return [4, 5] (Newline) when caret set to', function() {
+        var caret;
         instance.caret(4, 5);
         caret = instance.caret();
         if (isIE) {
-          return expect(caret).to.be.eql([4, 6]);
+          return expect(caret).to.be.eql([4, 4]);
         } else {
           return expect(caret).to.be.eql([4, 5]);
         }
+      });
+      it('should return [2, 7] (include Newline) when caret set to', function() {
+        var caret;
+        instance.caret(2, 7);
+        caret = instance.caret();
+        return expect(caret).to.be.eql([2, 7]);
+      });
+      return it('should return [2, 12] (include two Newlines) when caret set to', function() {
+        var caret;
+        instance.caret(2, 12);
+        caret = instance.caret();
+        return expect(caret).to.be.eql([2, 12]);
       });
     });
     describe('#isCollapsed() -> boolean', function() {
@@ -2353,26 +2376,24 @@ Cross-browser textarea selection class
     describe('#collapse(toStart) -> instance', function() {
       it('should moves the start point of the selection to its end point and return the instance when called without argument', function() {
         var e, r, s, _ref;
-        instance.caret(0, 10);
+        instance.caret(0, 7);
         r = instance.collapse();
         _ref = instance.caret(), s = _ref[0], e = _ref[1];
         expect(r).to.be.a(Selection);
         expect(r).to.be.eql(instance);
-        expect(s).to.be.eql(10);
-        return expect(e).to.be.eql(10);
+        return expect([s, e]).to.be.eql([7, 7]);
       });
       return it('should moves the end point of the selection to its start point and return the instance when called with argument (True)', function() {
         var e, r, s, _ref;
-        instance.caret(0, 10);
+        instance.caret(0, 7);
         r = instance.collapse(true);
         _ref = instance.caret(), s = _ref[0], e = _ref[1];
         expect(r).to.be.a(Selection);
         expect(r).to.be.eql(instance);
-        expect(s).to.be.eql(0);
-        return expect(e).to.be.eql(0);
+        return expect([s, e]).to.be.eql([0, 0]);
       });
     });
-    describe('#text(text, keepSelection) -> string | instance', function() {
+    describe('#text(text, keepSelection) -> string I instance', function() {
       it('should return current selected text when called without any arguments', function() {
         var text;
         instance.caret(0, 0);
@@ -2447,7 +2468,7 @@ Cross-browser textarea selection class
         return expect(instance.caret()).to.be.eql([0, 0]);
       });
     });
-    describe("#lineText(text, keepSelection) -> string | instance", function() {
+    describe("#lineText(text, keepSelection) -> string I instance", function() {
       it("should return current selected line text when called without any arguments", function() {
         var text;
         instance.caret(0, 0);
@@ -2783,43 +2804,14 @@ Cross-browser textarea selection class
         caret = instance.caret();
         return expect(caret).to.be.eql([19, 19]);
       });
-      it("should encloseLine the line of the selection with specified and select text include insertion when text is selected and called with two arguments", function() {
+      return it("should encloseLine the line of the selection with specified and select text include insertion when text is selected and called with two arguments", function() {
         var caret, result;
         instance.caret(2, 2);
         result = instance.encloseLine("HELLO", "WORLD", true);
         expect(normalizedValue()).to.be.eql("HELLOaaaaWORLD\nbbbb\ncccc\n");
         caret = instance.caret();
         expect(caret).to.be.eql([0, 14]);
-        rollback();
-        instance.caret(2, 6);
-        result = instance.encloseLine("HELLO", "WORLD", true);
-        expect(normalizedValue()).to.be.eql("HELLOaaaa\nbbbbWORLD\ncccc\n");
-        caret = instance.caret();
-        return expect(caret).to.be.eql([0, 19]);
-      });
-      it("should remove specified when selected text (or caret) is encloseLined and called with two arguments", function() {
-        var caret;
-        instance.caret(2, 2);
-        instance.encloseLine("HELLO", "WORLD", true);
-        instance.encloseLine("HELLO", "WORLD");
-        expect(normalizedValue()).to.be.eql("aaaa\nbbbb\ncccc\n");
-        caret = instance.caret();
-        expect(caret).to.be.eql([4, 4]);
-        instance.caret(2, 6);
-        instance.encloseLine("HELLO", "WORLD", true);
-        instance.encloseLine("HELLO", "WORLD");
-        expect(normalizedValue()).to.be.eql("aaaa\nbbbb\ncccc\n");
-        caret = instance.caret();
-        return expect(caret).to.be.eql([9, 9]);
-      });
-      return it("should remove specified and select text when selected text (or caret) is encloseLined and called with three arguments", function() {
-        var caret;
-        instance.caret(2, 6);
-        instance.encloseLine("HELLO", "WORLD", true);
-        instance.encloseLine("HELLO", "WORLD", true);
-        expect(normalizedValue()).to.be.eql("aaaa\nbbbb\ncccc\n");
-        caret = instance.caret();
-        return expect(caret).to.be.eql([0, 9]);
+        return rollback();
       });
     });
   });
