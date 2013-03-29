@@ -42,21 +42,20 @@ class AutoIndenty
   @return [AutoIndenty] the instance
   ###
   insertNewLine: ->
-    [cs] = @_selection.caret()
-    # get current indent level with regexp
+    [s, e] = @_selection.caret()
+    # find the start caret of last line in the selection
     text = @_selection._getWholeText()
-    line = @_selection.lineText().split("\n")[0]
-    indent = line.match(@_pattern)
-    # move caret forward if the caret stands just before the newline
-    if cs is text.length
-      # insert newline and indent after to simulate RETURN press
-      @_selection.insertAfter "\n#{indent}", false
+    ls = text.lastIndexOf('\n', e-1) + 1
+    # get the indent string used in the last line
+    indent = text[ls...e].match(@_pattern)
+    # insert newline with the indent
+    insert = "\n#{indent}"
+    @_selection.insertAfter insert, false
+    # move the caret
+    if s == e
+      @_selection.caret(s+insert.length, s+insert.length)
     else
-      if text[cs] is "\n"
-        @_selection.caret(1)
-      # insert newline and indent before to simulate RETURN press
-      @_selection.insertBefore "\n#{indent}", false
-      @_selection.caret(indent.length+1)
+      @_selection.caret(s, e+insert.length)
     return @
 
   # @private

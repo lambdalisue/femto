@@ -3,14 +3,14 @@ describe 'Femto.utils.AutoIndenty', ->
   AutoIndenty = Femto.utils.AutoIndenty
   Selection = Femto.utils.Selection
 
+  normalizedValue = ->
+    textarea.value.replace(/\r\n/g, '\n')
+  rollback = ->
+    textarea.value = 'aaaa\nbbbb\ncccc\n'
+
   before ->
     textarea = document.createElement('textarea')
-    textarea.rollback = ->
-      @value = 'AAAAABBBBBCCCCC\naaaaabbbbbccccc\n111112222233333'
-    textarea.rollback()
-    value = ->
-      # IE use \r\n so replace it
-      textarea.value.replace(/\r\n/g, "\n")
+    rollback()
     instance = new AutoIndenty(jQuery(textarea), true, 4)
     selection = instance._selection
     document.body.appendChild textarea
@@ -19,9 +19,8 @@ describe 'Femto.utils.AutoIndenty', ->
   after ->
     document.body.removeChild(textarea)
 
-
   afterEach ->
-    textarea.rollback()
+    rollback()
 
   # check expected private properties
   expected_private_properties = [
@@ -68,37 +67,194 @@ describe 'Femto.utils.AutoIndenty', ->
       expect(r).to.be.a(AutoIndenty)
       expect(r).to.be.eql(instance)
 
-    it 'should insert newline after the current caret', ->
+    it 'should insert newline after the caret [0, 0] and move the caret to [1, 1]', ->
+      #  a a a a N b b b b N c c c c N
+      # 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5
+      # |
+      selection.caret(0, 0)
+      #  N a a a a N b b b b N c c c c N
+      # 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5
+      #   |
+      instance.insertNewLine()
+      caret = selection.caret()
+      expect(normalizedValue()).to.be.eql("\naaaa\nbbbb\ncccc\n")
+      expect(caret).to.be.eql([1, 1])
+
+    it 'should insert newline after the caret [2, 2] and move the caret to [3, 3]', ->
+      #  a a a a N b b b b N c c c c N
+      # 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5
+      #     |
+      selection.caret(2, 2)
+      #  a a N a a N b b b b N c c c c N
+      # 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5
+      #       |
+      instance.insertNewLine()
+      caret = selection.caret()
+      expect(normalizedValue()).to.be.eql("aa\naa\nbbbb\ncccc\n")
+      expect(caret).to.be.eql([3, 3])
+
+    it 'should insert newline after the caret [4, 4] and move the caret to [5, 5]', ->
+      #  a a a a N b b b b N c c c c N
+      # 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5
+      #         |
+      selection.caret(4, 4)
+      #  a a a a N N b b b b N c c c c N
+      # 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5
+      #           |
+      instance.insertNewLine()
+      caret = selection.caret()
+      expect(normalizedValue()).to.be.eql("aaaa\n\nbbbb\ncccc\n")
+      expect(caret).to.be.eql([5, 5])
+
+    it 'should insert newline after the caret [5, 5] and move the caret to [6, 6]', ->
+      #  a a a a N b b b b N c c c c N
+      # 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5
+      #           |
+      selection.caret(5, 5)
+      #  a a a a N N b b b b N c c c c N
+      # 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5
+      #             |
+      instance.insertNewLine()
+      caret = selection.caret()
+      expect(normalizedValue()).to.be.eql("aaaa\n\nbbbb\ncccc\n")
+      expect(caret).to.be.eql([6, 6])
+
+    it 'should insert newline after the caret [7, 7] and move the caret to [8, 8]', ->
+      #  a a a a N b b b b N c c c c N
+      # 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5
+      #               |
+      selection.caret(7, 7)
+      #  a a a a N b b N b b N c c c c N
+      # 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5
+      #                 |
+      instance.insertNewLine()
+      caret = selection.caret()
+      expect(normalizedValue()).to.be.eql("aaaa\nbb\nbb\ncccc\n")
+      expect(caret).to.be.eql([8, 8])
+
+    it 'should insert newline after the caret [14, 14] and move the caret to [15, 15]', ->
+      #  a a a a N b b b b N c c c c N
+      # 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5
+      #                             |
+      selection.caret(14, 14)
+      #  a a a a N b b b b N c c c c N N
+      # 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5
+      #                               |
+      instance.insertNewLine()
+      caret = selection.caret()
+      expect(normalizedValue()).to.be.eql("aaaa\nbbbb\ncccc\n\n")
+      expect(caret).to.be.eql([15, 15])
+
+    it 'should insert newline after the caret [15, 15] and move the caret to [16, 16]', ->
+      #  a a a a N b b b b N c c c c N
+      # 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5
+      #                             |
       selection.caret(15, 15)
+      #  a a a a N b b b b N c c c c N N
+      # 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6
+      #                                 |
       instance.insertNewLine()
-      expect(value()).to.be.eql("AAAAABBBBBCCCCC\n\naaaaabbbbbccccc\n111112222233333")
+      caret = selection.caret()
+      expect(normalizedValue()).to.be.eql("aaaa\nbbbb\ncccc\n\n")
+      expect(caret).to.be.eql([16, 16])
 
-      textarea.rollback()
-      selection.caret(21, 21)
+    it 'should insert newline after the selection [2, 7] and move the caret to [2, 8]', ->
+      #  a a a a N b b b b N c c c c N
+      # 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5
+      #     |---------|
+      selection.caret(2, 7)
+      #  a a a a N b b N b b N c c c c N
+      # 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6
+      #     |-----------|
       instance.insertNewLine()
-      expect(value()).to.be.eql("AAAAABBBBBCCCCC\naaaaa\nbbbbbccccc\n111112222233333")
+      caret = selection.caret()
+      expect(normalizedValue()).to.be.eql("aaaa\nbb\nbb\ncccc\n")
+      expect(caret).to.be.eql([2, 8])
 
-      textarea.rollback()
-      selection.caret(47, 47)
+    it 'should insert newline with tabString after the caret [4, 4] and move the caret to [9, 9]', ->
+      textarea.value = "    aaaa\n  bbbb\ncccc\n"
+      #  _ _ _ _ a a a a N b b b b N c c c c N
+      # 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5
+      #         |
+      selection.caret(4, 4)
+      #  _ _ _ _ N _ _ _ _ a a a a N _ _ b b b b N c c c c N
+      # 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5
+      #                   |
       instance.insertNewLine()
-      expect(value()).to.be.eql("AAAAABBBBBCCCCC\naaaaabbbbbccccc\n111112222233333\n")
+      caret = selection.caret()
+      expect(normalizedValue()).to.be.eql("    \n    aaaa\n  bbbb\ncccc\n")
+      expect(caret).to.be.eql([9, 9])
 
-
-    it 'should insert leading tabString and newline after the current caret if the current line starts from tabString', ->
-      textarea.value = "    AAAAABBBBBCCCCC\naaaaabbbbbccccc\n111112222233333"
-      selection.caret(19, 19)
+    it 'should insert newline with tabString after the caret [6, 6] and move the caret to [11, 11]', ->
+      textarea.value = "    aaaa\n  bbbb\ncccc\n"
+      #  _ _ _ _ a a a a N _ _ b b b b N c c c c N
+      # 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5
+      #             |
+      selection.caret(6, 6)
+      #  _ _ _ _ a a N _ _ _ _ a a N _ _ b b b b N c c c c N
+      # 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5
+      #                       |
       instance.insertNewLine()
-      expect(value()).to.be.eql("    AAAAABBBBBCCCCC\n\n    aaaaabbbbbccccc\n111112222233333")
+      caret = selection.caret()
+      expect(normalizedValue()).to.be.eql("    aa\n    aa\n  bbbb\ncccc\n")
+      expect(caret).to.be.eql([11, 11])
 
-      textarea.value = "AAAAABBBBBCCCCC\n    aaaaabbbbbccccc\n111112222233333"
-      selection.caret(25, 25)
+    it 'should insert newline with tabString after the caret [8, 8] and move the caret to [13, 13]', ->
+      textarea.value = "    aaaa\n  bbbb\ncccc\n"
+      #  _ _ _ _ a a a a N _ _ b b b b N c c c c N
+      # 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5
+      #                 |
+      selection.caret(8, 8)
+      #  _ _ _ _ a a a a N _ _ _ _ N _ _ b b b b N c c c c N
+      # 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5
+      #                           |
       instance.insertNewLine()
-      expect(value()).to.be.eql("AAAAABBBBBCCCCC\n    aaaaa\n    bbbbbccccc\n111112222233333")
+      caret = selection.caret()
+      expect(normalizedValue()).to.be.eql("    aaaa\n    \n  bbbb\ncccc\n")
+      expect(caret).to.be.eql([13, 13])
 
-      textarea.value = "AAAAABBBBBCCCCC\naaaaabbbbbccccc\n    111112222233333"
-      selection.caret(51, 51)
+    it 'should insert newline after the caret [9, 9] and move the caret to [10, 10]', ->
+      textarea.value = "    aaaa\n  bbbb\ncccc\n"
+      #  _ _ _ _ a a a a N _ _ b b b b N c c c c N
+      # 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5
+      #                   |
+      selection.caret(9, 9)
+      # Note: tab indent level is 4, not 2
+      #  _ _ _ _ a a a a N N _ _ b b b b N c c c c N
+      # 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5
+      #                     |
       instance.insertNewLine()
-      expect(value()).to.be.eql("AAAAABBBBBCCCCC\naaaaabbbbbccccc\n    111112222233333\n    ")
+      caret = selection.caret()
+      expect(normalizedValue()).to.be.eql("    aaaa\n\n  bbbb\ncccc\n")
+      expect(caret).to.be.eql([10, 10])
+
+    it 'should insert newline after the selection [2, 10] and move the selection to [2, 19]', ->
+      textarea.value = "        aaaa\n    bbbb\ncccc\n"
+      #  _ _ _ _ _ _ _ _ a a a a N _ _ _ _ b b b b N c c c c N
+      # 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2
+      #     |---------------|
+      selection.caret(2, 10)
+      #  _ _ _ _ _ _ _ _ a a N _ _ _ _ _ _ _ _ a a N _ _ _ _ b b b b N c c c c N
+      # 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2
+      #     |---------------------------------|
+      instance.insertNewLine()
+      caret = selection.caret()
+      expect(normalizedValue()).to.be.eql("        aa\n        aa\n    bbbb\ncccc\n")
+      expect(caret).to.be.eql([2, 19])
+
+    it 'should insert newline after the selection [2, 19] and move the selection to [2, 24]', ->
+      textarea.value = "        aaaa\n    bbbb\ncccc\n"
+      #  _ _ _ _ _ _ _ _ a a a a N _ _ _ _ b b b b N c c c c N
+      # 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2
+      #     |---------------------------------|
+      selection.caret(2, 19)
+      #  _ _ _ _ _ _ _ _ a a a a N _ _ _ _ b b N _ _ _ _ b b N c c c c N
+      # 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5
+      #     |-------------------------------------------|
+      instance.insertNewLine()
+      caret = selection.caret()
+      expect(normalizedValue()).to.be.eql("        aaaa\n    bb\n    bb\ncccc\n")
+      expect(caret).to.be.eql([2, 24])
 
   describe '!KeyDown event', ->
     it 'should call `insertNewLine()` when user hit RETURN', ->
