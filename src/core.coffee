@@ -29,7 +29,7 @@ transform = (textarea, options) ->
         target: elem.viewer.iframe.document
 
     # show femto
-    @editingMode(false)
+    @editingMode(false, false)
     @show()
     return @
 
@@ -48,7 +48,7 @@ transform = (textarea, options) ->
     elem.editor.removeClass('active')
     elem.viewer.addClass('active')
 
-  elem.editingMode = (focus=true) ->
+  elem.editingMode = (focus=true, caret=true) ->
     #
     # TODO: (Issue) textarea can not get focus back from iframe with the
     #       following code
@@ -63,7 +63,8 @@ transform = (textarea, options) ->
       # set focus to the editor
       elem.editor.focus()
     # restore caret position
-    elem.editor.selection.caret caret_start, caret_end
+    if caret
+      elem.editor.selection.caret caret_start, caret_end
 
   # Apply features
   elem.features = {}

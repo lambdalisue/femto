@@ -1707,7 +1707,7 @@ Cross-browser textarea selection class
           target: elem.viewer.iframe.document
         });
       }
-      this.editingMode(false);
+      this.editingMode(false, false);
       this.show();
       return this;
     };
@@ -1725,9 +1725,12 @@ Cross-browser textarea selection class
       elem.editor.removeClass('active');
       return elem.viewer.addClass('active');
     };
-    elem.editingMode = function(focus) {
+    elem.editingMode = function(focus, caret) {
       if (focus == null) {
         focus = true;
+      }
+      if (caret == null) {
+        caret = true;
       }
       elem.editor.addClass('active');
       elem.viewer.removeClass('active');
@@ -1735,7 +1738,9 @@ Cross-browser textarea selection class
         window.top.focus();
         elem.editor.focus();
       }
-      return elem.editor.selection.caret(caret_start, caret_end);
+      if (caret) {
+        return elem.editor.selection.caret(caret_start, caret_end);
+      }
     };
     elem.features = {};
     _ref = Femto.features;
