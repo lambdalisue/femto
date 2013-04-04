@@ -127,13 +127,18 @@ textarea = Femto.transform(textarea);
 
 Supported browsers
 --------------------------------------------------------------------------------
-The following browsers are (or will be) supported.
+The following browsers are supported (or Not Tested yet).
 
 - &#x2713; Google Chrome
-- &#x2717; Mozilla Firefox
-- &#x2717; Safari
-- &#x2717; Opera
-- &#x2717; Internet Explorer 8 (and over 8)
+- &#x2713; Mozilla Firefox
+- &#x2713; Safari
+- &#x2713; Lunascape
+- &#x2713; Opera
+- NT Internet Explorer 10
+- NT Internet Explorer 9
+- &#x2713; Internet Explorer 8 (limited)
+- &#x2713; Internet Explorer 7 (limited)
+- &#x2713; Internet Explorer 6 (limited)
 
 Test
 --------------------------------------------------------------------------------
