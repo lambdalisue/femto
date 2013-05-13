@@ -242,43 +242,13 @@ shortcut = {
 
 }).call(this);
 
-if (typeof process !== "undefined") {
-    process.nextTick = (function(){
-    var timeouts = []
-    // postMessage behaves badly on IE8
-    if (window.ActiveXObject || !window.postMessage) {
-        return function(fn){
-        timeouts.push(fn);
-        setTimeout(function(){
-            if (timeouts.length) timeouts.shift()();
-        }, 0);
-        }
-    }
-
-    // based on setZeroTimeout by David Baron
-    // - http://dbaron.org/log/20100309-faster-timeouts
-    var name = 'mocha-zero-timeout'
-
-    window.addEventListener('message', function(e){
-        if (e.source == window && e.data == name) {
-        if (e.stopPropagation) e.stopPropagation();
-        if (timeouts.length) timeouts.shift()();
-        }
-    }, true);
-
-    return function(fn){
-        timeouts.push(fn);
-        window.postMessage(name, '*');
-    }
-    })();
-}
-
 document.write('<scri'+'pt src="js/toaster/utils/selection.js"></scr'+'ipt>')
 document.write('<scri'+'pt src="js/toaster/utils/selection.ie.js"></scr'+'ipt>')
 document.write('<scri'+'pt src="js/toaster/utils/curtain.js"></scr'+'ipt>')
 document.write('<scri'+'pt src="js/toaster/utils/undo.js"></scr'+'ipt>')
 document.write('<scri'+'pt src="js/toaster/utils/type.js"></scr'+'ipt>')
 document.write('<scri'+'pt src="js/toaster/widget/widget.js"></scr'+'ipt>')
+document.write('<scri'+'pt src="js/toaster/widget/documenttype.js"></scr'+'ipt>')
 document.write('<scri'+'pt src="js/toaster/widget/iframe.js"></scr'+'ipt>')
 document.write('<scri'+'pt src="js/toaster/widget/editor.js"></scr'+'ipt>')
 document.write('<scri'+'pt src="js/toaster/widget/viewer.js"></scr'+'ipt>')
@@ -288,10 +258,3 @@ document.write('<scri'+'pt src="js/toaster/utils/indenty.js"></scr'+'ipt>')
 document.write('<scri'+'pt src="js/toaster/features/autoindent.js"></scr'+'ipt>')
 document.write('<scri'+'pt src="js/toaster/features/indent.js"></scr'+'ipt>')
 document.write('<scri'+'pt src="js/toaster/core.js"></scr'+'ipt>')
-document.write('<scri'+'pt src="js/toaster/utils/undo-test.js"></scr'+'ipt>')
-document.write('<scri'+'pt src="js/toaster/utils/autoindenty-test.js"></scr'+'ipt>')
-document.write('<scri'+'pt src="js/toaster/utils/type-test.js"></scr'+'ipt>')
-document.write('<scri'+'pt src="js/toaster/utils/selection-test.js"></scr'+'ipt>')
-document.write('<scri'+'pt src="js/toaster/utils/indenty-test.js"></scr'+'ipt>')
-document.write('<scri'+'pt src="js/toaster/widget-test.js"></scr'+'ipt>')
-document.write('<scri'+'pt src="js/toaster/editor-test.js"></scr'+'ipt>')

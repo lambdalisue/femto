@@ -2,11 +2,19 @@
 #<< widget/widget
 #<< widget/editor
 #<< widget/viewer
+###
+Femto (0.1.0)
+
+Author: Alisue
+Email:  lambdalisue@hashnote.net
+Web:    http://hashnote.net/
+###
 transform = (textarea, options) ->
   options = jQuery.extend({
       'template': new Femto.utils.Template()
       'previewModeShortcut': 'Shift+Right'
       'editingModeShortcut': 'Shift+Left'
+      'documentTypes': null
     }, options)
   elem = Femto.widget.Widget($('<div>').insertAfter(textarea).hide())
                           .addClass('femto')
@@ -16,9 +24,14 @@ transform = (textarea, options) ->
   elem.append elem.editor
   elem.append elem.viewer
 
+  if options.documentTypes isnt null
+    elem.documentType = Femto.widget.DocumentType(elem.viewer, options.documentTypes)
+    elem.editor.append elem.documentType
+
   elem.init = ->
     @editor.init?()
     @viewer.init?()
+    @documentType?.init?()
 
     # Apply shortcuts
     if options.previewModeShortcut

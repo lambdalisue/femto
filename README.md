@@ -1,7 +1,7 @@
 femto [![Build Status](https://travis-ci.org/lambdalisue/femto.png)](https://travis-ci.org/lambdalisue/femto)
 ================================================================================
 
-A well tested simple and powerful web based text editor.
+A well tested simple and powerful web based text editor (Version: 0.1.0).
 
 **femto** allow you to add a simple and powerful text editor on your web site.
 It is assumed to use for writing a Markup text.
@@ -11,6 +11,11 @@ It helps user to write these kind of text with the following features:
 
     femto has a preview panel to check the output of the current text.
     It is under developping now
+
+-   DocumentType (bundle)
+
+    femto can treat different types of document such as Markdown, Textile or so
+    on. See Usage for more detail.
 
 -   `TAB` indent and `SHIFT + TAB` outdent (features)
 
@@ -75,8 +80,8 @@ steps below:
 
     ```sh
     % mkdir -p ~/femto
-    % copy ./www/js/femto.js ~/femto/femto.0.0.0.js
-    % copy ./www/css/femto.css ~/femto/femto.0.0.0.css
+    % copy ./www/js/femto.js ~/femto/femto.js
+    % copy ./www/css/femto.css ~/femto/femto.css
     ```
 
 5.  Write HTML as:
@@ -84,12 +89,12 @@ steps below:
     ```html
     <html>
         <head>
-            <link rel="stylesheet" href="femto/femto.0.0.0.css">
+            <link rel="stylesheet" href="femto/femto.css">
         </head>
         <body>
             <textarea id="femto-demo"></textarea>
             <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
-            <script src="femto/femto.0.0.0.js"></script>
+            <script src="femto/femto.js"></script>
             <script>
                 $(function() {
                     var textarea;
@@ -123,6 +128,53 @@ del Femto.features.indent;
 var textarea;
 textarea = $('textarea#femto-demo');
 textarea = Femto.transform(textarea);
+```
+
+### Enable Markup language
+
+You can use any external libraries to convert markup into html.
+
+See the sample code below ([chjj/marked](<https://github.com/chjj/marked),
+[borgar/textile.js](https://github.com/borgar/textile-js) and
+[nitoyon/text-hatena.js](https://github.com/nitoyon/text-hatena.js) are used in
+the following code.)
+
+```html
+<!-- marked by chjj -->
+<script src="https://raw.github.com/chjj/marked/master/lib/marked.js"></script>
+<!-- textile-js by borgar -->
+<script src="https://raw.github.com/borgar/textile-js/master/lib/textile.js"></script>
+<!-- text-hatena.js by nitoyon -->
+<script src="https://raw.github.com/nitoyon/text-hatena.js/master/text-hatena.js"></script>
+<script src="femto/femto.js"></script>
+<script>
+    $(function() {
+        var markdown_filter = function(text) {
+            marked.setOptions({gfm: false, tables: false, breaks: false});
+            return marked(text);
+        };
+        var gfm_filter = function(text) {
+            marked.setOptions({gfm: true, tables: true, breaks: true});
+            return marked(text);
+        };
+        var textile_filter = textile;
+        var hatena_filter = function(text) {
+            var parser = new TextHatena();
+            return parser.parse(text);
+        };
+        var options = {
+            documentTypes: {
+            'markdown': markdown_filter,
+            'gfm': gfm_filter,
+            'textile': textile_filter,
+            'Hatena': hatena_filter
+            }
+        };
+        var femto;
+        femto = $('textarea#femto');
+        femto = Femto.transform(femto, options);
+    }
+</script>
 ```
 
 Supported browsers

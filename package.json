@@ -2,7 +2,7 @@
     "author": "lambdalisue",
     "name": "femto",
     "description": "A simple plain text editor",
-    "version": "0.0.0",
+    "version": "0.1.0",
     "scripts": {
         "test": "node_modules/mocha-phantomjs/bin/mocha-phantomjs www/test.html"
     },

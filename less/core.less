@@ -106,4 +106,28 @@
             .transform(rotateX(0deg) rotateY(0deg));
         }
     }
+    .documentType {
+        position: absolute;
+        top: 1px;
+        right: 1px;
+        z-index: 1100;
+        padding: 0.2em;
+        .border-radius(0 5px 0 10px);
+
+        select {
+            cursor: pointer;
+            width: 100%;
+            outline: none;
+            border: none;
+            border-radius: 0;
+            -webkit-appearance: none;
+            background: transparent;
+            opacity: 0.1;
+
+            &:hover, &:active {
+                background: #fff;
+                opacity: 1.0;
+            }
+        }
+    }
 }
