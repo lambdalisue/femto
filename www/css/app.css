@@ -110,7 +110,6 @@
   border-radius: 0;
   -webkit-appearance: none;
   background: transparent;
-  font-size: small;
   opacity: 0.1;
 }
 .femto .documentType select:hover,
