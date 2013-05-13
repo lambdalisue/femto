@@ -23,7 +23,7 @@ Viewer = (textarea, template) ->
     render = (value) =>
       @template.render(value, (value) => @iframe.write(value))
     if @parser?
-      @parser.parse(value, render)
+      render(@parser(value))
     else
       render(value)
     return @

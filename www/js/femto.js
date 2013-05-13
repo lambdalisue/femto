@@ -294,7 +294,7 @@ Cross-browser textarea selection class
 
 
 (function() {
-  var AutoIndenty, Caretaker, Curtain, DEFAULT_TEMPLATE, Editor, IESelection, IFrame, Indenty, Originator, Template, Viewer, W3CSelection, Widget, autoIndent, indent, makeTabString, transform, type,
+  var AutoIndenty, Caretaker, Curtain, DEFAULT_TEMPLATE, DocumentType, Editor, IESelection, IFrame, Indenty, Originator, Template, Viewer, W3CSelection, Widget, autoIndent, indent, makeTabString, transform, type,
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
     __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
@@ -1052,6 +1052,35 @@ Cross-browser textarea selection class
     return exports.Widget = Widget;
   });
 
+  /*
+  Femto DocumentType widget
+  */
+
+
+  DocumentType = function(viewer, documentTypes) {
+    var elem, fn, key, option, select;
+    select = jQuery('<select>');
+    elem = Femto.widget.Widget();
+    elem.addClass('documentType');
+    elem.append(select);
+    elem.select = select;
+    for (key in documentTypes) {
+      fn = documentTypes[key];
+      option = "<option value='" + key + "'>" + key + "</option>";
+      select.append(jQuery(option));
+    }
+    select.change(function() {
+      fn = documentTypes[select.val()];
+      return viewer.parser = fn;
+    });
+    select.change();
+    return elem;
+  };
+
+  namespace('Femto.widget', function(exports) {
+    return exports.DocumentType = DocumentType;
+  });
+
   IFrame = function() {
     var doc, elem, raw;
     raw = doc = null;
@@ -1232,7 +1261,7 @@ Cross-browser textarea selection class
         });
       };
       if (this.parser != null) {
-        this.parser.parse(value, render);
+        render(this.parser(value));
       } else {
         render(value);
       }
@@ -1681,7 +1710,8 @@ Cross-browser textarea selection class
     options = jQuery.extend({
       'template': new Femto.utils.Template(),
       'previewModeShortcut': 'Shift+Right',
-      'editingModeShortcut': 'Shift+Left'
+      'editingModeShortcut': 'Shift+Left',
+      'documentTypes': null
     }, options);
     elem = Femto.widget.Widget($('<div>').insertAfter(textarea).hide()).addClass('femto');
     elem.editor = Femto.widget.Editor(textarea);
@@ -1689,13 +1719,22 @@ Cross-browser textarea selection class
     elem.caretaker = elem.editor.caretaker;
     elem.append(elem.editor);
     elem.append(elem.viewer);
+    if (options.documentTypes !== null) {
+      elem.documentType = Femto.widget.DocumentType(elem.viewer, options.documentTypes);
+      elem.editor.append(elem.documentType);
+    }
     elem.init = function() {
-      var _base, _base1;
+      var _base, _base1, _ref;
       if (typeof (_base = this.editor).init === "function") {
         _base.init();
       }
       if (typeof (_base1 = this.viewer).init === "function") {
         _base1.init();
+      }
+      if ((_ref = this.documentType) != null) {
+        if (typeof _ref.init === "function") {
+          _ref.init();
+        }
       }
       if (options.previewModeShortcut) {
         shortcut.add(options.previewModeShortcut, elem.previewMode, {

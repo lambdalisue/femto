@@ -90,3 +90,31 @@
   -o-transform: rotateX(0deg) rotateY(0deg);
   transform: rotateX(0deg) rotateY(0deg);
 }
+.femto .documentType {
+  position: absolute;
+  top: 1px;
+  right: 1px;
+  z-index: 1100;
+  padding: 0.2em;
+  -webkit-border-radius: 0 5px 0 10px;
+  -moz-border-radius: 0 5px 0 10px;
+  -ms-border-radius: 0 5px 0 10px;
+  -o-border-radius: 0 5px 0 10px;
+  border-radius: 0 5px 0 10px;
+}
+.femto .documentType select {
+  cursor: pointer;
+  width: 100%;
+  outline: none;
+  border: none;
+  border-radius: 0;
+  -webkit-appearance: none;
+  background: transparent;
+  font-size: small;
+  opacity: 0.1;
+}
+.femto .documentType select:hover,
+.femto .documentType select:active {
+  background: #fff;
+  opacity: 1.0;
+}
