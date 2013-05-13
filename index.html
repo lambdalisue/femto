@@ -67,7 +67,7 @@
 <p>A well tested simple and powerful web based text editor. Try the demo below</p>
 
 <div id="demo">
-  <textarea id="femto-demo"></textarea>
+  <textarea id="femto-demo">You can change Markup parser by clicking here ----&gt;</textarea>
   <p><small>
     <code>TAB</code> to Indent. <code>Shift + TAB</code> to Outdent.<br>
     <code>RETURN</code> to Keep Indent. <code>Shift + RETURN</code> to Not.<br>
@@ -87,8 +87,14 @@ It helps user to write these kind of text with the following features:</p>
 <p>femto has a viewer panel to check the output of the current text.
 It support Template system so you can change the looks of the preview.
 It also support Render system so you can use Markdown, reStructuredText or so
-on.
-It is under developping now</p>
+on. (See DocumentType for more detail)</p>
+</li>
+<li>
+<p><strong>DocumentType</strong></p>
+
+<p>The preview system of femto support render system. So if you pass
+  <code>documentTypes</code> option, femto automatically add select field to
+  select document type. See the usage below for more detail.</p>
 </li>
 <li>
 <p><strong>Undo &amp; Redo (bundle)</strong></p>
@@ -216,6 +222,52 @@ following the steps below:</p>
 <span class="nx">textarea</span> <span class="o">=</span> <span class="nx">Femto</span><span class="p">.</span><span class="nx">transform</span><span class="p">(</span><span class="nx">textarea</span><span class="p">);</span>
 </pre></div>
 
+
+<h3>Enable Markup language (DocumentType)</h3>
+
+<p>You can use any external libraries to convert markup into html.</p>
+
+<p>See the sample code below (<a href="https://github.com/chjj/marked">chjj/marked</a>,
+<a href="https://github.com/borgar/textile-js">borgar/textile.js</a> and
+<a href="https://github.com/nitoyon/text-hatena.js">nitoyon/text-hatena.js</a> are used in
+the following code.)</p>
+
+<div class="highlight"><pre><span class="c">&lt;!-- marked by chjj --&gt;</span>
+<span class="nt">&lt;script </span><span class="na">src=</span><span class="s">"https://raw.github.com/chjj/marked/master/lib/marked.js"</span><span class="nt">&gt;&lt;/script&gt;</span>
+<span class="c">&lt;!-- textile-js by borgar --&gt;</span>
+<span class="nt">&lt;script </span><span class="na">src=</span><span class="s">"https://raw.github.com/borgar/textile-js/master/lib/textile.js"</span><span class="nt">&gt;&lt;/script&gt;</span>
+<span class="c">&lt;!-- text-hatena.js by nitoyon --&gt;</span>
+<span class="nt">&lt;script </span><span class="na">src=</span><span class="s">"https://raw.github.com/nitoyon/text-hatena.js/master/text-hatena.js"</span><span class="nt">&gt;&lt;/script&gt;</span>
+<span class="nt">&lt;script </span><span class="na">src=</span><span class="s">"femto/femto.js"</span><span class="nt">&gt;&lt;/script&gt;</span>
+<span class="nt">&lt;script&gt;</span>
+    <span class="nx">$</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+        <span class="kd">var</span> <span class="nx">markdown_filter</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">text</span><span class="p">)</span> <span class="p">{</span>
+            <span class="nx">marked</span><span class="p">.</span><span class="nx">setOptions</span><span class="p">({</span><span class="nx">gfm</span><span class="o">:</span> <span class="kc">false</span><span class="p">,</span> <span class="nx">tables</span><span class="o">:</span> <span class="kc">false</span><span class="p">,</span> <span class="nx">breaks</span><span class="o">:</span> <span class="kc">false</span><span class="p">});</span>
+            <span class="k">return</span> <span class="nx">marked</span><span class="p">(</span><span class="nx">text</span><span class="p">);</span>
+        <span class="p">};</span>
+        <span class="kd">var</span> <span class="nx">gfm_filter</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">text</span><span class="p">)</span> <span class="p">{</span>
+            <span class="nx">marked</span><span class="p">.</span><span class="nx">setOptions</span><span class="p">({</span><span class="nx">gfm</span><span class="o">:</span> <span class="kc">true</span><span class="p">,</span> <span class="nx">tables</span><span class="o">:</span> <span class="kc">true</span><span class="p">,</span> <span class="nx">breaks</span><span class="o">:</span> <span class="kc">true</span><span class="p">});</span>
+            <span class="k">return</span> <span class="nx">marked</span><span class="p">(</span><span class="nx">text</span><span class="p">);</span>
+        <span class="p">};</span>
+        <span class="kd">var</span> <span class="nx">textile_filter</span> <span class="o">=</span> <span class="nx">textile</span><span class="p">;</span>
+        <span class="kd">var</span> <span class="nx">hatena_filter</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">text</span><span class="p">)</span> <span class="p">{</span>
+            <span class="kd">var</span> <span class="nx">parser</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">TextHatena</span><span class="p">();</span>
+            <span class="k">return</span> <span class="nx">parser</span><span class="p">.</span><span class="nx">parse</span><span class="p">(</span><span class="nx">text</span><span class="p">);</span>
+        <span class="p">};</span>
+        <span class="kd">var</span> <span class="nx">options</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="nx">documentTypes</span><span class="o">:</span> <span class="p">{</span>
+            <span class="s1">'markdown'</span><span class="o">:</span> <span class="nx">markdown_filter</span><span class="p">,</span>
+            <span class="s1">'gfm'</span><span class="o">:</span> <span class="nx">gfm_filter</span><span class="p">,</span>
+            <span class="s1">'textile'</span><span class="o">:</span> <span class="nx">textile_filter</span><span class="p">,</span>
+            <span class="s1">'Hatena'</span><span class="o">:</span> <span class="nx">hatena_filter</span>
+            <span class="p">}</span>
+        <span class="p">};</span>
+        <span class="kd">var</span> <span class="nx">femto</span><span class="p">;</span>
+        <span class="nx">femto</span> <span class="o">=</span> <span class="nx">$</span><span class="p">(</span><span class="s1">'textarea#femto'</span><span class="p">);</span>
+        <span class="nx">femto</span> <span class="o">=</span> <span class="nx">Femto</span><span class="p">.</span><span class="nx">transform</span><span class="p">(</span><span class="nx">femto</span><span class="p">,</span> <span class="nx">options</span><span class="p">);</span>
+    <span class="p">}</span>
+<span class="nt">&lt;/script&gt;</span>
+</pre></div>
 <h2>Supported browsers</h2>
 
 <p>The following browsers are
@@ -259,12 +311,36 @@ following the steps below:</p>
     <!-- fake `describe` function to prevent run-time error with test version of
          femto (in case) -->
     <script>window.describe = function(){};</script>
+    <script src="javascripts/marked.js"></script>
+    <script src="javascripts/textile.js"></script>
+    <script src="javascripts/text-hatena.js"></script>
     <script src="javascripts/femto/www/js/femto.js"></script>
     <script>
       $(function() {
+        var markdown_filter = function(text) {
+            marked.setOptions({gfm: false, tables: false, breaks: false});
+            return marked(text);
+        };
+        var gfm_filter = function(text) {
+            marked.setOptions({gfm: true, tables: true, breaks: true});
+            return marked(text);
+        };
+        var textile_filter = textile;
+        var hatena_filter = function(text) {
+            var parser = new TextHatena();
+            return parser.parse(text);
+        };
+        var options = {
+            documentTypes: {
+            'markdown': markdown_filter,
+            'gfm': gfm_filter,
+            'textile': textile_filter,
+            'Hatena': hatena_filter
+            }
+        };
         var textarea;
         textarea = $('textarea#femto-demo');
-        textarea = Femto.transform(textarea);
+        textarea = Femto.transform(textarea, options);
       });
     </script>
     <!--[if !IE]><script>fixScale(document);</script><![endif]-->
