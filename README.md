@@ -1,7 +1,7 @@
 femto [![Build Status](https://travis-ci.org/lambdalisue/femto.png)](https://travis-ci.org/lambdalisue/femto)
 ================================================================================
 
-A well tested simple and powerful web based text editor.
+A well tested simple and powerful web based text editor (Version: 0.1.0).
 
 **femto** allow you to add a simple and powerful text editor on your web site.
 It is assumed to use for writing a Markup text.

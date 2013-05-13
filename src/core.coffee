@@ -2,6 +2,13 @@
 #<< widget/widget
 #<< widget/editor
 #<< widget/viewer
+###
+Femto (0.1.0)
+
+Author: Alisue
+Email:  lambdalisue@hashnote.net
+Web:    http://hashnote.net/
+###
 transform = (textarea, options) ->
   options = jQuery.extend({
       'template': new Femto.utils.Template()
