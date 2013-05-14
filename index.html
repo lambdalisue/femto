@@ -4,6 +4,8 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="chrome=1">
     <title>Femto by lambdalisue</title>
+    <link rel="stylesheet"
+      href="http://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css">
     <link rel="stylesheet" href="stylesheets/styles.css">
     <link rel="stylesheet" href="stylesheets/pygment_trac.css">
     <link rel="stylesheet" href="javascripts/femto/www/css/app.css">
@@ -27,8 +29,8 @@
         content: "☒ ";
       }
     </style>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
-    <script>window.jQuery || document.write('<script src="javascripts/jquery-1.8.0.min.js"><\/script>')</script>
+    <script src="http://code.jquery.com/jquery-1.9.1.js"></script>
+    <script src="http://code.jquery.com/ui/1.10.3/jquery-ui.js"></script>
     <script src="javascripts/respond.js"></script>
     <!--[if lt IE 9]>
       <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
@@ -45,9 +47,9 @@
           <li class="fork"><a href="https://github.com/lambdalisue/femto">View On GitHub</a></li>
           <li class="test"><a href="test.html">Run Tests</a></li>
           <li class="downloads"><a
-              href="https://raw.github.com/lambdalisue/femto/master/publish/femto.0.1.0.zip">ZIP</a></li>
+              href="https://raw.github.com/lambdalisue/femto/master/publish/femto.zip">ZIP</a></li>
           <li class="downloads"><a
-              href="https://raw.github.com/lambdalisue/femto/master/publish/femto.0.1.0.tar.gz">TAR</a></li>
+              href="https://raw.github.com/lambdalisue/femto/master/publish/femto.tar.gz">TAR</a></li>
           <li class="title">DOWNLOADS</li>
         </nav>
       </div><!-- end header -->
@@ -66,10 +68,19 @@
         <h1>femto <a href="https://travis-ci.org/lambdalisue/femto"><img src="https://travis-ci.org/lambdalisue/femto.png" alt="Build Status"></a>
 </h1>
 
-<p>A well tested simple and powerful web based text editor. Try the demo below</p>
+<p>A simple and powerful web based text editor. Try the demo below</p>
 
 <div id="demo">
-  <textarea id="femto-demo">You can change Markup parser by clicking here ----&gt;</textarea>
+  <textarea id="femto-demo">
+femto
+=========================================
+
+This text is written in
+[Markdown](http://daringfireball.net/projects/markdown/).
+
+Hit `Shift + Right` to see converted HTML. You can also write the text as
+Github flavored markdown, Textile, Hatena or so on.
+  </textarea>
   <p><small>
     <code>TAB</code> to Indent. <code>Shift + TAB</code> to Outdent.<br>
     <code>RETURN</code> to Keep Indent. <code>Shift + RETURN</code> to Not.<br>
@@ -176,8 +187,8 @@ following the steps below:</p>
 <p>Copy and rename <code>femto.js</code> and <code>app.css</code> to your project</p>
 
 <div class="highlight"><pre>% mkdir -p ~/femto
-% copy ./www/js/femto.js ~/femto/femto.0.0.0.js
-% copy ./www/css/app.css ~/femto/femto.0.0.0.css
+% copy ./www/js/femto.js ~/femto/femto.js
+% copy ./www/css/app.css ~/femto/femto.css
 </pre></div>
 </li>
 <li>
@@ -185,12 +196,12 @@ following the steps below:</p>
 
 <div class="highlight"><pre><span class="nt">&lt;html&gt;</span>
     <span class="nt">&lt;head&gt;</span>
-        <span class="nt">&lt;link</span> <span class="na">rel=</span><span class="s">"stylesheet"</span> <span class="na">href=</span><span class="s">"femto/femto.0.0.0.css"</span><span class="nt">&gt;</span>
+        <span class="nt">&lt;link</span> <span class="na">rel=</span><span class="s">"stylesheet"</span> <span class="na">href=</span><span class="s">"femto/femto.css"</span><span class="nt">&gt;</span>
     <span class="nt">&lt;/head&gt;</span>
     <span class="nt">&lt;body&gt;</span>
         <span class="nt">&lt;textarea</span> <span class="na">id=</span><span class="s">"femto-demo"</span><span class="nt">&gt;&lt;/textarea&gt;</span>
         <span class="nt">&lt;script </span><span class="na">src=</span><span class="s">"//ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"</span><span class="nt">&gt;&lt;/script&gt;</span>
-        <span class="nt">&lt;script </span><span class="na">src=</span><span class="s">"femto/femto.0.0.0.js"</span><span class="nt">&gt;&lt;/script&gt;</span>
+        <span class="nt">&lt;script </span><span class="na">src=</span><span class="s">"femto/femto.js"</span><span class="nt">&gt;&lt;/script&gt;</span>
         <span class="nt">&lt;script&gt;</span>
             <span class="nx">$</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
                 <span class="kd">var</span> <span class="nx">textarea</span><span class="p">;</span>
@@ -319,6 +330,11 @@ the following code.)</p>
     <script src="javascripts/femto/www/js/femto.js"></script>
     <script>
       $(function() {
+        // Template
+        var template = new Femto.utils.Template(
+        null,
+        "javascripts/femto/www/js/femto.template");
+        // DocumentType
         var markdown_filter = function(text) {
             marked.setOptions({gfm: false, tables: false, breaks: false});
             return marked(text);
@@ -333,6 +349,7 @@ the following code.)</p>
             return parser.parse(text);
         };
         var options = {
+            template: template,
             documentTypes: {
             'markdown': markdown_filter,
             'gfm': gfm_filter,
@@ -343,6 +360,8 @@ the following code.)</p>
         var textarea;
         textarea = $('textarea#femto-demo');
         textarea = Femto.transform(textarea, options);
+        // Enable resizable feature via jQueryUI
+        textarea.resizable({ghost: true});
       });
     </script>
     <!--[if !IE]><script>fixScale(document);</script><![endif]-->
