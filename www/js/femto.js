@@ -1057,13 +1057,18 @@ Cross-browser textarea selection class
   */
 
 
-  DocumentType = function(viewer, documentTypes) {
+  DocumentType = function(viewer, documentTypes, documentTypeField) {
     var elem, fn, key, option, select;
-    select = jQuery('<select>');
+    if (documentTypeField != null) {
+      select = jQuery(documentTypeField);
+    } else {
+      select = jQuery('<select>');
+    }
     elem = Femto.widget.Widget();
     elem.addClass('documentType');
     elem.append(select);
-    elem.select = select;
+    elem.documentTypes = documentTypes;
+    elem.documentTypeField = select;
     for (key in documentTypes) {
       fn = documentTypes[key];
       option = "<option value='" + key + "'>" + key + "</option>";
@@ -1229,7 +1234,7 @@ Cross-browser textarea selection class
     return exports.Editor = Editor;
   });
 
-  Viewer = function(textarea, template) {
+  Viewer = function(textarea, template, parser) {
     var elem, iframe;
     iframe = Femto.widget.IFrame();
     elem = Femto.widget.Widget();
@@ -1239,7 +1244,7 @@ Cross-browser textarea selection class
     elem.textarea = textarea;
     elem.template = template;
     elem.curtain = Femto.utils.Curtain(elem);
-    elem.parser = null;
+    elem.parser = parser;
     elem.init = function() {
       iframe.init();
       return this;
@@ -1261,7 +1266,11 @@ Cross-browser textarea selection class
         });
       };
       if (this.parser != null) {
-        render(this.parser(value));
+        if ((this.parser.async != null) === true) {
+          this.parser(value, render);
+        } else {
+          render(this.parser(value));
+        }
       } else {
         render(value);
       }
@@ -1416,7 +1425,7 @@ Cross-browser textarea selection class
       success = function(data) {
         _this.template = data;
         if (done != null) {
-          return dane(data);
+          return done(data);
         }
       };
       if (this.templateURI !== uri || !(this.template != null) || force) {
@@ -1438,6 +1447,7 @@ Cross-browser textarea selection class
       };
       if (!(this.template != null) && (this.templateURI != null)) {
         this.load(this.templateURI, render, true);
+        return this;
       } else if (!(this.template != null)) {
         this.template = DEFAULT_TEMPLATE;
       }
@@ -1720,16 +1730,18 @@ Cross-browser textarea selection class
       'template': new Femto.utils.Template(),
       'previewModeShortcut': 'Shift+Right',
       'editingModeShortcut': 'Shift+Left',
-      'documentTypes': null
+      'documentTypes': null,
+      'documentTypeField': null,
+      'documentParser': null
     }, options);
     elem = Femto.widget.Widget($('<div>').insertAfter(textarea).hide()).addClass('femto');
     elem.editor = Femto.widget.Editor(textarea);
-    elem.viewer = Femto.widget.Viewer(textarea, options.template);
+    elem.viewer = Femto.widget.Viewer(textarea, options.template, options.documentParser);
     elem.caretaker = elem.editor.caretaker;
     elem.append(elem.editor);
     elem.append(elem.viewer);
     if (options.documentTypes !== null) {
-      elem.documentType = Femto.widget.DocumentType(elem.viewer, options.documentTypes);
+      elem.documentType = Femto.widget.DocumentType(elem.viewer, options.documentTypes, options.documentTypeField);
       elem.editor.append(elem.documentType);
     }
     elem.init = function() {

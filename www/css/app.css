@@ -55,7 +55,7 @@
   box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.2) inset;
 }
 .femto .editor {
-  z-index: 900;
+  z-index: 9;
   -webkit-transform: rotateY(180deg);
   -moz-transform: rotateY(180deg);
   -ms-transform: rotateY(180deg);
@@ -63,7 +63,7 @@
   transform: rotateY(180deg);
 }
 .femto .editor.active {
-  z-index: 900;
+  z-index: 9;
   -webkit-transform: rotateX(0deg) rotateY(0deg);
   -moz-transform: rotateX(0deg) rotateY(0deg);
   -ms-transform: rotateX(0deg) rotateY(0deg);
@@ -75,7 +75,7 @@
 }
 .femto .viewer {
   background: #fff;
-  z-index: 800;
+  z-index: 8;
   -webkit-transform: rotateY(-180deg);
   -moz-transform: rotateY(-180deg);
   -ms-transform: rotateY(-180deg);
@@ -83,7 +83,7 @@
   transform: rotateY(-180deg);
 }
 .femto .viewer.active {
-  z-index: 1000;
+  z-index: 10;
   -webkit-transform: rotateX(0deg) rotateY(0deg);
   -moz-transform: rotateX(0deg) rotateY(0deg);
   -ms-transform: rotateX(0deg) rotateY(0deg);
@@ -94,7 +94,7 @@
   position: absolute;
   top: 1px;
   right: 1px;
-  z-index: 1100;
+  z-index: 11;
   padding: 0.2em;
   -webkit-border-radius: 0 5px 0 10px;
   -moz-border-radius: 0 5px 0 10px;
