@@ -15,17 +15,24 @@ transform = (textarea, options) ->
       'previewModeShortcut': 'Shift+Right'
       'editingModeShortcut': 'Shift+Left'
       'documentTypes': null
+      'documentTypeField': null
+      'documentParser': null
     }, options)
   elem = Femto.widget.Widget($('<div>').insertAfter(textarea).hide())
                           .addClass('femto')
   elem.editor = Femto.widget.Editor(textarea)
-  elem.viewer = Femto.widget.Viewer(textarea, options.template)
+  elem.viewer = Femto.widget.Viewer(textarea,
+    options.template, options.documentParser)
   elem.caretaker = elem.editor.caretaker
   elem.append elem.editor
   elem.append elem.viewer
 
   if options.documentTypes isnt null
-    elem.documentType = Femto.widget.DocumentType(elem.viewer, options.documentTypes)
+    elem.documentType = Femto.widget.DocumentType(
+      elem.viewer,
+      options.documentTypes,
+      options.documentTypeField,
+    )
     elem.editor.append elem.documentType
 
   elem.init = ->

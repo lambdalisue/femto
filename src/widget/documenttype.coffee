@@ -2,12 +2,16 @@
 ###
 Femto DocumentType widget
 ###
-DocumentType = (viewer, documentTypes) ->
-  select = jQuery('<select>')
+DocumentType = (viewer, documentTypes, documentTypeField) ->
+  if documentTypeField?
+    select = jQuery(documentTypeField)
+  else
+    select = jQuery('<select>')
   elem = Femto.widget.Widget()
   elem.addClass('documentType')
   elem.append(select)
-  elem.select = select
+  elem.documentTypes = documentTypes
+  elem.documentTypeField = select
   # create options
   for key, fn of documentTypes
     option = "<option value='#{key}'>#{key}</option>"

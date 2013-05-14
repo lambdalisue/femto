@@ -1,7 +1,7 @@
 femto [![Build Status](https://travis-ci.org/lambdalisue/femto.png)](https://travis-ci.org/lambdalisue/femto)
 ================================================================================
 
-A well tested simple and powerful web based text editor (Version: 0.1.0).
+A well tested simple and powerful web based text editor (Version: 0.1.1).
 
 **femto** allow you to add a simple and powerful text editor on your web site.
 It is assumed to use for writing a Markup text.
@@ -53,48 +53,34 @@ It helps user to write these kind of text with the following features:
 
 Usage
 --------------------------------------------------------------------------------
-femto is under developped yet. If you want to try femto, you can follow the
-steps below:
 
-1.  Clone git repository on your hard disk with
+1.  Download the following files
 
+    - [femto.js](https://raw.github.com/lambdalisue/femto/master/publish/femto.js)
+    - [femto.css](https://raw.github.com/lambdalisue/femto/master/publish/femto.css)
 
-    ```sh
-    % git clone https://github.com/lambdalisue/femto.git
-    % cd femto
+2.  Copy the files into `femto` directory like
+
+    ```
+    + www
+        +- index.html
+        +- js
+            +- femto
+                +- femto.js
+                +- femto.css
     ```
 
-2.  Install required library to build femto with
-
-    ```sh
-    % npm install
-    ```
-
-3.  Build femto with
-
-    ```sh
-    % ./node_modules/coffee-script/bin/cake release
-    ```
-
-4.  Copy and rename `femto.js` and `femto.css` to your project
-
-    ```sh
-    % mkdir -p ~/femto
-    % copy ./www/js/femto.js ~/femto/femto.js
-    % copy ./www/css/femto.css ~/femto/femto.css
-    ```
-
-5.  Write HTML as:
+3.  Write `index.html` as:
 
     ```html
     <html>
         <head>
-            <link rel="stylesheet" href="femto/femto.css">
+            <link rel="stylesheet" href="js/femto/femto.css">
         </head>
         <body>
             <textarea id="femto-demo"></textarea>
             <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
-            <script src="femto/femto.js"></script>
+            <script src="js/femto/femto.js"></script>
             <script>
                 $(function() {
                     var textarea;

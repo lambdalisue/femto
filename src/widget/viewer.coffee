@@ -1,6 +1,6 @@
 #<< widget/widget
 #<< widget/iframe
-Viewer = (textarea, template) ->
+Viewer = (textarea, template, parser) ->
   iframe = Femto.widget.IFrame()
   elem = Femto.widget.Widget()
   elem.addClass('panel').addClass('viewer')
@@ -9,7 +9,7 @@ Viewer = (textarea, template) ->
   elem.textarea = textarea
   elem.template = template
   elem.curtain = Femto.utils.Curtain(elem)
-  elem.parser = null
+  elem.parser = parser
   elem.init = ->
     iframe.init()
     return @
@@ -23,7 +23,10 @@ Viewer = (textarea, template) ->
     render = (value) =>
       @template.render(value, (value) => @iframe.write(value))
     if @parser?
-      render(@parser(value))
+      if @parser.async? is true
+        @parser(value, render)
+      else
+        render(@parser(value))
     else
       render(value)
     return @

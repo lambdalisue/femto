@@ -1,5 +1,6 @@
 node_modules
 javascripts
+javascripts/femto
 www/js/app.js
 www/js/app-debug.js
 www/js/toaster
