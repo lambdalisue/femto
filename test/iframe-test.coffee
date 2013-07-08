@@ -4,21 +4,19 @@ describe 'Femto.widget.IFrame', ->
 
   before ->
     instance = IFrame()
-    $(document).append instance
+    $(document.body).append instance
     instance.init()
 
   it 'should return jQuery instance', ->
     expect(instance).to.be.a(jQuery)
 
   expected_css = [
-    ['margin', '0']
-    ['padding', '0']
-    ['border', 'none']
-    ['outline', 'none']
+    ['margin', '']
+    ['padding', '']
+    ['border', '']
+    ['outline', '']
     ['resize', 'none']
     ['overflow', 'scroll']
-    ['width', '100%']
-    ['height', '100%']
   ]
   for [name, value] in expected_css then do (name, value) ->
     it "return instance CSS `#{name}` should be `#{value}`", ->
@@ -44,3 +42,31 @@ describe 'Femto.widget.IFrame', ->
     it 'should return the instance', ->
       r = instance.blur()
       expect(r).to.be.eql(instance)
+
+  describe '#init() -> instance', ->
+    it 'should return the instance', ->
+      r = instance.init()
+      expect(r).to.be.eql(instance)
+
+  describe '#write() -> instance', ->
+    it 'should return the instance', ->
+      r = instance.write("")
+      expect(r).to.be.eql(instance)
+
+    it 'should update document body', ->
+      instance.document.body.innerHTML = ""
+      expect(instance.document.body.innerHTML).to.be.eql("")
+
+      instance.write("Hello World")
+      expect(instance.document.body.innerHTML).to.be.eql("Hello World")
+
+      instance.write("<b>Hello</b>")
+      expect(instance.document.body.innerHTML).to.be.eql("<b>Hello</b>")
+
+    it 'should overwrite all target property of anchor links', ->
+      instance.write("<a>Hello</a>")
+      expect(instance.document.body.innerHTML)
+        .to.be.eql("<a target=\"_blank\">Hello</a>")
+      instance.write("<a>Hello</a><a target=\"_top\">World</a>")
+      expect(instance.document.body.innerHTML)
+        .to.be.eql("<a target=\"_blank\">Hello</a><a target=\"_blank\">World</a>")

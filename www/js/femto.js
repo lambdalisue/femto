@@ -3757,13 +3757,13 @@ Cross-browser textarea selection class
     textarea = instance = null;
     before(function() {
       instance = IFrame();
-      $(document).append(instance);
+      $(document.body).append(instance);
       return instance.init();
     });
     it('should return jQuery instance', function() {
       return expect(instance).to.be.a(jQuery);
     });
-    expected_css = [['margin', '0'], ['padding', '0'], ['border', 'none'], ['outline', 'none'], ['resize', 'none'], ['overflow', 'scroll'], ['width', '100%'], ['height', '100%']];
+    expected_css = [['margin', ''], ['padding', ''], ['border', ''], ['outline', ''], ['resize', 'none'], ['overflow', 'scroll']];
     _fn = function(name, value) {
       return it("return instance CSS `" + name + "` should be `" + value + "`", function() {
         return expect(instance.css(name)).to.be.eql(value);
@@ -3791,11 +3791,39 @@ Cross-browser textarea selection class
         return expect(r).to.be.eql(instance);
       });
     });
-    return describe('#blur() -> instance', function() {
+    describe('#blur() -> instance', function() {
       return it('should return the instance', function() {
         var r;
         r = instance.blur();
         return expect(r).to.be.eql(instance);
+      });
+    });
+    describe('#init() -> instance', function() {
+      return it('should return the instance', function() {
+        var r;
+        r = instance.init();
+        return expect(r).to.be.eql(instance);
+      });
+    });
+    return describe('#write() -> instance', function() {
+      it('should return the instance', function() {
+        var r;
+        r = instance.write("");
+        return expect(r).to.be.eql(instance);
+      });
+      it('should update document body', function() {
+        instance.document.body.innerHTML = "";
+        expect(instance.document.body.innerHTML).to.be.eql("");
+        instance.write("Hello World");
+        expect(instance.document.body.innerHTML).to.be.eql("Hello World");
+        instance.write("<b>Hello</b>");
+        return expect(instance.document.body.innerHTML).to.be.eql("<b>Hello</b>");
+      });
+      return it('should overwrite all target property of anchor links', function() {
+        instance.write("<a>Hello</a>");
+        expect(instance.document.body.innerHTML).to.be.eql("<a target=\"_blank\">Hello</a>");
+        instance.write("<a>Hello</a><a target=\"_top\">World</a>");
+        return expect(instance.document.body.innerHTML).to.be.eql("<a target=\"_blank\">Hello</a><a target=\"_blank\">World</a>");
       });
     });
   });
