@@ -1,3 +1,4 @@
+#<< parsers/parser
 #<< widget/widget
 #<< widget/iframe
 Viewer = (textarea, template, parser) ->
@@ -9,6 +10,8 @@ Viewer = (textarea, template, parser) ->
   elem.textarea = textarea
   elem.template = template
   elem.curtain = Femto.utils.Curtain(elem)
+  if parser? and not parser instanceof Parser
+    parser = new Parser(parser)
   elem.parser = parser
   elem.init = ->
     iframe.init()
@@ -29,6 +32,14 @@ Viewer = (textarea, template, parser) ->
         render(@parser(value))
     else
       render(value)
+    return @
+  elem.wait = ->
+    elem.curtain.addClass 'waiting'
+    elem.curtain.show()
+    return @
+  elem.done = ->
+    elem.curtain.hide()
+    elem.curtain.removeClass 'waiting'
     return @
   return elem
 

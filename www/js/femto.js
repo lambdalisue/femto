@@ -294,7 +294,7 @@ Cross-browser textarea selection class
 
 
 (function() {
-  var AutoIndenty, Caretaker, Curtain, DEFAULT_TEMPLATE, DocumentType, Editor, IESelection, IFrame, Indenty, Originator, Template, Viewer, W3CSelection, Widget, autoIndent, indent, makeTabString, transform, type,
+  var AjaxParser, AutoIndenty, Caretaker, Curtain, DEFAULT_TEMPLATE, DocumentType, Editor, IESelection, IFrame, Indenty, Originator, Parser, Template, Viewer, W3CSelection, Widget, autoIndent, indent, makeTabString, transform, type,
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
     __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
@@ -727,741 +727,6 @@ Cross-browser textarea selection class
     });
   }
 
-  Curtain = function(widget) {
-    var elem;
-    if (widget.css('position') === 'static') {
-      widget.css('position', 'relative');
-    }
-    elem = $('<div>').appendTo(widget).hide().css({
-      position: 'absolute',
-      top: 0,
-      left: 0,
-      overflow: 'hidden',
-      'z-index': 10000,
-      width: '100%',
-      height: '100%'
-    });
-    elem.adjust = function() {
-      this.width(widget.outerWidth(true));
-      this.height(height.outerHeight(true));
-      return this;
-    };
-    elem.show = function() {
-      this.adjust();
-      jQuery.prototype.show.apply(this, arguments);
-      return this;
-    };
-    return elem;
-  };
-
-  namespace('Femto.utils', function(exports) {
-    return exports.Curtain = Curtain;
-  });
-
-  /*
-  Base class for Originator
-  
-  @example
-    class Notebook extends utils.Originator
-      constructor: ->
-        @value = ""
-      createMemento: -> @value
-      setMemento: (memento) -> @value = memento
-  */
-
-
-  Originator = (function() {
-
-    function Originator() {}
-
-    /*
-      Create memento of the instance
-    
-      @return [Object] a memento of the instance
-    
-      @note Subclass must overload this method
-      @throw Not implemented yet
-    */
-
-
-    Originator.prototype.createMemento = function() {
-      throw Error("Not implemented yet");
-    };
-
-    /*
-      Set memento of the instance
-    
-      @param [Object] memento a memento of the instance
-    
-      @note Subclass must overload this method
-      @throw Not implemented yet
-    */
-
-
-    Originator.prototype.setMemento = function(memento) {
-      throw Error("Not implemented yet");
-    };
-
-    return Originator;
-
-  })();
-
-  /*
-  Caretaker of `Originator`
-  
-  @example
-    # see the example of Originator
-    notebook = new Notebook()
-    notebook.caretaker = new Caretaker(notebook)
-    # save the changes
-    notebook.caretaker.save()
-    # undo the changes
-    notebook.caretaker.undo()
-    # redo the changes
-    notebook.caretaker.redo()
-  */
-
-
-  Caretaker = (function() {
-    /*
-      Constructor
-    
-      @param [Originator] originator an instance of originator subclass
-      @return [Caretaker] the new instance
-    */
-
-    function Caretaker(originator) {
-      this._originator = originator;
-      this._undoStack = [];
-      this._redoStack = [];
-      this._previous = null;
-    }
-
-    /*
-      Get originator when called without any argument.
-      Set originator when called with an argument.
-    
-      @param [Originator] originator set originator of the instance to this.
-      @return [Originator, Caretaker] return Originator instance when called
-        without any argument. return this instance when called with an argument.
-    */
-
-
-    Caretaker.prototype.originator = function(originator) {
-      if (originator != null) {
-        this._originator = originator;
-        return this;
-      }
-      return this._originator;
-    };
-
-    /*
-      Save a memento of the originator to the undo memento stack.
-      Nothing will be saved if the same memento was saved previously.
-    
-      @param [Object] memento a memento to store. `createMemento()` of the
-        originator will be used when no memento is specified.
-      @return [Caretaker] the instance
-    */
-
-
-    Caretaker.prototype.save = function(memento) {
-      memento = memento || this.originator().createMemento();
-      if (!(this._previous != null) || this._previous !== memento) {
-        this._undoStack.push(memento);
-        this._redoStack = [];
-        this._previous = memento;
-      }
-      return this;
-    };
-
-    /*
-      Restore a value of the originator from the undo memento stack.
-      The current value of the originator will be stack on the redo memento stack.
-    
-      @return [Caretaker] the instance
-    
-      @note Nothing will be happen when no memento was stacked on undo memento stack.
-    */
-
-
-    Caretaker.prototype.undo = function() {
-      var originator;
-      if (!this.canUndo()) {
-        return this;
-      }
-      originator = this.originator();
-      this._redoStack.push(originator.createMemento());
-      originator.setMemento(this._undoStack.pop());
-      return this;
-    };
-
-    /*
-      Restore a value of the originator from the redo memento stack.
-      The current value of the originator will be stack on the undo memento stack.
-    
-      @return [Caretaker] the instance
-    
-      @note Nothing will be happen when no memento was stacked on redo memento stack.
-    */
-
-
-    Caretaker.prototype.redo = function() {
-      var originator;
-      if (!this.canRedo()) {
-        return this;
-      }
-      originator = this.originator();
-      this._undoStack.push(originator.createMemento());
-      originator.setMemento(this._redoStack.pop());
-      return this;
-    };
-
-    /*
-      Return whether the undo memento stack isn't empty or not
-    
-      @return [Boolean] return `true` if the undo memento stack is not empty
-    */
-
-
-    Caretaker.prototype.canUndo = function() {
-      return this._undoStack.length > 0;
-    };
-
-    /*
-      Return whether the redo memento stack isn't empty or not
-    
-      @return [Boolean] return `true` if the redo memento stack is not empty
-    */
-
-
-    Caretaker.prototype.canRedo = function() {
-      return this._redoStack.length > 0;
-    };
-
-    return Caretaker;
-
-  })();
-
-  if (typeof exports !== "undefined" && exports !== null) {
-    exports.Originator = Originator;
-    exports.Caretaker = Caretaker;
-  }
-
-  if (typeof namespace !== "undefined" && namespace !== null) {
-    namespace('Femto.utils', function(exports) {
-      exports.Originator = Originator;
-      return exports.Caretaker = Caretaker;
-    });
-  }
-
-  /*
-  Better `typeof` method of javascript
-  
-  @param [Object] obj object you want to check the type
-  @return [String] type
-  
-  @example
-    > utils.type(1)
-    'number'
-    > utils.type('1')
-    'string'
-    > utils.type(new String('1'))
-    'string'
-  
-  @see http://coffeescriptcookbook.com/chapters/classes_and_objects/type-function
-  */
-
-
-  type = function(obj) {
-    var classToType, myClass, name, _i, _len, _ref;
-    if (obj === void 0 || obj === null) {
-      return String(obj);
-    }
-    classToType = new Object;
-    _ref = "Boolean Number String Function Array Date RegExp".split(" ");
-    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-      name = _ref[_i];
-      classToType["[object " + name + "]"] = name.toLowerCase();
-    }
-    myClass = Object.prototype.toString.call(obj);
-    if (myClass in classToType) {
-      return classToType[myClass];
-    }
-    return "object";
-  };
-
-  namespace('Femto.utils', function(exports) {
-    return exports.type = type;
-  });
-
-  Widget = function(selector, context) {
-    var elem, _outerHeight, _outerWidth;
-    if (selector == null) {
-      selector = '<div>';
-    }
-    if (selector instanceof jQuery) {
-      elem = selector;
-    } else {
-      elem = $(selector, context);
-    }
-    _outerWidth = jQuery.prototype.outerWidth;
-    _outerHeight = jQuery.prototype.outerHeight;
-    elem.nonContentWidth = function(includeMargin) {
-      if (includeMargin == null) {
-        includeMargin = false;
-      }
-      return _outerWidth.call(this, includeMargin) - this.width();
-    };
-    elem.nonContentHeight = function(includeMargin) {
-      if (includeMargin == null) {
-        includeMargin = false;
-      }
-      return _outerHeight.call(this, includeMargin) - this.height();
-    };
-    elem.outerWidth = function(includeMargin, value) {
-      var offset;
-      if (Femto.utils.type(includeMargin) === 'number') {
-        value = includeMargin;
-        includeMargin = false;
-      }
-      if (!(value != null)) {
-        return _outerWidth.call(this);
-      }
-      offset = this.nonContentWidth(includeMargin);
-      return this.width(value - offset);
-    };
-    elem._outerHeight = elem.outerHeight;
-    elem.outerHeight = function(includeMargin, value) {
-      var offset;
-      if (Femto.utils.type(includeMargin) === 'number') {
-        value = includeMargin;
-        includeMargin = false;
-      }
-      if (!(value != null)) {
-        return _outerHeight.call(this);
-      }
-      offset = this.nonContentHeight(includeMargin);
-      return this.height(value - offset);
-    };
-    elem.widget = true;
-    return elem;
-  };
-
-  namespace('Femto.widget', function(exports) {
-    return exports.Widget = Widget;
-  });
-
-  /*
-  Femto DocumentType widget
-  */
-
-
-  DocumentType = function(viewer, documentTypes, documentTypeField) {
-    var elem, fn, key, option, select;
-    if (documentTypeField != null) {
-      select = jQuery(documentTypeField);
-    } else {
-      select = jQuery('<select>');
-    }
-    elem = Femto.widget.Widget();
-    elem.addClass('documentType');
-    elem.append(select);
-    elem.documentTypes = documentTypes;
-    elem.documentTypeField = select;
-    for (key in documentTypes) {
-      fn = documentTypes[key];
-      option = "<option value='" + key + "'>" + key + "</option>";
-      select.append(jQuery(option));
-    }
-    select.change(function() {
-      fn = documentTypes[select.val()];
-      return viewer.parser = fn;
-    });
-    select.change();
-    return elem;
-  };
-
-  namespace('Femto.widget', function(exports) {
-    return exports.DocumentType = DocumentType;
-  });
-
-  IFrame = function() {
-    var doc, elem, raw;
-    raw = doc = null;
-    elem = Femto.widget.Widget('<iframe>');
-    elem.css({
-      margin: 0,
-      padding: 0,
-      border: 'none',
-      outline: 'none',
-      resize: 'none',
-      overflow: 'scroll',
-      width: '100%',
-      height: '100%'
-    });
-    elem.attr('frameborder', 0);
-    elem.focus = function() {
-      raw.contentWindow.focus();
-      return this;
-    };
-    elem.blur = function() {
-      raw.contentWindow.document.body.blur();
-      return this;
-    };
-    elem.init = function() {
-      var style;
-      raw = this.get(0);
-      if (raw.contentDocument != null) {
-        doc = raw.contentDocument;
-      } else {
-        doc = raw.contentWindow.document;
-      }
-      doc.write('<body></body>');
-      style = doc.body.style;
-      style.margin = '0';
-      style.padding = '0';
-      style.width = '100%';
-      style.height = '100%';
-      this.document = doc;
-      return this;
-    };
-    elem.write = function(value) {
-      var scrollTop;
-      if (doc != null) {
-        try {
-          scrollTop = doc.documentElement.scrollTop;
-        } catch (e) {
-          scrollTop = 0;
-        }
-        doc.open();
-        doc.write(value);
-        doc.close();
-        $(doc).find('a').attr('target', '_blank');
-        doc.documentElement.scrollTop = scrollTop;
-      }
-      return this;
-    };
-    return elem;
-  };
-
-  namespace('Femto.widget', function(exports) {
-    return exports.IFrame = IFrame;
-  });
-
-  /*
-  Femto Editor widget
-  
-  @param [jQuery] textarea A jQuery instance of target textarea DOM element
-  @return [jQuery extend] extended jQuery instance which contains the textarea
-  
-  @example
-    textarea = document.createElement('textarea')
-    textarea = jQuery(textarea)
-    editor = Femto.widget.Editor(textarea)
-    # set focus
-    editor.focus()
-    # set value
-    editor.val("Hello")
-    # get value
-    console.log editor.val()
-  */
-
-
-  Editor = function(textarea) {
-    var elem, raw;
-    raw = textarea.get(0);
-    textarea = Femto.widget.Widget(textarea);
-    textarea.css({
-      margin: '0',
-      padding: '0',
-      border: 'none',
-      outline: 'none',
-      resize: 'none',
-      width: '100%',
-      height: '100%'
-    });
-    textarea.setMemento = textarea.val;
-    textarea.createMemento = textarea.val;
-    textarea._caretaker = new Femto.utils.Caretaker(textarea);
-    textarea._caretaker.save();
-    textarea._selection = new Femto.utils.Selection(raw);
-    elem = Femto.widget.Widget();
-    elem.addClass('panel').addClass('editor');
-    elem.append(textarea);
-    elem.textarea = textarea;
-    elem.selection = textarea._selection;
-    elem.caretaker = textarea._caretaker;
-    /*
-      Focus the widget
-    */
-
-    elem.focus = function() {
-      textarea.focus();
-      return this;
-    };
-    /*
-      Get or set the value of the widget
-    */
-
-    elem.val = function() {
-      return textarea.val.apply(textarea, arguments);
-    };
-    textarea.on('keydown', function(e) {
-      var _ref;
-      if ((_ref = e.which) === 13 || _ref === 9 || _ref === 8 || _ref === 46) {
-        textarea._caretaker.save();
-      }
-      if (e.which === 90 && e.ctrlKey) {
-        if (e.shiftKey) {
-          textarea._caretaker.redo();
-        } else {
-          textarea._caretaker.undo();
-        }
-        e.stopPropagation();
-        e.stopImmediatePropagation();
-        e.preventDefault();
-        return false;
-      }
-    });
-    textarea.on('paste,drop', function(e) {
-      return textarea._caretaker.save();
-    });
-    return elem;
-  };
-
-  namespace('Femto.widget', function(exports) {
-    return exports.Editor = Editor;
-  });
-
-  Viewer = function(textarea, template, parser) {
-    var elem, iframe;
-    iframe = Femto.widget.IFrame();
-    elem = Femto.widget.Widget();
-    elem.addClass('panel').addClass('viewer');
-    elem.append(iframe);
-    elem.iframe = iframe;
-    elem.textarea = textarea;
-    elem.template = template;
-    elem.curtain = Femto.utils.Curtain(elem);
-    elem.parser = parser;
-    elem.init = function() {
-      iframe.init();
-      return this;
-    };
-    elem.focus = function() {
-      iframe.focus();
-      return this;
-    };
-    elem.blur = function() {
-      iframe.blur();
-      return this;
-    };
-    elem.val = function(value) {
-      var render,
-        _this = this;
-      render = function(value) {
-        return _this.template.render(value, function(value) {
-          return _this.iframe.write(value);
-        });
-      };
-      if (this.parser != null) {
-        if ((this.parser.async != null) === true) {
-          this.parser(value, render);
-        } else {
-          render(this.parser(value));
-        }
-      } else {
-        render(value);
-      }
-      return this;
-    };
-    return elem;
-  };
-
-  namespace('Femto.widget', function(exports) {
-    return exports.Viewer = Viewer;
-  });
-
-  /*
-  Cross-browser textarea auto indent manager
-  
-  @example
-    textarea = document.createElement('textarea')
-    textarea.autoIndenty = new AutoIndenty(jQuery(textarea))
-    # insert newline after current caret with appropriate indent characters
-    textarea.autoIndenty.insertNewLine
-    # enable auto indent
-    textarea.autoIndenty.enable()
-    # disable auto indent
-    textarea.autoIndenty.disable()
-  */
-
-
-  AutoIndenty = (function() {
-    /*
-      Constructor
-    
-      @param [jQuery] textarea A jQuery instance of target textarea DOM element
-      @param [bool] expandTab When true, use SPACE insted of TAB for indent
-      @param [integer] indentLevel An indent level. Enable only when expandTab is `true`
-    */
-
-    function AutoIndenty(textarea, expandTab, indentLevel) {
-      var tabString;
-      this.textarea = textarea;
-      this.expandTab = expandTab != null ? expandTab : true;
-      this.indentLevel = indentLevel != null ? indentLevel : 4;
-      this._keyDownEvent = __bind(this._keyDownEvent, this);
-
-      if (!(this.textarea instanceof jQuery)) {
-        this.textarea = jQuery(this.textarea);
-      }
-      if (this.textarea._selection != null) {
-        this._selection = this.textarea._selection;
-      } else {
-        this._selection = new Femto.utils.Selection(this.textarea.get(0));
-        this.textarea._selection = this._selection;
-      }
-      if (this.expandTab) {
-        tabString = Femto.utils.Indenty._makeTabString(this.indentLevel);
-      } else {
-        tabString = "\t";
-      }
-      this._pattern = new RegExp("^(?:" + tabString + ")*");
-    }
-
-    /*
-      Insert newline after the current caret position
-      with appropriate indent characters (keep previous indent level)
-    
-      @return [AutoIndenty] the instance
-    */
-
-
-    AutoIndenty.prototype.insertNewLine = function() {
-      var e, indent, insert, ls, s, text, _ref;
-      _ref = this._selection.caret(), s = _ref[0], e = _ref[1];
-      text = this._selection._getWholeText();
-      ls = text.lastIndexOf('\n', e - 1) + 1;
-      indent = text.slice(ls, e).match(this._pattern);
-      insert = "\n" + indent;
-      this._selection.insertAfter(insert, false);
-      if (s === e) {
-        this._selection.caret(s + insert.length, s + insert.length);
-      } else {
-        this._selection.caret(s, e + insert.length);
-      }
-      return this;
-    };
-
-    AutoIndenty.prototype._keyDownEvent = function(e) {
-      var RETURN, _ref;
-      RETURN = 13;
-      if (e.which !== RETURN) {
-        return true;
-      }
-      if (e.shiftKey) {
-        return true;
-      }
-      this.insertNewLine();
-      if ((_ref = this.textarea._caretaker) != null) {
-        _ref.save();
-      }
-      e.stopPropagation();
-      e.stopImmediatePropagation();
-      e.preventDefault();
-      return false;
-    };
-
-    /*
-      Enable auto indent feature on target textarea
-    
-      @return [AutoIndenty] the instance
-    */
-
-
-    AutoIndenty.prototype.enable = function() {
-      var _this = this;
-      return this.textarea.on('keydown', function(e) {
-        return _this._keyDownEvent(e);
-      });
-    };
-
-    /*
-      Disable auto indent feature on target textarea
-    
-      @return [AutoIndenty] the instance
-    */
-
-
-    AutoIndenty.prototype.disable = function() {
-      var _this = this;
-      return this.textarea.off('keydown', function(e) {
-        return _this._keyDownEvent(e);
-      });
-    };
-
-    return AutoIndenty;
-
-  })();
-
-  namespace('Femto.utils', function(exports) {
-    return exports.AutoIndenty = AutoIndenty;
-  });
-
-  DEFAULT_TEMPLATE = "<html><head>\n  <style>\n    body { color: #333; }\n  </style>\n</head><body>\n  <!--CONTENT-->\n</body></html>";
-
-  Template = (function() {
-
-    function Template(template, templateURI) {
-      this.template = template != null ? template : null;
-      this.templateURI = templateURI != null ? templateURI : null;
-    }
-
-    Template.prototype.load = function(uri, done, force) {
-      var success,
-        _this = this;
-      success = function(data) {
-        _this.template = data;
-        if (done != null) {
-          return done(data);
-        }
-      };
-      if (this.templateURI !== uri || !(this.template != null) || force) {
-        this.templateURI = uri;
-        jQuery.ajax({
-          url: uri,
-          success: success
-        });
-      }
-      return this;
-    };
-
-    Template.prototype.render = function(content, done) {
-      var render,
-        _this = this;
-      render = function(template) {
-        done(template.replace(/<!--CONTENT-->/g, content));
-        return _this;
-      };
-      if (!(this.template != null) && (this.templateURI != null)) {
-        this.load(this.templateURI, render, true);
-        return this;
-      } else if (!(this.template != null)) {
-        this.template = DEFAULT_TEMPLATE;
-      }
-      return render(this.template);
-    };
-
-    return Template;
-
-  })();
-
-  namespace('Femto.utils', function(exports) {
-    return exports.Template = Template;
-  });
-
   /*
   Cross-browser textarea indent manager
   
@@ -1693,26 +958,789 @@ Cross-browser textarea selection class
     return exports.Indenty = Indenty;
   });
 
-  autoIndent = function(femto) {
-    var textarea;
-    textarea = femto.editor.textarea;
-    femto.features.autoIndent = new Femto.utils.AutoIndenty(textarea);
-    return femto.features.autoIndent.enable();
-  };
+  /*
+  Cross-browser textarea auto indent manager
+  
+  @example
+    textarea = document.createElement('textarea')
+    textarea.autoIndenty = new AutoIndenty(jQuery(textarea))
+    # insert newline after current caret with appropriate indent characters
+    textarea.autoIndenty.insertNewLine
+    # enable auto indent
+    textarea.autoIndenty.enable()
+    # disable auto indent
+    textarea.autoIndenty.disable()
+  */
 
-  namespace('Femto.features', function(exports) {
-    return exports.autoIndent = autoIndent;
+
+  AutoIndenty = (function() {
+    /*
+      Constructor
+    
+      @param [jQuery] textarea A jQuery instance of target textarea DOM element
+      @param [bool] expandTab When true, use SPACE insted of TAB for indent
+      @param [integer] indentLevel An indent level. Enable only when expandTab is `true`
+    */
+
+    function AutoIndenty(textarea, expandTab, indentLevel) {
+      var tabString;
+      this.textarea = textarea;
+      this.expandTab = expandTab != null ? expandTab : true;
+      this.indentLevel = indentLevel != null ? indentLevel : 4;
+      this._keyDownEvent = __bind(this._keyDownEvent, this);
+
+      if (!(this.textarea instanceof jQuery)) {
+        this.textarea = jQuery(this.textarea);
+      }
+      if (this.textarea._selection != null) {
+        this._selection = this.textarea._selection;
+      } else {
+        this._selection = new Femto.utils.Selection(this.textarea.get(0));
+        this.textarea._selection = this._selection;
+      }
+      if (this.expandTab) {
+        tabString = Femto.utils.Indenty._makeTabString(this.indentLevel);
+      } else {
+        tabString = "\t";
+      }
+      this._pattern = new RegExp("^(?:" + tabString + ")*");
+    }
+
+    /*
+      Insert newline after the current caret position
+      with appropriate indent characters (keep previous indent level)
+    
+      @return [AutoIndenty] the instance
+    */
+
+
+    AutoIndenty.prototype.insertNewLine = function() {
+      var e, indent, insert, ls, s, text, _ref;
+      _ref = this._selection.caret(), s = _ref[0], e = _ref[1];
+      text = this._selection._getWholeText();
+      ls = text.lastIndexOf('\n', e - 1) + 1;
+      indent = text.slice(ls, e).match(this._pattern);
+      insert = "\n" + indent;
+      this._selection.insertAfter(insert, false);
+      if (s === e) {
+        this._selection.caret(s + insert.length, s + insert.length);
+      } else {
+        this._selection.caret(s, e + insert.length);
+      }
+      return this;
+    };
+
+    AutoIndenty.prototype._keyDownEvent = function(e) {
+      var RETURN, _ref;
+      RETURN = 13;
+      if (e.which !== RETURN) {
+        return true;
+      }
+      if (e.shiftKey) {
+        return true;
+      }
+      this.insertNewLine();
+      if ((_ref = this.textarea._caretaker) != null) {
+        _ref.save();
+      }
+      e.stopPropagation();
+      e.stopImmediatePropagation();
+      e.preventDefault();
+      return false;
+    };
+
+    /*
+      Enable auto indent feature on target textarea
+    
+      @return [AutoIndenty] the instance
+    */
+
+
+    AutoIndenty.prototype.enable = function() {
+      var _this = this;
+      return this.textarea.on('keydown', function(e) {
+        return _this._keyDownEvent(e);
+      });
+    };
+
+    /*
+      Disable auto indent feature on target textarea
+    
+      @return [AutoIndenty] the instance
+    */
+
+
+    AutoIndenty.prototype.disable = function() {
+      var _this = this;
+      return this.textarea.off('keydown', function(e) {
+        return _this._keyDownEvent(e);
+      });
+    };
+
+    return AutoIndenty;
+
+  })();
+
+  namespace('Femto.utils', function(exports) {
+    return exports.AutoIndenty = AutoIndenty;
   });
 
-  indent = function(femto) {
-    var textarea;
-    textarea = femto.editor.textarea;
-    femto.features.indent = new Femto.utils.Indenty(textarea);
-    return femto.features.indent.enable();
+  /*
+  Better `typeof` method of javascript
+  
+  @param [Object] obj object you want to check the type
+  @return [String] type
+  
+  @example
+    > utils.type(1)
+    'number'
+    > utils.type('1')
+    'string'
+    > utils.type(new String('1'))
+    'string'
+  
+  @see http://coffeescriptcookbook.com/chapters/classes_and_objects/type-function
+  */
+
+
+  type = function(obj) {
+    var classToType, myClass, name, _i, _len, _ref;
+    if (obj === void 0 || obj === null) {
+      return String(obj);
+    }
+    classToType = new Object;
+    _ref = "Boolean Number String Function Array Date RegExp".split(" ");
+    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+      name = _ref[_i];
+      classToType["[object " + name + "]"] = name.toLowerCase();
+    }
+    myClass = Object.prototype.toString.call(obj);
+    if (myClass in classToType) {
+      return classToType[myClass];
+    }
+    return "object";
   };
 
-  namespace('Femto.features', function(exports) {
-    return exports.indent = indent;
+  namespace('Femto.utils', function(exports) {
+    return exports.type = type;
+  });
+
+  Curtain = function(widget) {
+    var elem;
+    if (widget.css('position') === 'static') {
+      widget.css('position', 'relative');
+    }
+    elem = $('<div>').appendTo(widget).hide().css({
+      position: 'absolute',
+      top: 0,
+      left: 0,
+      overflow: 'hidden',
+      'z-index': 10000,
+      width: '100%',
+      height: '100%'
+    });
+    elem.adjust = function() {
+      this.width(widget.outerWidth(true));
+      this.height(height.outerHeight(true));
+      return this;
+    };
+    elem.show = function() {
+      this.adjust();
+      jQuery.prototype.show.apply(this, arguments);
+      return this;
+    };
+    return elem;
+  };
+
+  namespace('Femto.utils', function(exports) {
+    return exports.Curtain = Curtain;
+  });
+
+  Widget = function(selector, context) {
+    var elem, _outerHeight, _outerWidth;
+    if (selector == null) {
+      selector = '<div>';
+    }
+    if (selector instanceof jQuery) {
+      elem = selector;
+    } else {
+      elem = $(selector, context);
+    }
+    _outerWidth = jQuery.prototype.outerWidth;
+    _outerHeight = jQuery.prototype.outerHeight;
+    elem.nonContentWidth = function(includeMargin) {
+      if (includeMargin == null) {
+        includeMargin = false;
+      }
+      return _outerWidth.call(this, includeMargin) - this.width();
+    };
+    elem.nonContentHeight = function(includeMargin) {
+      if (includeMargin == null) {
+        includeMargin = false;
+      }
+      return _outerHeight.call(this, includeMargin) - this.height();
+    };
+    elem.outerWidth = function(includeMargin, value) {
+      var offset;
+      if (Femto.utils.type(includeMargin) === 'number') {
+        value = includeMargin;
+        includeMargin = false;
+      }
+      if (!(value != null)) {
+        return _outerWidth.call(this);
+      }
+      offset = this.nonContentWidth(includeMargin);
+      return this.width(value - offset);
+    };
+    elem._outerHeight = elem.outerHeight;
+    elem.outerHeight = function(includeMargin, value) {
+      var offset;
+      if (Femto.utils.type(includeMargin) === 'number') {
+        value = includeMargin;
+        includeMargin = false;
+      }
+      if (!(value != null)) {
+        return _outerHeight.call(this);
+      }
+      offset = this.nonContentHeight(includeMargin);
+      return this.height(value - offset);
+    };
+    elem.widget = true;
+    return elem;
+  };
+
+  namespace('Femto.widget', function(exports) {
+    return exports.Widget = Widget;
+  });
+
+  Parser = (function() {
+
+    function Parser(fn, sync) {
+      if (sync == null) {
+        sync = true;
+      }
+      this.fn = fn;
+      this.sync = sync;
+    }
+
+    Parser.prototype.parse = function(value, render) {
+      var translated, _ref, _ref1;
+      if ((_ref = this.viewer) != null) {
+        _ref.wait();
+      }
+      if (this.sync) {
+        translated = this.fn(value);
+        render(translated);
+      } else {
+        this.fn(value, function(translated) {
+          return render(translated);
+        });
+      }
+      if ((_ref1 = this.viewer) != null) {
+        _ref1.done();
+      }
+      return this;
+    };
+
+    return Parser;
+
+  })();
+
+  AjaxParser = (function(_super) {
+
+    __extends(AjaxParser, _super);
+
+    function AjaxParser(url, fieldName, type, dataType) {
+      var fn,
+        _this = this;
+      this.url = url;
+      this.fieldName = fieldName != null ? fieldName : 'data';
+      this.type = type != null ? type : 'GET';
+      this.dataType = dataType != null ? dataType : 'text';
+      fn = function(value, done) {
+        var data;
+        data = {};
+        data[_this.fieldName] = value;
+        return jQuery.ajax({
+          'url': _this.url,
+          'type': _this.type,
+          'dataType': _this.dataType,
+          'data': data
+        }).done(function(data, textStatus, jqXHR) {
+          return done(data);
+        }).fail(function(jqXHR, textStatus, errorThrown) {
+          return done(errorThrown);
+        });
+      };
+      AjaxParser.__super__.constructor.call(this, fn, false);
+    }
+
+    return AjaxParser;
+
+  })(Parser);
+
+  namespace('Femto.parsers', function(exports) {
+    exports.Parser = Parser;
+    return exports.AjaxParser = AjaxParser;
+  });
+
+  IFrame = function() {
+    var doc, elem, raw;
+    raw = doc = null;
+    elem = Femto.widget.Widget('<iframe>');
+    elem.css({
+      margin: 0,
+      padding: 0,
+      border: 'none',
+      outline: 'none',
+      resize: 'none',
+      overflow: 'scroll',
+      width: '100%',
+      height: '100%'
+    });
+    elem.attr('frameborder', 0);
+    elem.focus = function() {
+      raw.contentWindow.focus();
+      return this;
+    };
+    elem.blur = function() {
+      doc.body.blur();
+      return this;
+    };
+    elem.init = function() {
+      var style;
+      raw = this.get(0);
+      if (raw.contentDocument != null) {
+        doc = raw.contentDocument;
+      } else {
+        doc = raw.contentWindow.document;
+      }
+      doc.write('<body></body>');
+      style = doc.body.style;
+      style.margin = '0';
+      style.padding = '0';
+      style.width = '100%';
+      style.height = '100%';
+      this.document = doc;
+      return this;
+    };
+    elem.write = function(value) {
+      var scrollTop;
+      if (doc != null) {
+        try {
+          scrollTop = doc.documentElement.scrollTop;
+        } catch (e) {
+          scrollTop = 0;
+        }
+        doc.open();
+        doc.write(value);
+        doc.close();
+        $(doc).find('a').attr('target', '_blank');
+        doc.documentElement.scrollTop = scrollTop;
+      }
+      return this;
+    };
+    return elem;
+  };
+
+  namespace('Femto.widget', function(exports) {
+    return exports.IFrame = IFrame;
+  });
+
+  /*
+  Base class for Originator
+  
+  @example
+    class Notebook extends utils.Originator
+      constructor: ->
+        @value = ""
+      createMemento: -> @value
+      setMemento: (memento) -> @value = memento
+  */
+
+
+  Originator = (function() {
+
+    function Originator() {}
+
+    /*
+      Create memento of the instance
+    
+      @return [Object] a memento of the instance
+    
+      @note Subclass must overload this method
+      @throw Not implemented yet
+    */
+
+
+    Originator.prototype.createMemento = function() {
+      throw Error("Not implemented yet");
+    };
+
+    /*
+      Set memento of the instance
+    
+      @param [Object] memento a memento of the instance
+    
+      @note Subclass must overload this method
+      @throw Not implemented yet
+    */
+
+
+    Originator.prototype.setMemento = function(memento) {
+      throw Error("Not implemented yet");
+    };
+
+    return Originator;
+
+  })();
+
+  /*
+  Caretaker of `Originator`
+  
+  @example
+    # see the example of Originator
+    notebook = new Notebook()
+    notebook.caretaker = new Caretaker(notebook)
+    # save the changes
+    notebook.caretaker.save()
+    # undo the changes
+    notebook.caretaker.undo()
+    # redo the changes
+    notebook.caretaker.redo()
+  */
+
+
+  Caretaker = (function() {
+    /*
+      Constructor
+    
+      @param [Originator] originator an instance of originator subclass
+      @return [Caretaker] the new instance
+    */
+
+    function Caretaker(originator) {
+      this._originator = originator;
+      this._undoStack = [];
+      this._redoStack = [];
+      this._previous = null;
+    }
+
+    /*
+      Get originator when called without any argument.
+      Set originator when called with an argument.
+    
+      @param [Originator] originator set originator of the instance to this.
+      @return [Originator, Caretaker] return Originator instance when called
+        without any argument. return this instance when called with an argument.
+    */
+
+
+    Caretaker.prototype.originator = function(originator) {
+      if (originator != null) {
+        this._originator = originator;
+        return this;
+      }
+      return this._originator;
+    };
+
+    /*
+      Save a memento of the originator to the undo memento stack.
+      Nothing will be saved if the same memento was saved previously.
+    
+      @param [Object] memento a memento to store. `createMemento()` of the
+        originator will be used when no memento is specified.
+      @return [Caretaker] the instance
+    */
+
+
+    Caretaker.prototype.save = function(memento) {
+      memento = memento || this.originator().createMemento();
+      if (!(this._previous != null) || this._previous !== memento) {
+        this._undoStack.push(memento);
+        this._redoStack = [];
+        this._previous = memento;
+      }
+      return this;
+    };
+
+    /*
+      Restore a value of the originator from the undo memento stack.
+      The current value of the originator will be stack on the redo memento stack.
+    
+      @return [Caretaker] the instance
+    
+      @note Nothing will be happen when no memento was stacked on undo memento stack.
+    */
+
+
+    Caretaker.prototype.undo = function() {
+      var originator;
+      if (!this.canUndo()) {
+        return this;
+      }
+      originator = this.originator();
+      this._redoStack.push(originator.createMemento());
+      originator.setMemento(this._undoStack.pop());
+      return this;
+    };
+
+    /*
+      Restore a value of the originator from the redo memento stack.
+      The current value of the originator will be stack on the undo memento stack.
+    
+      @return [Caretaker] the instance
+    
+      @note Nothing will be happen when no memento was stacked on redo memento stack.
+    */
+
+
+    Caretaker.prototype.redo = function() {
+      var originator;
+      if (!this.canRedo()) {
+        return this;
+      }
+      originator = this.originator();
+      this._undoStack.push(originator.createMemento());
+      originator.setMemento(this._redoStack.pop());
+      return this;
+    };
+
+    /*
+      Return whether the undo memento stack isn't empty or not
+    
+      @return [Boolean] return `true` if the undo memento stack is not empty
+    */
+
+
+    Caretaker.prototype.canUndo = function() {
+      return this._undoStack.length > 0;
+    };
+
+    /*
+      Return whether the redo memento stack isn't empty or not
+    
+      @return [Boolean] return `true` if the redo memento stack is not empty
+    */
+
+
+    Caretaker.prototype.canRedo = function() {
+      return this._redoStack.length > 0;
+    };
+
+    return Caretaker;
+
+  })();
+
+  if (typeof exports !== "undefined" && exports !== null) {
+    exports.Originator = Originator;
+    exports.Caretaker = Caretaker;
+  }
+
+  if (typeof namespace !== "undefined" && namespace !== null) {
+    namespace('Femto.utils', function(exports) {
+      exports.Originator = Originator;
+      return exports.Caretaker = Caretaker;
+    });
+  }
+
+  Viewer = function(textarea, template, parser) {
+    var elem, iframe;
+    iframe = Femto.widget.IFrame();
+    elem = Femto.widget.Widget();
+    elem.addClass('panel').addClass('viewer');
+    elem.append(iframe);
+    elem.iframe = iframe;
+    elem.textarea = textarea;
+    elem.template = template;
+    elem.curtain = Femto.utils.Curtain(elem);
+    if ((parser != null) && !parser instanceof Parser) {
+      parser = new Parser(parser);
+    }
+    elem.parser = parser;
+    elem.init = function() {
+      iframe.init();
+      return this;
+    };
+    elem.focus = function() {
+      iframe.focus();
+      return this;
+    };
+    elem.blur = function() {
+      iframe.blur();
+      return this;
+    };
+    elem.val = function(value) {
+      var render,
+        _this = this;
+      render = function(value) {
+        return _this.template.render(value, function(value) {
+          return _this.iframe.write(value);
+        });
+      };
+      if (this.parser != null) {
+        if ((this.parser.async != null) === true) {
+          this.parser(value, render);
+        } else {
+          render(this.parser(value));
+        }
+      } else {
+        render(value);
+      }
+      return this;
+    };
+    elem.wait = function() {
+      elem.curtain.addClass('waiting');
+      elem.curtain.show();
+      return this;
+    };
+    elem.done = function() {
+      elem.curtain.hide();
+      elem.curtain.removeClass('waiting');
+      return this;
+    };
+    return elem;
+  };
+
+  namespace('Femto.widget', function(exports) {
+    return exports.Viewer = Viewer;
+  });
+
+  DEFAULT_TEMPLATE = "<html><head>\n  <style>\n    body { color: #333; }\n  </style>\n</head><body>\n  <!--CONTENT-->\n</body></html>";
+
+  Template = (function() {
+
+    function Template(template, templateURI) {
+      this.template = template != null ? template : null;
+      this.templateURI = templateURI != null ? templateURI : null;
+    }
+
+    Template.prototype.load = function(uri, done, force) {
+      var success,
+        _this = this;
+      success = function(data) {
+        _this.template = data;
+        if (done != null) {
+          return done(data);
+        }
+      };
+      if (this.templateURI !== uri || !(this.template != null) || force) {
+        this.templateURI = uri;
+        jQuery.ajax({
+          url: uri,
+          success: success
+        });
+      }
+      return this;
+    };
+
+    Template.prototype.render = function(content, done) {
+      var render,
+        _this = this;
+      render = function(template) {
+        done(template.replace(/<!--CONTENT-->/g, content));
+        return _this;
+      };
+      if (!(this.template != null) && (this.templateURI != null)) {
+        this.load(this.templateURI, render, true);
+        return this;
+      } else if (!(this.template != null)) {
+        this.template = DEFAULT_TEMPLATE;
+      }
+      return render(this.template);
+    };
+
+    return Template;
+
+  })();
+
+  namespace('Femto.utils', function(exports) {
+    return exports.Template = Template;
+  });
+
+  /*
+  Femto Editor widget
+  
+  @param [jQuery] textarea A jQuery instance of target textarea DOM element
+  @return [jQuery extend] extended jQuery instance which contains the textarea
+  
+  @example
+    textarea = document.createElement('textarea')
+    textarea = jQuery(textarea)
+    editor = Femto.widget.Editor(textarea)
+    # set focus
+    editor.focus()
+    # set value
+    editor.val("Hello")
+    # get value
+    console.log editor.val()
+  */
+
+
+  Editor = function(textarea) {
+    var elem, raw;
+    raw = textarea.get(0);
+    textarea = Femto.widget.Widget(textarea);
+    textarea.css({
+      margin: '0',
+      padding: '0',
+      border: 'none',
+      outline: 'none',
+      resize: 'none',
+      width: '100%',
+      height: '100%'
+    });
+    textarea.setMemento = textarea.val;
+    textarea.createMemento = textarea.val;
+    textarea._caretaker = new Femto.utils.Caretaker(textarea);
+    textarea._caretaker.save();
+    textarea._selection = new Femto.utils.Selection(raw);
+    elem = Femto.widget.Widget();
+    elem.addClass('panel').addClass('editor');
+    elem.append(textarea);
+    elem.textarea = textarea;
+    elem.selection = textarea._selection;
+    elem.caretaker = textarea._caretaker;
+    /*
+      Focus the widget
+    */
+
+    elem.focus = function() {
+      textarea.focus();
+      return this;
+    };
+    /*
+      Get or set the value of the widget
+    */
+
+    elem.val = function() {
+      return textarea.val.apply(textarea, arguments);
+    };
+    textarea.on('keydown', function(e) {
+      var _ref;
+      if ((_ref = e.which) === 13 || _ref === 9 || _ref === 8 || _ref === 46) {
+        textarea._caretaker.save();
+      }
+      if (e.which === 90 && e.ctrlKey) {
+        if (e.shiftKey) {
+          textarea._caretaker.redo();
+        } else {
+          textarea._caretaker.undo();
+        }
+        e.stopPropagation();
+        e.stopImmediatePropagation();
+        e.preventDefault();
+        return false;
+      }
+    });
+    textarea.on('paste,drop', function(e) {
+      return textarea._caretaker.save();
+    });
+    return elem;
+  };
+
+  namespace('Femto.widget', function(exports) {
+    return exports.Editor = Editor;
   });
 
   /*
@@ -1818,332 +1846,281 @@ Cross-browser textarea selection class
     return exports.transform = transform;
   });
 
-  describe('Femto.utils.Originator', function() {
-    var expected_methods, method, _i, _len, _results;
-    Originator = Femto.utils.Originator;
-    Caretaker = Femto.utils.Caretaker;
-    expected_methods = ['createMemento', 'setMemento'];
-    _results = [];
-    for (_i = 0, _len = expected_methods.length; _i < _len; _i++) {
-      method = expected_methods[_i];
-      _results.push((function(method) {
-        return it("instance should have `" + method + "` method", function() {
-          var instance;
-          instance = new Originator();
-          expect(instance).to.have.property(method);
-          return expect(instance[method]).to.be.a('function');
-        });
-      })(method));
-    }
-    return _results;
+  autoIndent = function(femto) {
+    var textarea;
+    textarea = femto.editor.textarea;
+    femto.features.autoIndent = new Femto.utils.AutoIndenty(textarea);
+    return femto.features.autoIndent.enable();
+  };
+
+  namespace('Femto.features', function(exports) {
+    return exports.autoIndent = autoIndent;
   });
 
-  describe('Femto.utils.Caretaker', function() {
-    var Dummy, dummy, expected_methods, instance, method, _fn, _i, _len;
-    Originator = Femto.utils.Originator;
-    Caretaker = Femto.utils.Caretaker;
-    Dummy = (function(_super) {
+  indent = function(femto) {
+    var textarea;
+    textarea = femto.editor.textarea;
+    femto.features.indent = new Femto.utils.Indenty(textarea);
+    return femto.features.indent.enable();
+  };
 
-      __extends(Dummy, _super);
+  namespace('Femto.features', function(exports) {
+    return exports.indent = indent;
+  });
 
-      function Dummy() {
-        return Dummy.__super__.constructor.apply(this, arguments);
-      }
+  /*
+  Femto DocumentType widget
+  */
 
-      Dummy.prototype.createMemento = function() {
-        return this.memento;
-      };
 
-      Dummy.prototype.setMemento = function(memento) {
-        return this.memento = memento;
-      };
+  DocumentType = function(viewer, documentTypes, documentTypeField) {
+    var elem, fn, key, option, select;
+    if (documentTypeField != null) {
+      select = jQuery(documentTypeField);
+    } else {
+      select = jQuery('<select>');
+    }
+    elem = Femto.widget.Widget();
+    elem.addClass('documentType');
+    elem.append(select);
+    elem.documentTypes = documentTypes;
+    elem.documentTypeField = select;
+    for (key in documentTypes) {
+      fn = documentTypes[key];
+      option = "<option value='" + key + "'>" + key + "</option>";
+      select.append(jQuery(option));
+    }
+    select.change(function() {
+      fn = documentTypes[select.val()];
+      return viewer.parser = fn;
+    });
+    select.change();
+    return elem;
+  };
 
-      return Dummy;
+  namespace('Femto.widget', function(exports) {
+    return exports.DocumentType = DocumentType;
+  });
 
-    })(Originator);
-    dummy = new Dummy();
-    instance = new Caretaker(dummy);
-    expected_methods = ['originator', 'save', 'undo', 'redo', 'canUndo', 'canRedo'];
-    _fn = function(method) {
-      return it("instance should have `" + method + "` method", function() {
+  describe('Femto.widget.Editor', function() {
+    var expected_classname, expected_methods, expected_properties, instance, method, name, textarea, _fn, _fn1, _fn2, _i, _j, _k, _len, _len1, _len2, _ref;
+    Editor = Femto.widget.Editor;
+    textarea = instance = null;
+    before(function() {
+      textarea = jQuery('<textarea>');
+      return instance = Editor(textarea);
+    });
+    it('should return jQuery instance', function() {
+      return expect(instance).to.be.a(jQuery);
+    });
+    expected_classname = ['panel', 'editor'];
+    _fn = function(name) {
+      return it("should have `" + name + "` class in its DOM element", function() {
+        return expect(instance.hasClass(name)).to.be["true"];
+      });
+    };
+    for (_i = 0, _len = expected_classname.length; _i < _len; _i++) {
+      name = expected_classname[_i];
+      _fn(name);
+    }
+    it('DOM element should have `textarea` DOM element in it', function() {
+      var children;
+      children = instance.children();
+      expect(children.length).to.be.eql(1);
+      return expect(children[0]).to.be.eql(instance.textarea[0]);
+    });
+    expected_properties = [['textarea', jQuery], ['caretaker', Femto.utils.Caretaker]];
+    _fn1 = function(name, type) {
+      return it("return instance should have `" + name + "` property as `" + type.name + "`", function() {
+        expect(instance).to.have.property(name);
+        return expect(instance[name]).to.be.a(type);
+      });
+    };
+    for (_j = 0, _len1 = expected_properties.length; _j < _len1; _j++) {
+      _ref = expected_properties[_j], name = _ref[0], type = _ref[1];
+      _fn1(name, type);
+    }
+    expected_methods = ['val'];
+    _fn2 = function(method) {
+      return it("return instance should have `" + method + "` method", function() {
         expect(instance).to.have.property(method);
         return expect(instance[method]).to.be.a('function');
       });
     };
-    for (_i = 0, _len = expected_methods.length; _i < _len; _i++) {
-      method = expected_methods[_i];
-      _fn(method);
+    for (_k = 0, _len2 = expected_methods.length; _k < _len2; _k++) {
+      method = expected_methods[_k];
+      _fn2(method);
     }
-    beforeEach(function() {
-      dummy.memento = null;
-      instance._undoStack = [];
-      instance._redoStack = [];
-      instance._previous = null;
-      return instance._originator = dummy;
-    });
-    describe('#originator(originator) -> originator | instance', function() {
-      it('should return originator instance when called without any argument', function() {
-        var r;
-        r = instance.originator();
-        expect(r).to.be.a(Dummy);
-        return expect(r).to.be.eql(dummy);
+    describe('#textarea : An extended jQuery instance', function() {
+      var action, key, save_trigger_actions, save_trigger_keys, _fn3, _fn4, _fn5, _l, _len3, _len4, _len5, _m, _n, _ref1, _ref2;
+      it('should have `widget` property', function() {
+        expect(instance.textarea).to.have.property('widget');
+        return expect(instance.textarea.widget).to.be.eql(true);
       });
-      return it('should change originator and return the instance when called with a argument', function() {
-        var Dummy2, dummy2, o, r;
-        Dummy2 = (function(_super) {
-
-          __extends(Dummy2, _super);
-
-          function Dummy2() {
-            return Dummy2.__super__.constructor.apply(this, arguments);
-          }
-
-          Dummy2.prototype.createMemento = function() {
-            return this.memento + this.memento;
+      expected_methods = ['createMemento', 'setMemento'];
+      _fn3 = function(method) {
+        return it("should have `" + method + "` method", function() {
+          expect(instance.textarea).to.have.property(method);
+          return expect(instance.textarea[method]).to.be.a('function');
+        });
+      };
+      for (_l = 0, _len3 = expected_methods.length; _l < _len3; _l++) {
+        method = expected_methods[_l];
+        _fn3(method);
+      }
+      save_trigger_keys = [['Return', 13], ['Tab', 9], ['Backspace', 8], ['Delete', 46]];
+      _fn4 = function(name, key) {
+        return it("should call `caretaker.save()` method when user press " + name, function() {
+          var e, save;
+          e = jQuery.Event('keydown', {
+            which: key
+          });
+          save = instance.save;
+          instance.save = function() {
+            return this.save.called = true;
           };
-
-          return Dummy2;
-
-        })(Dummy);
-        dummy2 = new Dummy2();
-        r = instance.originator(dummy2);
-        expect(r).to.be.eql(instance);
-        o = r.originator();
-        expect(o).to.be.a(Dummy2);
-        return expect(o).to.be.eql(dummy2);
-      });
-    });
-    return describe('#save(memento) -> instance', function() {
-      it('should return the instance', function() {
-        var r;
-        r = instance.save();
-        expect(r).to.be.eql(instance);
-        r = instance.save('HELLO');
-        return expect(r).to.be.eql(instance);
-      });
-      it('should call originator `createMemento()` method to get current memento without any argument', function() {
-        var createMemento, o;
-        o = instance.originator();
-        createMemento = o.createMemento;
-        o.createMemento = function() {
-          return this.createMemento.called = true;
+          instance.save.called = false;
+          instance.textarea.trigger(e);
+          expect(instance.save.called).to.be["true"];
+          return instance.save = save;
+        });
+      };
+      for (_m = 0, _len4 = save_trigger_keys.length; _m < _len4; _m++) {
+        _ref1 = save_trigger_keys[_m], name = _ref1[0], key = _ref1[1];
+        _fn4(name, key);
+      }
+      save_trigger_actions = [['paste', null], ['drop', null]];
+      _fn5 = function(name, action) {
+        return it("should call `caretaker.save()` method when user " + name + " text", function() {
+          var e, save;
+          e = jQuery.Event(name);
+          save = instance.save;
+          instance.save = function() {
+            return this.save.called = true;
+          };
+          instance.save.called = false;
+          instance.textarea.trigger(e);
+          expect(instance.save.called).to.be["true"];
+          return instance.save = save;
+        });
+      };
+      for (_n = 0, _len5 = save_trigger_actions.length; _n < _len5; _n++) {
+        _ref2 = save_trigger_actions[_n], name = _ref2[0], action = _ref2[1];
+        _fn5(name, action);
+      }
+      it("should call `caretaker.undo()` method when user press Ctrl+Z", function() {
+        var e, undo;
+        e = jQuery.Event('keydown', {
+          which: 90,
+          ctrlKey: true
+        });
+        undo = instance.undo;
+        instance.undo = function() {
+          return this.undo.called = true;
         };
-        o.createMemento.called = false;
-        instance.save();
-        expect(o.createMemento.called).to.be["true"];
-        return o.createMemento = createMemento;
+        instance.undo.called = false;
+        instance.textarea.trigger(e);
+        expect(instance.undo.called).to.be["true"];
+        return instance.undo = undo;
       });
-      it('should save new memento into `_undoStack` and change `_previous` when called without any argument', function() {
-        dummy.memento = 'HELLO';
-        instance.save();
-        expect(instance._undoStack.length).to.be.eql(1);
-        expect(instance._undoStack[0]).to.be.eql('HELLO');
-        return expect(instance._previous).to.be.eql('HELLO');
+      it("should not call `caretaker.undo()` method when user press Ctrl+Shift+Z", function() {
+        var e, undo;
+        e = jQuery.Event('keydown', {
+          which: 90,
+          ctrlKey: true,
+          shiftKey: true
+        });
+        undo = instance.undo;
+        instance.undo = function() {
+          return this.undo.called = true;
+        };
+        instance.undo.called = false;
+        instance.textarea.trigger(e);
+        expect(instance.undo.called).to.be["false"];
+        return instance.undo = undo;
       });
-      it('should save specified memento into `_undoStack` and change `_previous` when called with a argument', function() {
-        instance.save('HELLO');
-        expect(instance._undoStack.length).to.be.eql(1);
-        expect(instance._undoStack[0]).to.be.eql('HELLO');
-        return expect(instance._previous).to.be.eql('HELLO');
+      it("should not call `caretaker.redo()` method when user press Ctrl+Z", function() {
+        var e, redo;
+        e = jQuery.Event('keydown', {
+          which: 90,
+          ctrlKey: true
+        });
+        redo = instance.redo;
+        instance.redo = function() {
+          return this.redo.called = true;
+        };
+        instance.redo.called = false;
+        instance.textarea.trigger(e);
+        expect(instance.redo.called).to.be["false"];
+        return instance.redo = redo;
       });
-      it('should `push` a memento into `_undoStack` rather than `unshift`', function() {
-        instance.save('HELLO1');
-        instance.save('HELLO2');
-        instance.save('HELLO3');
-        expect(instance._undoStack.length).to.be.eql(3);
-        return expect(instance._undoStack).to.be.eql(['HELLO1', 'HELLO2', 'HELLO3']);
+      it("should call `caretaker.redo()` method when user press Ctrl+Shift+Z", function() {
+        var e, redo;
+        e = jQuery.Event('keydown', {
+          which: 90,
+          ctrlKey: true,
+          shiftKey: true
+        });
+        redo = instance.redo;
+        instance.redo = function() {
+          return this.redo.called = true;
+        };
+        instance.redo.called = false;
+        instance.textarea.trigger(e);
+        expect(instance.redo.called).to.be["true"];
+        return instance.redo = redo;
       });
-      it('should not save a memento which is equal with the previous one', function() {
-        instance.save('HELLO');
-        instance.save('HELLO');
-        instance.save('HELLO');
-        expect(instance._undoStack.length).to.be.eql(1);
-        return expect(instance._undoStack[0]).to.be.eql('HELLO');
+      describe('#createMemento() -> value', function() {
+        return it('should return current value of the textarea', function() {
+          var r;
+          textarea.val('HELLO');
+          r = textarea.createMemento();
+          expect(r).to.be.eql('HELLO');
+          textarea.val('HELLO2');
+          r = textarea.createMemento();
+          expect(r).to.be.eql('HELLO2');
+          return textarea.val('');
+        });
       });
-      describe('#undo() -> instance', function() {
+      return describe('#setMemento(value) -> instance', function() {
         it('should return the instance', function() {
           var r;
-          r = instance.undo();
-          return expect(r).to.be.eql(instance);
+          r = textarea.setMemento('');
+          return expect(r).to.be.eql(textarea);
         });
-        it('should not do anything when nothing have saved on `_undoStack`', function() {
-          expect(dummy.memento).to.be.eql(null);
-          expect(instance._undoStack.length).to.be.eql(0);
-          expect(instance._redoStack.length).to.be.eql(0);
-          expect(instance._previous).to.be.eql(null);
-          instance.undo();
-          expect(dummy.memento).to.be.eql(null);
-          expect(instance._undoStack.length).to.be.eql(0);
-          expect(instance._redoStack.length).to.be.eql(0);
-          return expect(instance._previous).to.be.eql(null);
-        });
-        it('should call originator `createMemento()` method to get current value', function() {
-          var createMemento, o;
-          o = instance.originator();
-          createMemento = o.createMemento;
-          o.createMemento = function() {
-            return this.createMemento.called = true;
-          };
-          o.createMemento.called = false;
-          instance.undo();
-          expect(o.createMemento.called).to.be["true"];
-          return o.createMemento = createMemento;
-        });
-        it('should call originator `setMemento(value)` method to change current value', function() {
-          var o, setMemento;
-          o = instance.originator();
-          setMemento = o.setMemento;
-          o.setMemento = function() {
-            return this.setMemento.called = true;
-          };
-          o.setMemento.called = false;
-          instance.undo();
-          expect(o.setMemento.called).to.be["true"];
-          return o.setMemento = setMemento;
-        });
-        it('should pop previous memento from `_undoStack`', function() {
-          var i, _j, _k, _results;
-          dummy.memento = "HELLO1";
-          for (i = _j = 2; _j <= 3; i = ++_j) {
-            instance.save();
-            dummy.memento = "HELLO" + i;
-          }
-          expect(instance._undoStack).to.be.eql(['HELLO1', 'HELLO2']);
-          _results = [];
-          for (i = _k = 3; _k >= 1; i = --_k) {
-            expect(dummy.memento).to.be.eql("HELLO" + i);
-            expect(instance._undoStack.length).to.be.eql(i - 1);
-            _results.push(instance.undo());
-          }
-          return _results;
-        });
-        return it('should push current memento to `_redoStack`', function() {
-          var i, _j, _k;
-          dummy.memento = "HELLO1";
-          for (i = _j = 2; _j <= 3; i = ++_j) {
-            instance.save();
-            dummy.memento = "HELLO" + i;
-          }
-          for (i = _k = 3; _k >= 1; i = --_k) {
-            expect(instance._redoStack.length).to.be.eql(3 - i);
-            instance.undo();
-          }
-          return expect(instance._redoStack).to.be.eql(['HELLO3', 'HELLO2']);
+        return it('should change current value of the textarea', function() {
+          textarea.setMemento('HELLO');
+          expect(textarea.val()).to.be.eql('HELLO');
+          textarea.setMemento('HELLO2');
+          expect(textarea.val()).to.be.eql('HELLO2');
+          return textarea.val('');
         });
       });
-      describe('#redo() -> instance', function() {
-        it('should return the instance', function() {
-          var r;
-          r = instance.redo();
-          return expect(r).to.be.eql(instance);
-        });
-        it('should not do anything when nothing have saved on `_redoStack`', function() {
-          expect(dummy.memento).to.be.eql(null);
-          expect(instance._undoStack.length).to.be.eql(0);
-          expect(instance._redoStack.length).to.be.eql(0);
-          expect(instance._previous).to.be.eql(null);
-          instance.redo();
-          expect(dummy.memento).to.be.eql(null);
-          expect(instance._undoStack.length).to.be.eql(0);
-          expect(instance._redoStack.length).to.be.eql(0);
-          return expect(instance._previous).to.be.eql(null);
-        });
-        it('should call originator `createMemento()` method to get current value', function() {
-          var createMemento, o;
-          o = instance.originator();
-          createMemento = o.createMemento;
-          o.createMemento = function() {
-            return this.createMemento.called = true;
-          };
-          o.createMemento.called = false;
-          instance.redo();
-          expect(o.createMemento.called).to.be["true"];
-          return o.createMemento = createMemento;
-        });
-        it('should call originator `setMemento(value)` method to change current value', function() {
-          var o, setMemento;
-          o = instance.originator();
-          setMemento = o.setMemento;
-          o.setMemento = function() {
-            return this.setMemento.called = true;
-          };
-          o.setMemento.called = false;
-          instance.redo();
-          expect(o.setMemento.called).to.be["true"];
-          return o.setMemento = setMemento;
-        });
-        it('should pop further memento from `_redoStack`', function() {
-          var i, _j, _k, _l;
-          dummy.memento = "HELLO1";
-          for (i = _j = 2; _j <= 3; i = ++_j) {
-            instance.save();
-            dummy.memento = "HELLO" + i;
-          }
-          for (i = _k = 3; _k >= 1; i = --_k) {
-            instance.undo();
-          }
-          expect(instance._redoStack).to.be.eql(['HELLO3', 'HELLO2']);
-          for (i = _l = 1; _l <= 2; i = ++_l) {
-            expect(dummy.memento).to.be.eql("HELLO" + i);
-            expect(instance._redoStack.length).to.be.eql(3 - i);
-            instance.redo();
-          }
-          return expect(dummy.memento).to.be.eql("HELLO3");
-        });
-        return it('should push current memento to `_undoStack`', function() {
-          var i, _j, _k, _l;
-          dummy.memento = "HELLO1";
-          for (i = _j = 2; _j <= 3; i = ++_j) {
-            instance.save();
-            dummy.memento = "HELLO" + i;
-          }
-          for (i = _k = 3; _k >= 1; i = --_k) {
-            instance.undo();
-          }
-          for (i = _l = 1; _l <= 2; i = ++_l) {
-            expect(dummy.memento).to.be.eql("HELLO" + i);
-            expect(instance._undoStack.length).to.be.eql(i - 1);
-            instance.redo();
-          }
-          return expect(instance._undoStack).to.be.eql(['HELLO1', 'HELLO2']);
-        });
+    });
+    describe('#caretaker : utils.Caretaker instance', function() {
+      return it('should use `textarea` as an originator', function() {
+        var originator;
+        originator = instance.caretaker.originator();
+        return expect(originator).to.be.eql(instance.textarea);
       });
-      describe('#canUndo() -> boolean', function() {
-        it('should return boolean', function() {
-          var r;
-          r = instance.canUndo();
-          return expect(r).to.be.a('boolean');
-        });
-        it('should return `false` when `_undoStack` is empty', function() {
-          var r;
-          r = instance.canUndo();
-          return expect(r).to.be["false"];
-        });
-        return it('should return `true` when `_undoStack` is not empty', function() {
-          var r;
-          instance.save('HELLO');
-          r = instance.canUndo();
-          return expect(r).to.be["true"];
-        });
+    });
+    return describe('#val(value) -> value | instance', function() {
+      it('should return current value of the textarea when called without any argument', function() {
+        var r;
+        instance.textarea.val("HELLO");
+        r = instance.val();
+        expect(r).to.be.eql("HELLO");
+        instance.textarea.val("HELLO2");
+        r = instance.val();
+        expect(r).to.be.eql("HELLO2");
+        return instance.textarea.val("");
       });
-      return describe('#canRedo() -> boolean', function() {
-        it('should return boolean', function() {
-          var r;
-          r = instance.canRedo();
-          return expect(r).to.be.a('boolean');
-        });
-        it('should return `false` when `_redoStack` is empty', function() {
-          var r;
-          r = instance.canRedo();
-          return expect(r).to.be["false"];
-        });
-        return it('should return `true` when `_redoStack` is not empty', function() {
-          var r;
-          instance.save('HELLO');
-          instance.undo();
-          r = instance.canRedo();
-          return expect(r).to.be["true"];
-        });
+      return it('should change current value of the textarea when called with an argument', function() {
+        instance.val("HELLO");
+        expect(instance.val()).to.be.eql("HELLO");
+        instance.val("HELLO2");
+        expect(instance.val()).to.be.eql("HELLO2");
+        return instance.textarea.val("");
       });
     });
   });
@@ -2379,25 +2356,331 @@ Cross-browser textarea selection class
     });
   });
 
-  describe('Femto.utils.type', function() {
-    var cases, obj, result, _i, _len, _ref, _results;
-    cases = [
-      [0, 'number'], [1.2, 'number'], [[0, 1], 'array'], [new Array, 'array'], [
-        {
-          0: 1
-        }, 'object'
-      ], [null, 'null'], [void 0, 'undefined'], [NaN, 'number']
-    ];
-    _results = [];
-    for (_i = 0, _len = cases.length; _i < _len; _i++) {
-      _ref = cases[_i], obj = _ref[0], result = _ref[1];
-      _results.push((function(obj, result) {
-        return it("should return '" + result + "' for `" + obj + "`", function() {
-          return expect(Femto.utils.type(obj)).to.be.eql(result);
-        });
-      })(obj, result));
+  describe('Femto.utils.Indenty', function() {
+    var Selection, expected_methods, expected_private_methods, expected_private_properties, expected_properties, instance, isIE, method, name, normalizedValue, rollback, selection, textarea, value, _fn, _fn1, _fn2, _fn3, _i, _j, _k, _l, _len, _len1, _len2, _len3, _ref, _ref1;
+    textarea = instance = selection = value = null;
+    Indenty = Femto.utils.Indenty;
+    Selection = Femto.utils.Selection;
+    isIE = document.selection != null;
+    normalizedValue = function() {
+      return textarea.value.replace(/\r\n/g, '\n');
+    };
+    rollback = function() {
+      return textarea.value = 'aaaa\nbbbb\ncccc\n';
+    };
+    before(function() {
+      textarea = document.createElement('textarea');
+      rollback();
+      instance = new Indenty(jQuery(textarea), true, 4);
+      selection = instance._selection;
+      document.body.appendChild(textarea);
+      return textarea.focus();
+    });
+    after(function() {
+      return document.body.removeChild(textarea);
+    });
+    afterEach(function() {
+      return rollback();
+    });
+    expected_private_properties = [['_selection', Selection]];
+    _fn = function(name, type) {
+      return it("instance should have private `" + name + "` property", function() {
+        expect(instance).to.have.property(name);
+        return expect(instance[name]).to.be.a(type);
+      });
+    };
+    for (_i = 0, _len = expected_private_properties.length; _i < _len; _i++) {
+      _ref = expected_private_properties[_i], name = _ref[0], type = _ref[1];
+      _fn(name, type);
     }
-    return _results;
+    expected_properties = [['textarea', null], ['expandTab', 'boolean'], ['indentLevel', 'number']];
+    _fn1 = function(name, type) {
+      return it("instance should have public `" + name + "` property", function() {
+        expect(instance).to.have.property(name);
+        if (type != null) {
+          return expect(instance[name]).to.be.a(type);
+        }
+      });
+    };
+    for (_j = 0, _len1 = expected_properties.length; _j < _len1; _j++) {
+      _ref1 = expected_properties[_j], name = _ref1[0], type = _ref1[1];
+      _fn1(name, type);
+    }
+    expected_private_methods = ['_keyDownEvent'];
+    _fn2 = function(method) {
+      return it("instance should have private `" + method + "` method", function() {
+        expect(instance).to.have.property(method);
+        return expect(instance[method]).to.be.a('function');
+      });
+    };
+    for (_k = 0, _len2 = expected_private_methods.length; _k < _len2; _k++) {
+      method = expected_private_methods[_k];
+      _fn2(method);
+    }
+    expected_methods = ['indent', 'outdent', 'enable', 'disable'];
+    _fn3 = function(method) {
+      return it("instance should have public `" + method + "` method", function() {
+        expect(instance).to.have.property(method);
+        return expect(instance[method]).to.be.a('function');
+      });
+    };
+    for (_l = 0, _len3 = expected_methods.length; _l < _len3; _l++) {
+      method = expected_methods[_l];
+      _fn3(method);
+    }
+    describe('#indent() -> instance', function() {
+      it('should return the instance', function() {
+        var r;
+        r = instance.indent();
+        expect(r).to.be.a(Indenty);
+        return expect(r).to.be.eql(instance);
+      });
+      it('should insert 4 spaces before the caret [0, 0] and move the caret to [4, 4], [8, 8]', function() {
+        var caret;
+        selection.caret(0, 0);
+        instance.indent();
+        caret = selection.caret();
+        expect(normalizedValue()).to.be.eql("    aaaa\nbbbb\ncccc\n");
+        expect(caret).to.be.eql([4, 4]);
+        instance.indent();
+        caret = selection.caret();
+        expect(normalizedValue()).to.be.eql("        aaaa\nbbbb\ncccc\n");
+        return expect(caret).to.be.eql([8, 8]);
+      });
+      it('should insert 2, 4 spaces before the caret [2, 2] and move the caret to [4, 4], [8, 8]', function() {
+        var caret;
+        selection.caret(2, 2);
+        instance.indent();
+        caret = selection.caret();
+        expect(normalizedValue()).to.be.eql("aa  aa\nbbbb\ncccc\n");
+        expect(caret).to.be.eql([4, 4]);
+        instance.indent();
+        caret = selection.caret();
+        expect(normalizedValue()).to.be.eql("aa      aa\nbbbb\ncccc\n");
+        return expect(caret).to.be.eql([8, 8]);
+      });
+      it('should insert 4 spaces before the caret [4, 4] (before Newline) and move the caret to [8, 8]', function() {
+        var caret;
+        selection.caret(4, 4);
+        instance.indent();
+        caret = selection.caret();
+        expect(normalizedValue()).to.be.eql("aaaa    \nbbbb\ncccc\n");
+        return expect(caret).to.be.eql([8, 8]);
+      });
+      it('should insert 4 spaces before the caret [5, 5] (after Newline) and move the caret to [9, 9]', function() {
+        var caret;
+        selection.caret(5, 5);
+        instance.indent();
+        caret = selection.caret();
+        expect(normalizedValue()).to.be.eql("aaaa\n    bbbb\ncccc\n");
+        return expect(caret).to.be.eql([9, 9]);
+      });
+      it('should insert 4 spaces before the single line selection [0, 4] and move the caret to [4, 8], [8, 12]', function() {
+        var caret;
+        selection.caret(0, 4);
+        instance.indent();
+        caret = selection.caret();
+        expect(normalizedValue()).to.be.eql("    aaaa\nbbbb\ncccc\n");
+        expect(caret).to.be.eql([4, 8]);
+        instance.indent();
+        caret = selection.caret();
+        expect(normalizedValue()).to.be.eql("        aaaa\nbbbb\ncccc\n");
+        return expect(caret).to.be.eql([8, 12]);
+      });
+      it('should insert 3, 4 spaces before the selection within a single line [1, 3] and move the caret to [4, 6], [8, 10]', function() {
+        var caret;
+        selection.caret(1, 3);
+        instance.indent();
+        caret = selection.caret();
+        expect(normalizedValue()).to.be.eql("a   aaa\nbbbb\ncccc\n");
+        expect(caret).to.be.eql([4, 6]);
+        instance.indent();
+        caret = selection.caret();
+        expect(normalizedValue()).to.be.eql("a       aaa\nbbbb\ncccc\n");
+        return expect(caret).to.be.eql([8, 10]);
+      });
+      it('should insert 4 spaces before each selected lines [0, 9] and move the caret to [0, 17], [0, 25]', function() {
+        var caret;
+        selection.caret(0, 9);
+        instance.indent();
+        caret = selection.caret();
+        expect(normalizedValue()).to.be.eql("    aaaa\n    bbbb\ncccc\n");
+        expect(caret).to.be.eql([0, 17]);
+        instance.indent();
+        caret = selection.caret();
+        expect(normalizedValue()).to.be.eql("        aaaa\n        bbbb\ncccc\n");
+        return expect(caret).to.be.eql([0, 25]);
+      });
+      it('should insert 4 spaces before each lines contains the selection [2, 7] and move the caret to [6, 15], [10, 23]', function() {
+        var caret;
+        selection.caret(2, 7);
+        instance.indent();
+        caret = selection.caret();
+        expect(normalizedValue()).to.be.eql("    aaaa\n    bbbb\ncccc\n");
+        expect(caret).to.be.eql([6, 15]);
+        instance.indent();
+        caret = selection.caret();
+        expect(normalizedValue()).to.be.eql("        aaaa\n        bbbb\ncccc\n");
+        return expect(caret).to.be.eql([10, 23]);
+      });
+      it('should insert appropriate number of spaces before each selected lines and move the caret to [0, 26]', function() {
+        var caret;
+        textarea.value = " aaaa\n  bbbb\n   cccc\n";
+        selection.caret(0, 20);
+        instance.indent();
+        caret = selection.caret();
+        expect(normalizedValue()).to.be.eql("    aaaa\n    bbbb\n    cccc\n");
+        return expect(caret).to.be.eql([0, 26]);
+      });
+      return it('should insert appropriate number of spaces before each lines contains selection and move the caret to [6, 24]', function() {
+        var caret;
+        textarea.value = " aaaa\n  bbbb\n   cccc\n";
+        selection.caret(3, 18);
+        instance.indent();
+        caret = selection.caret();
+        expect(normalizedValue()).to.be.eql("    aaaa\n    bbbb\n    cccc\n");
+        return expect(caret).to.be.eql([6, 24]);
+      });
+    });
+    describe('#outdent() -> instance', function() {
+      it('should return the instance', function() {
+        var r;
+        r = instance.outdent();
+        expect(r).to.be.a(Indenty);
+        return expect(r).to.be.eql(instance);
+      });
+      it('should remove 4 spaces before the caret [8, 8] and move the caret to [4, 4], [0, 0]', function() {
+        var caret;
+        textarea.value = "        aaaa\nbbbb\ncccc\n";
+        selection.caret(8, 8);
+        instance.outdent();
+        caret = selection.caret();
+        expect(normalizedValue()).to.be.eql("    aaaa\nbbbb\ncccc\n");
+        expect(caret).to.be.eql([4, 4]);
+        instance.outdent();
+        caret = selection.caret();
+        expect(normalizedValue()).to.be.eql("aaaa\nbbbb\ncccc\n");
+        return expect(caret).to.be.eql([0, 0]);
+      });
+      it('should remove 2, 4 spaces before the caret [6, 6] and move the caret to [2, 2], [0, 0]', function() {
+        var caret;
+        textarea.value = "      aaaa\nbbbb\ncccc\n";
+        selection.caret(6, 6);
+        instance.outdent();
+        caret = selection.caret();
+        expect(normalizedValue()).to.be.eql("    aaaa\nbbbb\ncccc\n");
+        expect(caret).to.be.eql([4, 4]);
+        instance.outdent();
+        caret = selection.caret();
+        expect(normalizedValue()).to.be.eql("aaaa\nbbbb\ncccc\n");
+        return expect(caret).to.be.eql([0, 0]);
+      });
+      it('should remove 4 spaces before the caret [8, 8] (before Newline) and move the caret to [4, 4]', function() {
+        var caret;
+        textarea.value = "aaaa    \nbbbb\ncccc\n";
+        selection.caret(8, 8);
+        instance.outdent();
+        caret = selection.caret();
+        expect(normalizedValue()).to.be.eql("aaaa\nbbbb\ncccc\n");
+        return expect(caret).to.be.eql([4, 4]);
+      });
+      it('should remove 4 spaces before the caret [9, 9] (after Newline) and move the caret to [5, 5]', function() {
+        var caret;
+        textarea.value = "aaaa\n    bbbb\ncccc\n";
+        selection.caret(9, 9);
+        instance.outdent();
+        caret = selection.caret();
+        expect(normalizedValue()).to.be.eql("aaaa\nbbbb\ncccc\n");
+        return expect(caret).to.be.eql([5, 5]);
+      });
+      it('should remove 4 spaces before the single line selection [8, 12] and move the caret to [4, 8], [0, 4]', function() {
+        var caret;
+        textarea.value = "        aaaa\nbbbb\ncccc\n";
+        selection.caret(8, 12);
+        instance.outdent();
+        caret = selection.caret();
+        expect(normalizedValue()).to.be.eql("    aaaa\nbbbb\ncccc\n");
+        expect(caret).to.be.eql([4, 8]);
+        instance.outdent();
+        caret = selection.caret();
+        expect(normalizedValue()).to.be.eql("aaaa\nbbbb\ncccc\n");
+        return expect(caret).to.be.eql([0, 4]);
+      });
+      it('should remove 3, 4 spaces before the single line selection [5, 9] and move the caret to [1, 5], [0, 1]', function() {
+        var caret;
+        textarea.value = "        aaaa\nbbbb\ncccc\n";
+        selection.caret(5, 9);
+        instance.outdent();
+        caret = selection.caret();
+        expect(normalizedValue()).to.be.eql("    aaaa\nbbbb\ncccc\n");
+        expect(caret).to.be.eql([1, 5]);
+        instance.outdent();
+        caret = selection.caret();
+        expect(normalizedValue()).to.be.eql("aaaa\nbbbb\ncccc\n");
+        return expect(caret).to.be.eql([0, 1]);
+      });
+      it('should remove 4 spaces before each selected lines [0, 25] and move the caret to [0, 17], [0, 9]', function() {
+        var caret;
+        textarea.value = "        aaaa\n        bbbb\ncccc\n";
+        selection.caret(0, 25);
+        instance.outdent();
+        caret = selection.caret();
+        expect(normalizedValue()).to.be.eql("    aaaa\n    bbbb\ncccc\n");
+        expect(caret).to.be.eql([0, 17]);
+        instance.outdent();
+        caret = selection.caret();
+        expect(normalizedValue()).to.be.eql("aaaa\nbbbb\ncccc\n");
+        return expect(caret).to.be.eql([0, 9]);
+      });
+      return it('should remove 2, 4 spaces before each lines contains [0, 29] and move the caret to [0, 25], [0, 17], [0, 9]', function() {
+        var caret;
+        textarea.value = "          aaaa\n          bbbb\ncccc\n";
+        selection.caret(0, 29);
+        instance.outdent();
+        caret = selection.caret();
+        expect(normalizedValue()).to.be.eql("        aaaa\n        bbbb\ncccc\n");
+        expect(caret).to.be.eql([0, 25]);
+        instance.outdent();
+        caret = selection.caret();
+        expect(normalizedValue()).to.be.eql("    aaaa\n    bbbb\ncccc\n");
+        expect(caret).to.be.eql([0, 17]);
+        instance.outdent();
+        caret = selection.caret();
+        expect(normalizedValue()).to.be.eql("aaaa\nbbbb\ncccc\n");
+        return expect(caret).to.be.eql([0, 9]);
+      });
+    });
+    return describe('!KeyDown event', function() {
+      it('should call `indent()` when user hit TAB', function() {
+        var e;
+        e = jQuery.Event('keydown', {
+          which: 9
+        });
+        indent = instance.indent;
+        instance.indent = function() {
+          return this.indent.called = true;
+        };
+        instance.indent.called = false;
+        $(textarea).trigger(e);
+        expect(instance.indent.called).to.be["true"];
+        return instance.indent = indent;
+      });
+      return it('should call `outdent()` when user hit Shift+TAB', function() {
+        var e, outdent;
+        e = jQuery.Event('keydown', {
+          which: 9,
+          shiftKey: true
+        });
+        outdent = instance.outdent;
+        instance.outdent = function() {
+          return this.outdent.called = true;
+        };
+        instance.outdent.called = false;
+        $(textarea).trigger(e);
+        expect(instance.outdent.called).to.be["true"];
+        return instance.outdent = outdent;
+      });
+    });
   });
 
   describe('Femto.utils.Selection', function() {
@@ -3081,329 +3364,353 @@ Cross-browser textarea selection class
     });
   });
 
-  describe('Femto.utils.Indenty', function() {
-    var Selection, expected_methods, expected_private_methods, expected_private_properties, expected_properties, instance, isIE, method, name, normalizedValue, rollback, selection, textarea, value, _fn, _fn1, _fn2, _fn3, _i, _j, _k, _l, _len, _len1, _len2, _len3, _ref, _ref1;
-    textarea = instance = selection = value = null;
-    Indenty = Femto.utils.Indenty;
-    Selection = Femto.utils.Selection;
-    isIE = document.selection != null;
-    normalizedValue = function() {
-      return textarea.value.replace(/\r\n/g, '\n');
-    };
-    rollback = function() {
-      return textarea.value = 'aaaa\nbbbb\ncccc\n';
-    };
-    before(function() {
-      textarea = document.createElement('textarea');
-      rollback();
-      instance = new Indenty(jQuery(textarea), true, 4);
-      selection = instance._selection;
-      document.body.appendChild(textarea);
-      return textarea.focus();
-    });
-    after(function() {
-      return document.body.removeChild(textarea);
-    });
-    afterEach(function() {
-      return rollback();
-    });
-    expected_private_properties = [['_selection', Selection]];
-    _fn = function(name, type) {
-      return it("instance should have private `" + name + "` property", function() {
-        expect(instance).to.have.property(name);
-        return expect(instance[name]).to.be.a(type);
-      });
-    };
-    for (_i = 0, _len = expected_private_properties.length; _i < _len; _i++) {
-      _ref = expected_private_properties[_i], name = _ref[0], type = _ref[1];
-      _fn(name, type);
+  describe('Femto.utils.type', function() {
+    var cases, obj, result, _i, _len, _ref, _results;
+    cases = [
+      [0, 'number'], [1.2, 'number'], [[0, 1], 'array'], [new Array, 'array'], [
+        {
+          0: 1
+        }, 'object'
+      ], [null, 'null'], [void 0, 'undefined'], [NaN, 'number']
+    ];
+    _results = [];
+    for (_i = 0, _len = cases.length; _i < _len; _i++) {
+      _ref = cases[_i], obj = _ref[0], result = _ref[1];
+      _results.push((function(obj, result) {
+        return it("should return '" + result + "' for `" + obj + "`", function() {
+          return expect(Femto.utils.type(obj)).to.be.eql(result);
+        });
+      })(obj, result));
     }
-    expected_properties = [['textarea', null], ['expandTab', 'boolean'], ['indentLevel', 'number']];
-    _fn1 = function(name, type) {
-      return it("instance should have public `" + name + "` property", function() {
-        expect(instance).to.have.property(name);
-        if (type != null) {
-          return expect(instance[name]).to.be.a(type);
-        }
-      });
-    };
-    for (_j = 0, _len1 = expected_properties.length; _j < _len1; _j++) {
-      _ref1 = expected_properties[_j], name = _ref1[0], type = _ref1[1];
-      _fn1(name, type);
+    return _results;
+  });
+
+  describe('Femto.utils.Originator', function() {
+    var expected_methods, method, _i, _len, _results;
+    Originator = Femto.utils.Originator;
+    Caretaker = Femto.utils.Caretaker;
+    expected_methods = ['createMemento', 'setMemento'];
+    _results = [];
+    for (_i = 0, _len = expected_methods.length; _i < _len; _i++) {
+      method = expected_methods[_i];
+      _results.push((function(method) {
+        return it("instance should have `" + method + "` method", function() {
+          var instance;
+          instance = new Originator();
+          expect(instance).to.have.property(method);
+          return expect(instance[method]).to.be.a('function');
+        });
+      })(method));
     }
-    expected_private_methods = ['_keyDownEvent'];
-    _fn2 = function(method) {
-      return it("instance should have private `" + method + "` method", function() {
+    return _results;
+  });
+
+  describe('Femto.utils.Caretaker', function() {
+    var Dummy, dummy, expected_methods, instance, method, _fn, _i, _len;
+    Originator = Femto.utils.Originator;
+    Caretaker = Femto.utils.Caretaker;
+    Dummy = (function(_super) {
+
+      __extends(Dummy, _super);
+
+      function Dummy() {
+        return Dummy.__super__.constructor.apply(this, arguments);
+      }
+
+      Dummy.prototype.createMemento = function() {
+        return this.memento;
+      };
+
+      Dummy.prototype.setMemento = function(memento) {
+        return this.memento = memento;
+      };
+
+      return Dummy;
+
+    })(Originator);
+    dummy = new Dummy();
+    instance = new Caretaker(dummy);
+    expected_methods = ['originator', 'save', 'undo', 'redo', 'canUndo', 'canRedo'];
+    _fn = function(method) {
+      return it("instance should have `" + method + "` method", function() {
         expect(instance).to.have.property(method);
         return expect(instance[method]).to.be.a('function');
       });
     };
-    for (_k = 0, _len2 = expected_private_methods.length; _k < _len2; _k++) {
-      method = expected_private_methods[_k];
-      _fn2(method);
+    for (_i = 0, _len = expected_methods.length; _i < _len; _i++) {
+      method = expected_methods[_i];
+      _fn(method);
     }
-    expected_methods = ['indent', 'outdent', 'enable', 'disable'];
-    _fn3 = function(method) {
-      return it("instance should have public `" + method + "` method", function() {
-        expect(instance).to.have.property(method);
-        return expect(instance[method]).to.be.a('function');
-      });
-    };
-    for (_l = 0, _len3 = expected_methods.length; _l < _len3; _l++) {
-      method = expected_methods[_l];
-      _fn3(method);
-    }
-    describe('#indent() -> instance', function() {
-      it('should return the instance', function() {
+    beforeEach(function() {
+      dummy.memento = null;
+      instance._undoStack = [];
+      instance._redoStack = [];
+      instance._previous = null;
+      return instance._originator = dummy;
+    });
+    describe('#originator(originator) -> originator | instance', function() {
+      it('should return originator instance when called without any argument', function() {
         var r;
-        r = instance.indent();
-        expect(r).to.be.a(Indenty);
-        return expect(r).to.be.eql(instance);
+        r = instance.originator();
+        expect(r).to.be.a(Dummy);
+        return expect(r).to.be.eql(dummy);
       });
-      it('should insert 4 spaces before the caret [0, 0] and move the caret to [4, 4], [8, 8]', function() {
-        var caret;
-        selection.caret(0, 0);
-        instance.indent();
-        caret = selection.caret();
-        expect(normalizedValue()).to.be.eql("    aaaa\nbbbb\ncccc\n");
-        expect(caret).to.be.eql([4, 4]);
-        instance.indent();
-        caret = selection.caret();
-        expect(normalizedValue()).to.be.eql("        aaaa\nbbbb\ncccc\n");
-        return expect(caret).to.be.eql([8, 8]);
-      });
-      it('should insert 2, 4 spaces before the caret [2, 2] and move the caret to [4, 4], [8, 8]', function() {
-        var caret;
-        selection.caret(2, 2);
-        instance.indent();
-        caret = selection.caret();
-        expect(normalizedValue()).to.be.eql("aa  aa\nbbbb\ncccc\n");
-        expect(caret).to.be.eql([4, 4]);
-        instance.indent();
-        caret = selection.caret();
-        expect(normalizedValue()).to.be.eql("aa      aa\nbbbb\ncccc\n");
-        return expect(caret).to.be.eql([8, 8]);
-      });
-      it('should insert 4 spaces before the caret [4, 4] (before Newline) and move the caret to [8, 8]', function() {
-        var caret;
-        selection.caret(4, 4);
-        instance.indent();
-        caret = selection.caret();
-        expect(normalizedValue()).to.be.eql("aaaa    \nbbbb\ncccc\n");
-        return expect(caret).to.be.eql([8, 8]);
-      });
-      it('should insert 4 spaces before the caret [5, 5] (after Newline) and move the caret to [9, 9]', function() {
-        var caret;
-        selection.caret(5, 5);
-        instance.indent();
-        caret = selection.caret();
-        expect(normalizedValue()).to.be.eql("aaaa\n    bbbb\ncccc\n");
-        return expect(caret).to.be.eql([9, 9]);
-      });
-      it('should insert 4 spaces before the single line selection [0, 4] and move the caret to [4, 8], [8, 12]', function() {
-        var caret;
-        selection.caret(0, 4);
-        instance.indent();
-        caret = selection.caret();
-        expect(normalizedValue()).to.be.eql("    aaaa\nbbbb\ncccc\n");
-        expect(caret).to.be.eql([4, 8]);
-        instance.indent();
-        caret = selection.caret();
-        expect(normalizedValue()).to.be.eql("        aaaa\nbbbb\ncccc\n");
-        return expect(caret).to.be.eql([8, 12]);
-      });
-      it('should insert 3, 4 spaces before the selection within a single line [1, 3] and move the caret to [4, 6], [8, 10]', function() {
-        var caret;
-        selection.caret(1, 3);
-        instance.indent();
-        caret = selection.caret();
-        expect(normalizedValue()).to.be.eql("a   aaa\nbbbb\ncccc\n");
-        expect(caret).to.be.eql([4, 6]);
-        instance.indent();
-        caret = selection.caret();
-        expect(normalizedValue()).to.be.eql("a       aaa\nbbbb\ncccc\n");
-        return expect(caret).to.be.eql([8, 10]);
-      });
-      it('should insert 4 spaces before each selected lines [0, 9] and move the caret to [0, 17], [0, 25]', function() {
-        var caret;
-        selection.caret(0, 9);
-        instance.indent();
-        caret = selection.caret();
-        expect(normalizedValue()).to.be.eql("    aaaa\n    bbbb\ncccc\n");
-        expect(caret).to.be.eql([0, 17]);
-        instance.indent();
-        caret = selection.caret();
-        expect(normalizedValue()).to.be.eql("        aaaa\n        bbbb\ncccc\n");
-        return expect(caret).to.be.eql([0, 25]);
-      });
-      it('should insert 4 spaces before each lines contains the selection [2, 7] and move the caret to [6, 15], [10, 23]', function() {
-        var caret;
-        selection.caret(2, 7);
-        instance.indent();
-        caret = selection.caret();
-        expect(normalizedValue()).to.be.eql("    aaaa\n    bbbb\ncccc\n");
-        expect(caret).to.be.eql([6, 15]);
-        instance.indent();
-        caret = selection.caret();
-        expect(normalizedValue()).to.be.eql("        aaaa\n        bbbb\ncccc\n");
-        return expect(caret).to.be.eql([10, 23]);
-      });
-      it('should insert appropriate number of spaces before each selected lines and move the caret to [0, 26]', function() {
-        var caret;
-        textarea.value = " aaaa\n  bbbb\n   cccc\n";
-        selection.caret(0, 20);
-        instance.indent();
-        caret = selection.caret();
-        expect(normalizedValue()).to.be.eql("    aaaa\n    bbbb\n    cccc\n");
-        return expect(caret).to.be.eql([0, 26]);
-      });
-      return it('should insert appropriate number of spaces before each lines contains selection and move the caret to [6, 24]', function() {
-        var caret;
-        textarea.value = " aaaa\n  bbbb\n   cccc\n";
-        selection.caret(3, 18);
-        instance.indent();
-        caret = selection.caret();
-        expect(normalizedValue()).to.be.eql("    aaaa\n    bbbb\n    cccc\n");
-        return expect(caret).to.be.eql([6, 24]);
+      return it('should change originator and return the instance when called with a argument', function() {
+        var Dummy2, dummy2, o, r;
+        Dummy2 = (function(_super) {
+
+          __extends(Dummy2, _super);
+
+          function Dummy2() {
+            return Dummy2.__super__.constructor.apply(this, arguments);
+          }
+
+          Dummy2.prototype.createMemento = function() {
+            return this.memento + this.memento;
+          };
+
+          return Dummy2;
+
+        })(Dummy);
+        dummy2 = new Dummy2();
+        r = instance.originator(dummy2);
+        expect(r).to.be.eql(instance);
+        o = r.originator();
+        expect(o).to.be.a(Dummy2);
+        return expect(o).to.be.eql(dummy2);
       });
     });
-    describe('#outdent() -> instance', function() {
+    return describe('#save(memento) -> instance', function() {
       it('should return the instance', function() {
         var r;
-        r = instance.outdent();
-        expect(r).to.be.a(Indenty);
+        r = instance.save();
+        expect(r).to.be.eql(instance);
+        r = instance.save('HELLO');
         return expect(r).to.be.eql(instance);
       });
-      it('should remove 4 spaces before the caret [8, 8] and move the caret to [4, 4], [0, 0]', function() {
-        var caret;
-        textarea.value = "        aaaa\nbbbb\ncccc\n";
-        selection.caret(8, 8);
-        instance.outdent();
-        caret = selection.caret();
-        expect(normalizedValue()).to.be.eql("    aaaa\nbbbb\ncccc\n");
-        expect(caret).to.be.eql([4, 4]);
-        instance.outdent();
-        caret = selection.caret();
-        expect(normalizedValue()).to.be.eql("aaaa\nbbbb\ncccc\n");
-        return expect(caret).to.be.eql([0, 0]);
-      });
-      it('should remove 2, 4 spaces before the caret [6, 6] and move the caret to [2, 2], [0, 0]', function() {
-        var caret;
-        textarea.value = "      aaaa\nbbbb\ncccc\n";
-        selection.caret(6, 6);
-        instance.outdent();
-        caret = selection.caret();
-        expect(normalizedValue()).to.be.eql("    aaaa\nbbbb\ncccc\n");
-        expect(caret).to.be.eql([4, 4]);
-        instance.outdent();
-        caret = selection.caret();
-        expect(normalizedValue()).to.be.eql("aaaa\nbbbb\ncccc\n");
-        return expect(caret).to.be.eql([0, 0]);
-      });
-      it('should remove 4 spaces before the caret [8, 8] (before Newline) and move the caret to [4, 4]', function() {
-        var caret;
-        textarea.value = "aaaa    \nbbbb\ncccc\n";
-        selection.caret(8, 8);
-        instance.outdent();
-        caret = selection.caret();
-        expect(normalizedValue()).to.be.eql("aaaa\nbbbb\ncccc\n");
-        return expect(caret).to.be.eql([4, 4]);
-      });
-      it('should remove 4 spaces before the caret [9, 9] (after Newline) and move the caret to [5, 5]', function() {
-        var caret;
-        textarea.value = "aaaa\n    bbbb\ncccc\n";
-        selection.caret(9, 9);
-        instance.outdent();
-        caret = selection.caret();
-        expect(normalizedValue()).to.be.eql("aaaa\nbbbb\ncccc\n");
-        return expect(caret).to.be.eql([5, 5]);
-      });
-      it('should remove 4 spaces before the single line selection [8, 12] and move the caret to [4, 8], [0, 4]', function() {
-        var caret;
-        textarea.value = "        aaaa\nbbbb\ncccc\n";
-        selection.caret(8, 12);
-        instance.outdent();
-        caret = selection.caret();
-        expect(normalizedValue()).to.be.eql("    aaaa\nbbbb\ncccc\n");
-        expect(caret).to.be.eql([4, 8]);
-        instance.outdent();
-        caret = selection.caret();
-        expect(normalizedValue()).to.be.eql("aaaa\nbbbb\ncccc\n");
-        return expect(caret).to.be.eql([0, 4]);
-      });
-      it('should remove 3, 4 spaces before the single line selection [5, 9] and move the caret to [1, 5], [0, 1]', function() {
-        var caret;
-        textarea.value = "        aaaa\nbbbb\ncccc\n";
-        selection.caret(5, 9);
-        instance.outdent();
-        caret = selection.caret();
-        expect(normalizedValue()).to.be.eql("    aaaa\nbbbb\ncccc\n");
-        expect(caret).to.be.eql([1, 5]);
-        instance.outdent();
-        caret = selection.caret();
-        expect(normalizedValue()).to.be.eql("aaaa\nbbbb\ncccc\n");
-        return expect(caret).to.be.eql([0, 1]);
-      });
-      it('should remove 4 spaces before each selected lines [0, 25] and move the caret to [0, 17], [0, 9]', function() {
-        var caret;
-        textarea.value = "        aaaa\n        bbbb\ncccc\n";
-        selection.caret(0, 25);
-        instance.outdent();
-        caret = selection.caret();
-        expect(normalizedValue()).to.be.eql("    aaaa\n    bbbb\ncccc\n");
-        expect(caret).to.be.eql([0, 17]);
-        instance.outdent();
-        caret = selection.caret();
-        expect(normalizedValue()).to.be.eql("aaaa\nbbbb\ncccc\n");
-        return expect(caret).to.be.eql([0, 9]);
-      });
-      return it('should remove 2, 4 spaces before each lines contains [0, 29] and move the caret to [0, 25], [0, 17], [0, 9]', function() {
-        var caret;
-        textarea.value = "          aaaa\n          bbbb\ncccc\n";
-        selection.caret(0, 29);
-        instance.outdent();
-        caret = selection.caret();
-        expect(normalizedValue()).to.be.eql("        aaaa\n        bbbb\ncccc\n");
-        expect(caret).to.be.eql([0, 25]);
-        instance.outdent();
-        caret = selection.caret();
-        expect(normalizedValue()).to.be.eql("    aaaa\n    bbbb\ncccc\n");
-        expect(caret).to.be.eql([0, 17]);
-        instance.outdent();
-        caret = selection.caret();
-        expect(normalizedValue()).to.be.eql("aaaa\nbbbb\ncccc\n");
-        return expect(caret).to.be.eql([0, 9]);
-      });
-    });
-    return describe('!KeyDown event', function() {
-      it('should call `indent()` when user hit TAB', function() {
-        var e;
-        e = jQuery.Event('keydown', {
-          which: 9
-        });
-        indent = instance.indent;
-        instance.indent = function() {
-          return this.indent.called = true;
+      it('should call originator `createMemento()` method to get current memento without any argument', function() {
+        var createMemento, o;
+        o = instance.originator();
+        createMemento = o.createMemento;
+        o.createMemento = function() {
+          return this.createMemento.called = true;
         };
-        instance.indent.called = false;
-        $(textarea).trigger(e);
-        expect(instance.indent.called).to.be["true"];
-        return instance.indent = indent;
+        o.createMemento.called = false;
+        instance.save();
+        expect(o.createMemento.called).to.be["true"];
+        return o.createMemento = createMemento;
       });
-      return it('should call `outdent()` when user hit Shift+TAB', function() {
-        var e, outdent;
-        e = jQuery.Event('keydown', {
-          which: 9,
-          shiftKey: true
+      it('should save new memento into `_undoStack` and change `_previous` when called without any argument', function() {
+        dummy.memento = 'HELLO';
+        instance.save();
+        expect(instance._undoStack.length).to.be.eql(1);
+        expect(instance._undoStack[0]).to.be.eql('HELLO');
+        return expect(instance._previous).to.be.eql('HELLO');
+      });
+      it('should save specified memento into `_undoStack` and change `_previous` when called with a argument', function() {
+        instance.save('HELLO');
+        expect(instance._undoStack.length).to.be.eql(1);
+        expect(instance._undoStack[0]).to.be.eql('HELLO');
+        return expect(instance._previous).to.be.eql('HELLO');
+      });
+      it('should `push` a memento into `_undoStack` rather than `unshift`', function() {
+        instance.save('HELLO1');
+        instance.save('HELLO2');
+        instance.save('HELLO3');
+        expect(instance._undoStack.length).to.be.eql(3);
+        return expect(instance._undoStack).to.be.eql(['HELLO1', 'HELLO2', 'HELLO3']);
+      });
+      it('should not save a memento which is equal with the previous one', function() {
+        instance.save('HELLO');
+        instance.save('HELLO');
+        instance.save('HELLO');
+        expect(instance._undoStack.length).to.be.eql(1);
+        return expect(instance._undoStack[0]).to.be.eql('HELLO');
+      });
+      describe('#undo() -> instance', function() {
+        it('should return the instance', function() {
+          var r;
+          r = instance.undo();
+          return expect(r).to.be.eql(instance);
         });
-        outdent = instance.outdent;
-        instance.outdent = function() {
-          return this.outdent.called = true;
-        };
-        instance.outdent.called = false;
-        $(textarea).trigger(e);
-        expect(instance.outdent.called).to.be["true"];
-        return instance.outdent = outdent;
+        it('should not do anything when nothing have saved on `_undoStack`', function() {
+          expect(dummy.memento).to.be.eql(null);
+          expect(instance._undoStack.length).to.be.eql(0);
+          expect(instance._redoStack.length).to.be.eql(0);
+          expect(instance._previous).to.be.eql(null);
+          instance.undo();
+          expect(dummy.memento).to.be.eql(null);
+          expect(instance._undoStack.length).to.be.eql(0);
+          expect(instance._redoStack.length).to.be.eql(0);
+          return expect(instance._previous).to.be.eql(null);
+        });
+        it('should call originator `createMemento()` method to get current value', function() {
+          var createMemento, o;
+          o = instance.originator();
+          createMemento = o.createMemento;
+          o.createMemento = function() {
+            return this.createMemento.called = true;
+          };
+          o.createMemento.called = false;
+          instance.undo();
+          expect(o.createMemento.called).to.be["true"];
+          return o.createMemento = createMemento;
+        });
+        it('should call originator `setMemento(value)` method to change current value', function() {
+          var o, setMemento;
+          o = instance.originator();
+          setMemento = o.setMemento;
+          o.setMemento = function() {
+            return this.setMemento.called = true;
+          };
+          o.setMemento.called = false;
+          instance.undo();
+          expect(o.setMemento.called).to.be["true"];
+          return o.setMemento = setMemento;
+        });
+        it('should pop previous memento from `_undoStack`', function() {
+          var i, _j, _k, _results;
+          dummy.memento = "HELLO1";
+          for (i = _j = 2; _j <= 3; i = ++_j) {
+            instance.save();
+            dummy.memento = "HELLO" + i;
+          }
+          expect(instance._undoStack).to.be.eql(['HELLO1', 'HELLO2']);
+          _results = [];
+          for (i = _k = 3; _k >= 1; i = --_k) {
+            expect(dummy.memento).to.be.eql("HELLO" + i);
+            expect(instance._undoStack.length).to.be.eql(i - 1);
+            _results.push(instance.undo());
+          }
+          return _results;
+        });
+        return it('should push current memento to `_redoStack`', function() {
+          var i, _j, _k;
+          dummy.memento = "HELLO1";
+          for (i = _j = 2; _j <= 3; i = ++_j) {
+            instance.save();
+            dummy.memento = "HELLO" + i;
+          }
+          for (i = _k = 3; _k >= 1; i = --_k) {
+            expect(instance._redoStack.length).to.be.eql(3 - i);
+            instance.undo();
+          }
+          return expect(instance._redoStack).to.be.eql(['HELLO3', 'HELLO2']);
+        });
+      });
+      describe('#redo() -> instance', function() {
+        it('should return the instance', function() {
+          var r;
+          r = instance.redo();
+          return expect(r).to.be.eql(instance);
+        });
+        it('should not do anything when nothing have saved on `_redoStack`', function() {
+          expect(dummy.memento).to.be.eql(null);
+          expect(instance._undoStack.length).to.be.eql(0);
+          expect(instance._redoStack.length).to.be.eql(0);
+          expect(instance._previous).to.be.eql(null);
+          instance.redo();
+          expect(dummy.memento).to.be.eql(null);
+          expect(instance._undoStack.length).to.be.eql(0);
+          expect(instance._redoStack.length).to.be.eql(0);
+          return expect(instance._previous).to.be.eql(null);
+        });
+        it('should call originator `createMemento()` method to get current value', function() {
+          var createMemento, o;
+          o = instance.originator();
+          createMemento = o.createMemento;
+          o.createMemento = function() {
+            return this.createMemento.called = true;
+          };
+          o.createMemento.called = false;
+          instance.redo();
+          expect(o.createMemento.called).to.be["true"];
+          return o.createMemento = createMemento;
+        });
+        it('should call originator `setMemento(value)` method to change current value', function() {
+          var o, setMemento;
+          o = instance.originator();
+          setMemento = o.setMemento;
+          o.setMemento = function() {
+            return this.setMemento.called = true;
+          };
+          o.setMemento.called = false;
+          instance.redo();
+          expect(o.setMemento.called).to.be["true"];
+          return o.setMemento = setMemento;
+        });
+        it('should pop further memento from `_redoStack`', function() {
+          var i, _j, _k, _l;
+          dummy.memento = "HELLO1";
+          for (i = _j = 2; _j <= 3; i = ++_j) {
+            instance.save();
+            dummy.memento = "HELLO" + i;
+          }
+          for (i = _k = 3; _k >= 1; i = --_k) {
+            instance.undo();
+          }
+          expect(instance._redoStack).to.be.eql(['HELLO3', 'HELLO2']);
+          for (i = _l = 1; _l <= 2; i = ++_l) {
+            expect(dummy.memento).to.be.eql("HELLO" + i);
+            expect(instance._redoStack.length).to.be.eql(3 - i);
+            instance.redo();
+          }
+          return expect(dummy.memento).to.be.eql("HELLO3");
+        });
+        return it('should push current memento to `_undoStack`', function() {
+          var i, _j, _k, _l;
+          dummy.memento = "HELLO1";
+          for (i = _j = 2; _j <= 3; i = ++_j) {
+            instance.save();
+            dummy.memento = "HELLO" + i;
+          }
+          for (i = _k = 3; _k >= 1; i = --_k) {
+            instance.undo();
+          }
+          for (i = _l = 1; _l <= 2; i = ++_l) {
+            expect(dummy.memento).to.be.eql("HELLO" + i);
+            expect(instance._undoStack.length).to.be.eql(i - 1);
+            instance.redo();
+          }
+          return expect(instance._undoStack).to.be.eql(['HELLO1', 'HELLO2']);
+        });
+      });
+      describe('#canUndo() -> boolean', function() {
+        it('should return boolean', function() {
+          var r;
+          r = instance.canUndo();
+          return expect(r).to.be.a('boolean');
+        });
+        it('should return `false` when `_undoStack` is empty', function() {
+          var r;
+          r = instance.canUndo();
+          return expect(r).to.be["false"];
+        });
+        return it('should return `true` when `_undoStack` is not empty', function() {
+          var r;
+          instance.save('HELLO');
+          r = instance.canUndo();
+          return expect(r).to.be["true"];
+        });
+      });
+      return describe('#canRedo() -> boolean', function() {
+        it('should return boolean', function() {
+          var r;
+          r = instance.canRedo();
+          return expect(r).to.be.a('boolean');
+        });
+        it('should return `false` when `_redoStack` is empty', function() {
+          var r;
+          r = instance.canRedo();
+          return expect(r).to.be["false"];
+        });
+        return it('should return `true` when `_redoStack` is not empty', function() {
+          var r;
+          instance.save('HELLO');
+          instance.undo();
+          r = instance.canRedo();
+          return expect(r).to.be["true"];
+        });
       });
     });
   });
@@ -3444,225 +3751,51 @@ Cross-browser textarea selection class
     return _results;
   });
 
-  describe('Femto.widget.Editor', function() {
-    var expected_classname, expected_methods, expected_properties, instance, method, name, textarea, _fn, _fn1, _fn2, _i, _j, _k, _len, _len1, _len2, _ref;
-    Editor = Femto.widget.Editor;
+  describe('Femto.widget.IFrame', function() {
+    var expected_css, expected_methods, instance, method, name, textarea, value, _fn, _fn1, _i, _j, _len, _len1, _ref;
+    IFrame = Femto.widget.IFrame;
     textarea = instance = null;
     before(function() {
-      textarea = jQuery('<textarea>');
-      return instance = Editor(textarea);
+      instance = IFrame();
+      $(document).append(instance);
+      return instance.init();
     });
     it('should return jQuery instance', function() {
       return expect(instance).to.be.a(jQuery);
     });
-    expected_classname = ['panel', 'editor'];
-    _fn = function(name) {
-      return it("should have `" + name + "` class in its DOM element", function() {
-        return expect(instance.hasClass(name)).to.be["true"];
+    expected_css = [['margin', '0'], ['padding', '0'], ['border', 'none'], ['outline', 'none'], ['resize', 'none'], ['overflow', 'scroll'], ['width', '100%'], ['height', '100%']];
+    _fn = function(name, value) {
+      return it("return instance CSS `" + name + "` should be `" + value + "`", function() {
+        return expect(instance.css(name)).to.be.eql(value);
       });
     };
-    for (_i = 0, _len = expected_classname.length; _i < _len; _i++) {
-      name = expected_classname[_i];
-      _fn(name);
+    for (_i = 0, _len = expected_css.length; _i < _len; _i++) {
+      _ref = expected_css[_i], name = _ref[0], value = _ref[1];
+      _fn(name, value);
     }
-    it('DOM element should have `textarea` DOM element in it', function() {
-      var children;
-      children = instance.children();
-      expect(children.length).to.be.eql(1);
-      return expect(children[0]).to.be.eql(instance.textarea[0]);
-    });
-    expected_properties = [['textarea', jQuery], ['caretaker', Femto.utils.Caretaker]];
-    _fn1 = function(name, type) {
-      return it("return instance should have `" + name + "` property as `" + type.name + "`", function() {
-        expect(instance).to.have.property(name);
-        return expect(instance[name]).to.be.a(type);
-      });
-    };
-    for (_j = 0, _len1 = expected_properties.length; _j < _len1; _j++) {
-      _ref = expected_properties[_j], name = _ref[0], type = _ref[1];
-      _fn1(name, type);
-    }
-    expected_methods = ['val'];
-    _fn2 = function(method) {
+    expected_methods = ['focus', 'blur', 'init', 'write'];
+    _fn1 = function(method) {
       return it("return instance should have `" + method + "` method", function() {
         expect(instance).to.have.property(method);
         return expect(instance[method]).to.be.a('function');
       });
     };
-    for (_k = 0, _len2 = expected_methods.length; _k < _len2; _k++) {
-      method = expected_methods[_k];
-      _fn2(method);
+    for (_j = 0, _len1 = expected_methods.length; _j < _len1; _j++) {
+      method = expected_methods[_j];
+      _fn1(method);
     }
-    describe('#textarea : An extended jQuery instance', function() {
-      var action, key, save_trigger_actions, save_trigger_keys, _fn3, _fn4, _fn5, _l, _len3, _len4, _len5, _m, _n, _ref1, _ref2;
-      it('should have `widget` property', function() {
-        expect(instance.textarea).to.have.property('widget');
-        return expect(instance.textarea.widget).to.be.eql(true);
-      });
-      expected_methods = ['createMemento', 'setMemento'];
-      _fn3 = function(method) {
-        return it("should have `" + method + "` method", function() {
-          expect(instance.textarea).to.have.property(method);
-          return expect(instance.textarea[method]).to.be.a('function');
-        });
-      };
-      for (_l = 0, _len3 = expected_methods.length; _l < _len3; _l++) {
-        method = expected_methods[_l];
-        _fn3(method);
-      }
-      save_trigger_keys = [['Return', 13], ['Tab', 9], ['Backspace', 8], ['Delete', 46]];
-      _fn4 = function(name, key) {
-        return it("should call `caretaker.save()` method when user press " + name, function() {
-          var e, save;
-          e = jQuery.Event('keydown', {
-            which: key
-          });
-          save = instance.save;
-          instance.save = function() {
-            return this.save.called = true;
-          };
-          instance.save.called = false;
-          instance.textarea.trigger(e);
-          expect(instance.save.called).to.be["true"];
-          return instance.save = save;
-        });
-      };
-      for (_m = 0, _len4 = save_trigger_keys.length; _m < _len4; _m++) {
-        _ref1 = save_trigger_keys[_m], name = _ref1[0], key = _ref1[1];
-        _fn4(name, key);
-      }
-      save_trigger_actions = [['paste', null], ['drop', null]];
-      _fn5 = function(name, action) {
-        return it("should call `caretaker.save()` method when user " + name + " text", function() {
-          var e, save;
-          e = jQuery.Event(name);
-          save = instance.save;
-          instance.save = function() {
-            return this.save.called = true;
-          };
-          instance.save.called = false;
-          instance.textarea.trigger(e);
-          expect(instance.save.called).to.be["true"];
-          return instance.save = save;
-        });
-      };
-      for (_n = 0, _len5 = save_trigger_actions.length; _n < _len5; _n++) {
-        _ref2 = save_trigger_actions[_n], name = _ref2[0], action = _ref2[1];
-        _fn5(name, action);
-      }
-      it("should call `caretaker.undo()` method when user press Ctrl+Z", function() {
-        var e, undo;
-        e = jQuery.Event('keydown', {
-          which: 90,
-          ctrlKey: true
-        });
-        undo = instance.undo;
-        instance.undo = function() {
-          return this.undo.called = true;
-        };
-        instance.undo.called = false;
-        instance.textarea.trigger(e);
-        expect(instance.undo.called).to.be["true"];
-        return instance.undo = undo;
-      });
-      it("should not call `caretaker.undo()` method when user press Ctrl+Shift+Z", function() {
-        var e, undo;
-        e = jQuery.Event('keydown', {
-          which: 90,
-          ctrlKey: true,
-          shiftKey: true
-        });
-        undo = instance.undo;
-        instance.undo = function() {
-          return this.undo.called = true;
-        };
-        instance.undo.called = false;
-        instance.textarea.trigger(e);
-        expect(instance.undo.called).to.be["false"];
-        return instance.undo = undo;
-      });
-      it("should not call `caretaker.redo()` method when user press Ctrl+Z", function() {
-        var e, redo;
-        e = jQuery.Event('keydown', {
-          which: 90,
-          ctrlKey: true
-        });
-        redo = instance.redo;
-        instance.redo = function() {
-          return this.redo.called = true;
-        };
-        instance.redo.called = false;
-        instance.textarea.trigger(e);
-        expect(instance.redo.called).to.be["false"];
-        return instance.redo = redo;
-      });
-      it("should call `caretaker.redo()` method when user press Ctrl+Shift+Z", function() {
-        var e, redo;
-        e = jQuery.Event('keydown', {
-          which: 90,
-          ctrlKey: true,
-          shiftKey: true
-        });
-        redo = instance.redo;
-        instance.redo = function() {
-          return this.redo.called = true;
-        };
-        instance.redo.called = false;
-        instance.textarea.trigger(e);
-        expect(instance.redo.called).to.be["true"];
-        return instance.redo = redo;
-      });
-      describe('#createMemento() -> value', function() {
-        return it('should return current value of the textarea', function() {
-          var r;
-          textarea.val('HELLO');
-          r = textarea.createMemento();
-          expect(r).to.be.eql('HELLO');
-          textarea.val('HELLO2');
-          r = textarea.createMemento();
-          expect(r).to.be.eql('HELLO2');
-          return textarea.val('');
-        });
-      });
-      return describe('#setMemento(value) -> instance', function() {
-        it('should return the instance', function() {
-          var r;
-          r = textarea.setMemento('');
-          return expect(r).to.be.eql(textarea);
-        });
-        return it('should change current value of the textarea', function() {
-          textarea.setMemento('HELLO');
-          expect(textarea.val()).to.be.eql('HELLO');
-          textarea.setMemento('HELLO2');
-          expect(textarea.val()).to.be.eql('HELLO2');
-          return textarea.val('');
-        });
-      });
-    });
-    describe('#caretaker : utils.Caretaker instance', function() {
-      return it('should use `textarea` as an originator', function() {
-        var originator;
-        originator = instance.caretaker.originator();
-        return expect(originator).to.be.eql(instance.textarea);
-      });
-    });
-    return describe('#val(value) -> value | instance', function() {
-      it('should return current value of the textarea when called without any argument', function() {
+    describe('#focus() -> instance', function() {
+      return it('should return the instance', function() {
         var r;
-        instance.textarea.val("HELLO");
-        r = instance.val();
-        expect(r).to.be.eql("HELLO");
-        instance.textarea.val("HELLO2");
-        r = instance.val();
-        expect(r).to.be.eql("HELLO2");
-        return instance.textarea.val("");
+        r = instance.focus();
+        return expect(r).to.be.eql(instance);
       });
-      return it('should change current value of the textarea when called with an argument', function() {
-        instance.val("HELLO");
-        expect(instance.val()).to.be.eql("HELLO");
-        instance.val("HELLO2");
-        expect(instance.val()).to.be.eql("HELLO2");
-        return instance.textarea.val("");
+    });
+    return describe('#blur() -> instance', function() {
+      return it('should return the instance', function() {
+        var r;
+        r = instance.blur();
+        return expect(r).to.be.eql(instance);
       });
     });
   });

@@ -17,7 +17,7 @@ IFrame = ->
     raw.contentWindow.focus()
     return @
   elem.blur = ->
-    raw.contentWindow.document.body.blur()
+    doc.body.blur()
     return @
   elem.init = ->
     raw = @get(0)
