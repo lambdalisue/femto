@@ -11,7 +11,7 @@ Curtain = (widget) ->
     height: '100%'
   elem.adjust = ->
     @width widget.outerWidth(true)
-    @height height.outerHeight(true)
+    @height widget.outerHeight(true)
     return @
   elem.show = ->
     @adjust()

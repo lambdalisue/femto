@@ -15,22 +15,23 @@ class Parser
 
 
 class AjaxParser extends Parser
-  constructor: (@url, @fieldName='data', @type='GET', @dataType='text') ->
-    fn = (value, done) =>
-      data = {}
-      data[@fieldName] = value
-      jQuery.ajax(
-        'url': @url
-        'type': @type
-        'dataType': @dataType
-        'data': data
-      ).done( (data, textStatus, jqXHR) ->
-        done data
-      ).fail( (jqXHR, textStatus, errorThrown) ->
-        done errorThrown
-      )
-    super(fn, false)
+  constructor: (@url, @type='GET', @dataType='text') ->
+    super(@fn, false)
 
+  data: (value) ->
+    return {'data': value}
+
+  fn: (value, done) =>
+    jQuery.ajax(
+      'url': @url
+      'type': @type
+      'dataType': @dataType
+      'data': @data(value)
+    ).done( (data, textStatus, jqXHR) ->
+      done data
+    ).fail( (jqXHR, textStatus, errorThrown) ->
+      done errorThrown
+    )
 
 namespace 'Femto.parsers', (exports) ->
   exports.Parser = Parser

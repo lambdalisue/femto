@@ -42,13 +42,20 @@
         var parser = new TextHatena();
         return parser.parse(text);
       };
+      var gfm_ajax_filter = new Femto.parsers.AjaxParser(
+        "http://developer.github.com/v3/markdown/",
+        "POST");
+      gfm_ajax_filter.data = function (value){
+        return {'text': value};
+      };
       var options = {
         template: template,
         documentTypes: {
           'markdown': markdown_filter,
           'gfm': gfm_filter,
           'textile': textile_filter,
-          'Hatena': hatena_filter
+          'Hatena': hatena_filter,
+          'gfm Ajax': gfm_ajax_filter
         }
       };
 		  var femto;

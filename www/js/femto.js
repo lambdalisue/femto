@@ -1141,7 +1141,7 @@ Cross-browser textarea selection class
     });
     elem.adjust = function() {
       this.width(widget.outerWidth(true));
-      this.height(height.outerHeight(true));
+      this.height(widget.outerHeight(true));
       return this;
     };
     elem.show = function() {
@@ -1250,30 +1250,33 @@ Cross-browser textarea selection class
 
     __extends(AjaxParser, _super);
 
-    function AjaxParser(url, fieldName, type, dataType) {
-      var fn,
-        _this = this;
+    function AjaxParser(url, type, dataType) {
       this.url = url;
-      this.fieldName = fieldName != null ? fieldName : 'data';
       this.type = type != null ? type : 'GET';
       this.dataType = dataType != null ? dataType : 'text';
-      fn = function(value, done) {
-        var data;
-        data = {};
-        data[_this.fieldName] = value;
-        return jQuery.ajax({
-          'url': _this.url,
-          'type': _this.type,
-          'dataType': _this.dataType,
-          'data': data
-        }).done(function(data, textStatus, jqXHR) {
-          return done(data);
-        }).fail(function(jqXHR, textStatus, errorThrown) {
-          return done(errorThrown);
-        });
-      };
-      AjaxParser.__super__.constructor.call(this, fn, false);
+      this.fn = __bind(this.fn, this);
+
+      AjaxParser.__super__.constructor.call(this, this.fn, false);
     }
+
+    AjaxParser.prototype.data = function(value) {
+      return {
+        'data': value
+      };
+    };
+
+    AjaxParser.prototype.fn = function(value, done) {
+      return jQuery.ajax({
+        'url': this.url,
+        'type': this.type,
+        'dataType': this.dataType,
+        'data': this.data(value)
+      }).done(function(data, textStatus, jqXHR) {
+        return done(data);
+      }).fail(function(jqXHR, textStatus, errorThrown) {
+        return done(errorThrown);
+      });
+    };
 
     return AjaxParser;
 
@@ -1554,10 +1557,6 @@ Cross-browser textarea selection class
     elem.textarea = textarea;
     elem.template = template;
     elem.curtain = Femto.utils.Curtain(elem);
-    if ((parser != null) && !parser instanceof Parser) {
-      parser = new Parser(parser);
-    }
-    elem.parser = parser;
     elem.init = function() {
       iframe.init();
       return this;
@@ -1579,11 +1578,7 @@ Cross-browser textarea selection class
         });
       };
       if (this.parser != null) {
-        if ((this.parser.async != null) === true) {
-          this.parser(value, render);
-        } else {
-          render(this.parser(value));
-        }
+        this.parser.parse(value, render);
       } else {
         render(value);
       }
@@ -1599,6 +1594,16 @@ Cross-browser textarea selection class
       elem.curtain.removeClass('waiting');
       return this;
     };
+    elem.setParser = function(parser) {
+      if (!(parser instanceof Femto.parsers.Parser)) {
+        parser = new Femto.parsers.Parser(parser);
+      }
+      parser.viewer = this;
+      return this.parser = parser;
+    };
+    if (parser != null) {
+      elem.setParser(parser);
+    }
     return elem;
   };
 
@@ -1891,8 +1896,9 @@ Cross-browser textarea selection class
       select.append(jQuery(option));
     }
     select.change(function() {
-      fn = documentTypes[select.val()];
-      return viewer.parser = fn;
+      var parser;
+      parser = documentTypes[select.val()];
+      return viewer.setParser(parser);
     });
     select.change();
     return elem;

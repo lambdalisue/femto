@@ -17,8 +17,8 @@ DocumentType = (viewer, documentTypes, documentTypeField) ->
     option = "<option value='#{key}'>#{key}</option>"
     select.append jQuery(option)
   select.change ->
-    fn = documentTypes[select.val()]
-    viewer.parser = fn
+    parser = documentTypes[select.val()]
+    viewer.setParser parser
   select.change()
   return elem
 

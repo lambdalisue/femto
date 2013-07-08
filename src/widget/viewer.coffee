@@ -10,9 +10,6 @@ Viewer = (textarea, template, parser) ->
   elem.textarea = textarea
   elem.template = template
   elem.curtain = Femto.utils.Curtain(elem)
-  if parser? and not parser instanceof Parser
-    parser = new Parser(parser)
-  elem.parser = parser
   elem.init = ->
     iframe.init()
     return @
@@ -26,10 +23,7 @@ Viewer = (textarea, template, parser) ->
     render = (value) =>
       @template.render(value, (value) => @iframe.write(value))
     if @parser?
-      if @parser.async? is true
-        @parser(value, render)
-      else
-        render(@parser(value))
+      @parser.parse(value, render)
     else
       render(value)
     return @
@@ -41,6 +35,12 @@ Viewer = (textarea, template, parser) ->
     elem.curtain.hide()
     elem.curtain.removeClass 'waiting'
     return @
+  elem.setParser = (parser) ->
+    if parser not instanceof Femto.parsers.Parser
+      parser = new Femto.parsers.Parser(parser)
+    parser.viewer = @
+    @parser = parser
+  elem.setParser(parser) if parser?
   return elem
 
 namespace 'Femto.widget', (exports) ->
