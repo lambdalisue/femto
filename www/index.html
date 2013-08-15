@@ -17,9 +17,11 @@
 	<script src="js/app.debug.js"></script>
 	<script>
 		$(function() {
-		  var femto;
+		  window.femto;
       femto = $('textarea#femto');
-			femto = femto.femto();
+      femto.femto();
+      femto = femto.data('femto');
+
 		});
 	</script>
 </body>

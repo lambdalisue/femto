@@ -42,8 +42,8 @@ textarea = (selector, context, options) ->
   # register event
   elem.on 'keydown', (e) ->
     result = true
-    result = result and shifter._keyDownEvent(e)
-    result = result and caretaker._keyDownEvent(e)
+    result = shifter._keyDownEvent(e) and result
+    result = caretaker._keyDownEvent(e) and result
     return result
   elem.on 'paste,drop', (e) ->
     caretaker.save()
