@@ -176,11 +176,11 @@ class Shifter
       return true if e.shiftKey
       # insert newline with appropriate indent characters
       @insertNewLine()
-    # cancel bubbling
-    e.stopPropagation()
-    e.stopImmediatePropagation()
-    # stop default
-    e.preventDefault()
+    # cancel bubbling immediately
+    #e.stopImmediatePropagation()
+    # `return false` in jQuery event call the followings
+    # e.stopPropagation()
+    # e.preventDefault()
     return false
 
   ###
