@@ -10,67 +10,16 @@
 </head>
 <body>
 	<textarea id="femto"></textarea>
-  <a href="javascript:void(0);" onclick="femto.editingMode();">Editing</a> |
-  <a href="javascript:void(0);" onclick="femto.previewMode();">Preview</a>
-  <script src="http://code.jquery.com/jquery-1.9.1.js"></script>
-  <script src="http://code.jquery.com/ui/1.10.3/jquery-ui.js"></script>
   <script src="http://ajax.googleapis.com/ajax/libs/chrome-frame/1.0.2/CFInstall.min.js"></script>
-  <script
-    src="https://rawgithub.com/chjj/marked/master/lib/marked.js"></script>
-  <script
-    src="https://rawgithub.com/borgar/textile-js/master/lib/textile.js"></script>
-  <script
-    src="https://rawgithub.com/nitoyon/text-hatena.js/master/text-hatena.js"></script>
+  <script src="http://code.jquery.com/jquery-1.9.1.js"></script>
 	<!-- fake `describe` function to prevent run-time error with test version of femto -->
   <script>window.describe = function(){};</script>
-	<script src="js/femto-debug.js"></script>
+	<script src="js/app.debug.js"></script>
 	<script>
 		$(function() {
-      // Template
-      var template = new Femto.utils.Template(null, "js/femto.template");
-		  // DocumentTypes
-      var markdown_filter = function(text) {
-        marked.setOptions({gfm: false, tables: false, breaks: false});
-        return marked(text);
-      };
-      var gfm_filter = function(text) {
-        marked.setOptions({gfm: true, tables: true, breaks: true});
-        return marked(text);
-      };
-      var textile_filter = textile;
-      var hatena_filter = function(text) {
-        var parser = new TextHatena();
-        return parser.parse(text);
-      };
-      var gfm_ajax_filter = new Femto.parsers.AjaxParser(
-        "http://developer.github.com/v3/markdown/",
-        "POST");
-      gfm_ajax_filter.data = function (value){
-        return {'text': value};
-      };
-      var options = {
-        template: template,
-        documentTypes: {
-          'markdown': markdown_filter,
-          'gfm': gfm_filter,
-          'textile': textile_filter,
-          'Hatena': hatena_filter,
-          'gfm Ajax': gfm_ajax_filter
-        }
-      };
 		  var femto;
       femto = $('textarea#femto');
-			femto = Femto.transform(femto, options);
-      femto.resizable({ghost: true});
-			window.femto = femto;
-
-			var Selection, textarea, selection;
-			Selection = Femto.utils.Selection;
-			textarea = $('textarea#femto').get(0);
-			selection = new Selection(textarea);
-			window.Selection = Selection;
-			window.textarea = textarea;
-			window.selection = selection;
+			femto = femto.femto();
 		});
 	</script>
 </body>

@@ -1,73 +1,42 @@
 femto [![Build Status](https://travis-ci.org/lambdalisue/femto.png)](https://travis-ci.org/lambdalisue/femto)
 ================================================================================
 
-A well tested simple and powerful web based text editor (Version: 0.1.1).
+A minimum featured textarea
 
-**femto** allow you to add a simple and powerful text editor on your web site.
-It is assumed to use for writing a Markup text.
+**femto** allow you to add a simple text editor for writing some kind of Markup
+language.
 It helps user to write these kind of text with the following features:
 
--   Preview panel (bundle)
-
-    femto has a preview panel to check the output of the current text.
-    It is under developping now
-
--   DocumentType (bundle)
-
-    femto can treat different types of document such as Markdown, Textile or so
-    on. See Usage for more detail.
-
--   `TAB` indent and `SHIFT + TAB` outdent (features)
+-   `TAB` indent and `SHIFT + TAB` outdent
 
     `TAB` key move the focus to the next object in browser default `textarea`.
     However most desktop text editor use `TAB` key for indent.
 
--   Auto indent (Keep indent) (features)
+-   Auto indent (Keep indent)
 
     Some desktop text editor automatically keep indent level when user hit
     `RETURN` key. It is useful when user write a kind of Markup text which use
     indent as a blockquote or code block.
 
--   Smart indent (plugin)
+-   Complete Undo/Redo
 
-    With `smartIndent` plugin, femto automatically insert a Markup specified
-    leading characters like `>` in Markdown or `#.` in reStructuredText.
-    It has not developed yet.
-
--   Fullscreen (plugin)
-
-    With `fullscreen` plugin, user can use femto in fullscreen mode.
-    It has not developed yet.
-
--   Mobile support (plugin)
-
-    With `mobile` plugin, user can use femto in smart phone like iPhone.
-    It has not developed yet.
-
--   Attachment (plugin)
-
-    With `attachment` plugin, user can attach files like Image or Zip to the
-    text. It use some free upload services or user specified upload services to
-    store files.
-    It has not developed yet.
+    femto has its own Undo / Redo feature
 
 Usage
 --------------------------------------------------------------------------------
 
-1.  Download the following files
+1.  Download [femto-0.2.0.tar.gz](https://raw.github.com/lambdalisue/femto/master/release/femto-0.2.0.tar.gz)
+    and extract it
 
-    - [femto.js](https://raw.github.com/lambdalisue/femto/master/publish/femto.js)
-    - [femto.css](https://raw.github.com/lambdalisue/femto/master/publish/femto.css)
-
-2.  Copy the files into `femto` directory like
+2.  Copy extracted files into `femto` directory like
 
     ```
     + www
         +- index.html
         +- js
             +- femto
-                +- femto.js
-                +- femto.css
+                +- femto-0.2.0.js
+                +- femto-0.2.0.css
     ```
 
 3.  Write `index.html` as:
@@ -83,85 +52,20 @@ Usage
             <script src="js/femto/femto.js"></script>
             <script>
                 $(function() {
-                    var textarea;
-                    textarea = $('textarea#femto-demo');
-                    textarea = Femto.transform(textarea);
+                    var options = {};
+                    // set options if necessary
+                    $('textarea#femto-demo').femto(options);
                 });
             </script>
         </body>
     </html>
     ```
 
-### Disable features of each femto instance
+### Options
 
-If you want to disable features of each femto instance, follow the steps below:
-
-```javascript
-var textarea;
-textarea = $('textarea#femto-demo');
-textarea = Femto.transform(textarea);
-// if you want to disable `indent` feature
-textarea.features.indent.disable();
-```
-
-### Disable features globally
-
-If you want to disable features of all femto instance, follow the steps below:
-
-```javascript
-// You have to disable features before you make the instance
-del Femto.features.indent;
-var textarea;
-textarea = $('textarea#femto-demo');
-textarea = Femto.transform(textarea);
-```
-
-### Enable Markup language
-
-You can use any external libraries to convert markup into html.
-
-See the sample code below ([chjj/marked](<https://github.com/chjj/marked),
-[borgar/textile.js](https://github.com/borgar/textile-js) and
-[nitoyon/text-hatena.js](https://github.com/nitoyon/text-hatena.js) are used in
-the following code.)
-
-```html
-<!-- marked by chjj -->
-<script src="https://raw.github.com/chjj/marked/master/lib/marked.js"></script>
-<!-- textile-js by borgar -->
-<script src="https://raw.github.com/borgar/textile-js/master/lib/textile.js"></script>
-<!-- text-hatena.js by nitoyon -->
-<script src="https://raw.github.com/nitoyon/text-hatena.js/master/text-hatena.js"></script>
-<script src="femto/femto.js"></script>
-<script>
-    $(function() {
-        var markdown_filter = function(text) {
-            marked.setOptions({gfm: false, tables: false, breaks: false});
-            return marked(text);
-        };
-        var gfm_filter = function(text) {
-            marked.setOptions({gfm: true, tables: true, breaks: true});
-            return marked(text);
-        };
-        var textile_filter = textile;
-        var hatena_filter = function(text) {
-            var parser = new TextHatena();
-            return parser.parse(text);
-        };
-        var options = {
-            documentTypes: {
-            'markdown': markdown_filter,
-            'gfm': gfm_filter,
-            'textile': textile_filter,
-            'Hatena': hatena_filter
-            }
-        };
-        var femto;
-        femto = $('textarea#femto');
-        femto = Femto.transform(femto, options);
-    }
-</script>
-```
+-   `expandTab` - when true, use spaces instead of tab (default: true)
+-   `indentLevel` - the number of spaces to describe one indent. it makes sense
+    only when `expandTab` is true (default: 4)
 
 Supported browsers
 --------------------------------------------------------------------------------

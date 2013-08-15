@@ -115,11 +115,13 @@
         </p>
       </nav>
       <div id='filecontents'>
-        <h1>femto <a href="https://travis-ci.org/lambdalisue/femto"><img src="https://travis-ci.org/lambdalisue/femto.png" alt="Build Status"></a></h1><p>A well tested simple and powerful web based text editor.</p><p><strong>femto</strong> allow you to add a simple and powerful text editor on your web site.
+        <h1>femto <a href="https://travis-ci.org/lambdalisue/femto"><img src="https://travis-ci.org/lambdalisue/femto.png" alt="Build Status"></a></h1><p>A well tested simple and powerful web based text editor (Version: 0.1.1).</p><p><strong>femto</strong> allow you to add a simple and powerful text editor on your web site.
 It is assumed to use for writing a Markup text.
 It helps user to write these kind of text with the following features:</p><ul>
 <li><p>Preview panel (bundle)</p><p>femto has a preview panel to check the output of the current text.
 It is under developping now</p></li>
+<li><p>DocumentType (bundle)</p><p>femto can treat different types of document such as Markdown, Textile or so
+on. See Usage for more detail.</p></li>
 <li><p><code>TAB</code> indent and <code>SHIFT + TAB</code> outdent (features)</p><p><code>TAB</code> key move the focus to the next object in browser default <code>textarea</code>.
 However most desktop text editor use <code>TAB</code> key for indent.</p></li>
 <li><p>Auto indent (Keep indent) (features)</p><p>Some desktop text editor automatically keep indent level when user hit
@@ -137,31 +139,28 @@ text. It use some free upload services or user specified upload services to
 store files.
 It has not developed yet.</p></li>
 </ul>
-<h2>Usage</h2><p>femto is under developped yet. If you want to try femto, you can follow the
-steps below:</p><ol>
-<li>Clone git repository on your hard disk with</li>
-</ol>
-<pre><code>```sh
-% git clone https://github.com/lambdalisue/femto.git
-% cd femto
-```</code></pre>
+<h2>Usage</h2>
 <ol>
-<li><p>Install required library to build femto with</p><pre><code class="lang-sh">% npm install</code></pre>
+<li><p>Download the following files</p><ul>
+<li><a href="https://raw.github.com/lambdalisue/femto/master/publish/femto.js">femto.js</a></li>
+<li><a href="https://raw.github.com/lambdalisue/femto/master/publish/femto.css">femto.css</a></li>
+</ul>
 </li>
-<li><p>Build femto with</p><pre><code class="lang-sh">% ./node_modules/coffee-script/bin/cake release</code></pre>
+<li><p>Copy the files into <code>femto</code> directory like</p><pre><code>+ www
+    +- index.html
+    +- js
+        +- femto
+            +- femto.js
+            +- femto.css</code></pre>
 </li>
-<li><p>Copy and rename <code>femto.js</code> and <code>femto.css</code> to your project</p><pre><code class="lang-sh">% mkdir -p ~/femto
-% copy ./www/js/femto.js ~/femto/femto.0.0.0.js
-% copy ./www/css/femto.css ~/femto/femto.0.0.0.css</code></pre>
-</li>
-<li><p>Write HTML as:</p><pre><code class="lang-html">&lt;html&gt;
+<li><p>Write <code>index.html</code> as:</p><pre><code class="lang-html">&lt;html&gt;
     &lt;head&gt;
-        &lt;link rel=&quot;stylesheet&quot; href=&quot;femto/femto.0.0.0.css&quot;&gt;
+        &lt;link rel=&quot;stylesheet&quot; href=&quot;js/femto/femto.css&quot;&gt;
     &lt;/head&gt;
     &lt;body&gt;
         &lt;textarea id=&quot;femto-demo&quot;&gt;&lt;/textarea&gt;
         &lt;script src=&quot;//ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js&quot;&gt;&lt;/script&gt;
-        &lt;script src=&quot;femto/femto.0.0.0.js&quot;&gt;&lt;/script&gt;
+        &lt;script src=&quot;js/femto/femto.js&quot;&gt;&lt;/script&gt;
         &lt;script&gt;
             $(function() {
                 var textarea;
@@ -183,12 +182,55 @@ del Femto.features.indent;
 var textarea;
 textarea = $(&#39;textarea#femto-demo&#39;);
 textarea = Femto.transform(textarea);</code></pre>
-<h2>Supported browsers</h2><p>The following browsers are (or will be) supported.</p><ul>
+<h3>Enable Markup language</h3><p>You can use any external libraries to convert markup into html.</p><p>See the sample code below (<a href="https://github.com/chjj/marked">chjj/marked</a>,
+<a href="https://github.com/borgar/textile-js">borgar/textile.js</a> and
+<a href="https://github.com/nitoyon/text-hatena.js">nitoyon/text-hatena.js</a> are used in
+the following code.)</p><pre><code class="lang-html">&lt;!-- marked by chjj --&gt;
+&lt;script src=&quot;https://raw.github.com/chjj/marked/master/lib/marked.js&quot;&gt;&lt;/script&gt;
+&lt;!-- textile-js by borgar --&gt;
+&lt;script src=&quot;https://raw.github.com/borgar/textile-js/master/lib/textile.js&quot;&gt;&lt;/script&gt;
+&lt;!-- text-hatena.js by nitoyon --&gt;
+&lt;script src=&quot;https://raw.github.com/nitoyon/text-hatena.js/master/text-hatena.js&quot;&gt;&lt;/script&gt;
+&lt;script src=&quot;femto/femto.js&quot;&gt;&lt;/script&gt;
+&lt;script&gt;
+    $(function() {
+        var markdown_filter = function(text) {
+            marked.setOptions({gfm: false, tables: false, breaks: false});
+            return marked(text);
+        };
+        var gfm_filter = function(text) {
+            marked.setOptions({gfm: true, tables: true, breaks: true});
+            return marked(text);
+        };
+        var textile_filter = textile;
+        var hatena_filter = function(text) {
+            var parser = new TextHatena();
+            return parser.parse(text);
+        };
+        var options = {
+            documentTypes: {
+            &#39;markdown&#39;: markdown_filter,
+            &#39;gfm&#39;: gfm_filter,
+            &#39;textile&#39;: textile_filter,
+            &#39;Hatena&#39;: hatena_filter
+            }
+        };
+        var femto;
+        femto = $(&#39;textarea#femto&#39;);
+        femto = Femto.transform(femto, options);
+    }
+&lt;/script&gt;</code></pre>
+<h2>Supported browsers</h2><p>The following browsers are supported (or Not Tested yet).</p><ul>
 <li>&#x2713; Google Chrome</li>
-<li>&#x2717; Mozilla Firefox</li>
-<li>&#x2717; Safari</li>
-<li>&#x2717; Opera</li>
-<li>&#x2717; Internet Explorer 8 (and over 8)</li>
+<li>&#x2713; Mozilla Firefox</li>
+<li>&#x2713; Safari</li>
+<li>&#x2713; Lunascape</li>
+<li>&#x2713; Opera</li>
+<li>NT Internet Explorer 10</li>
+<li>NT Internet Explorer 9</li>
+<li>&#x2713; Internet Explorer 8 (limited)</li>
+<li>&#x2713; Internet Explorer 7 (limited)</li>
+<li>&#x2713; Internet Explorer 6 (limited)</li>
 </ul>
 <h2>Test</h2><p>You can check the test result at
 <a href="https://travis-ci.org/lambdalisue/femto">femto Travis-ci</a>.</p><h2>Develop</h2><p>femto is not stable yet. Features might be changed in future.</p><ul>
@@ -199,11 +241,11 @@ textarea = Femto.transform(textarea);</code></pre>
     </div>
     <div id='footer'>
   Generated on
-  Fri Mar 29 2013 00:27:32 GMT+0900 (JST)
+  Thu Aug 15 2013 16:04:47 GMT+0900 (JST)
   by
   <a href='https://github.com/netzpirat/codo' title='CoffeeScript API documentation generator'>Codo</a>
   v1.5.6
-  (Node.js v0.8.19).
+  (Node.js v0.11.3).
   &#10034;
   Press Ctrl-h to see the keyboard shortcuts
   &#10034;

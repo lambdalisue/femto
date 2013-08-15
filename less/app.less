@@ -84,54 +84,8 @@
         .box-shadow(1px 1px 3px rgba(0,0,0,0.2) inset);
     }
     .editor {
-        z-index: 9;
-        .transform(rotateY(180deg));
-
-        &.active {
-            z-index: 9;
-            .transform(rotateX(0deg) rotateY(0deg));
-        }
-
         textarea {
             font-family:Consolas,Monaco,Lucida Console,Liberation Mono,DejaVu Sans Mono,Bitstream Vera Sans Mono,Courier New, monospace;
-        }
-    }
-    .viewer {
-        background: #fff;
-        z-index: 8;
-        .transform(rotateY(-180deg));
-
-        &.active {
-            z-index: 10;
-            .transform(rotateX(0deg) rotateY(0deg));
-        }
-        .waiting {
-            background: #000;
-            opacity: 0.5;
-        }
-    }
-    .documentType {
-        position: absolute;
-        top: 1px;
-        right: 1px;
-        z-index: 11;
-        padding: 0.2em;
-        .border-radius(0 5px 0 10px);
-
-        select {
-            cursor: pointer;
-            width: 100%;
-            outline: none;
-            border: none;
-            border-radius: 0;
-            -webkit-appearance: none;
-            background: transparent;
-            opacity: 0.1;
-
-            &:hover, &:active {
-                background: #fff;
-                opacity: 1.0;
-            }
         }
     }
 }

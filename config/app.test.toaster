@@ -1,7 +1,6 @@
 # vim: set ft=coffee
 toast
   folders:
-    'src': null
     'test': null
 
   # EXCLUDED FOLDERS (optional)
@@ -9,8 +8,6 @@ toast
 
   # => VENDORS (optional)
   vendors: [
-    'vendors/shortcut.js',
-    'vendors/namespace.js',
     'vendors/mocha_ie_patch.js',
   ]
 
@@ -23,5 +20,5 @@ toast
 
   # => HTTPFOLDER (optional), RELEASE / DEBUG (required)
   httpfolder: 'js'
-  release: 'www/js/femto.js'
-  debug: 'www/js/femto-debug.js'
+  release: 'www/js/app.test.js'
+  debug: ''
