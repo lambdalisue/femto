@@ -6,7 +6,7 @@ spawn = require('child_process').spawn
 
 #-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-
 NAME    = "femto"
-VERSION = "0.2.1"
+VERSION = "0.2.2"
 
 HEADER  = """
 /*
