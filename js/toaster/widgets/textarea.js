@@ -28,9 +28,6 @@
         } else {
           caretaker.undo();
         }
-        e.stopPropagation();
-        e.stopImmediatePropagation();
-        e.preventDefault();
         return false;
       }
       return true;
@@ -38,11 +35,12 @@
     selection = new Femto.utils.Selection(elem.get(0));
     shifter = new Femto.utils.Shifter(elem, selection, options.expandTab, options.indentLevel);
     elem.on('keydown', function(e) {
-      var result;
-      result = true;
-      result = result && shifter._keyDownEvent(e);
-      result = result && caretaker._keyDownEvent(e);
-      return result;
+      var r;
+      r = caretaker._keyDownEvent(e);
+      if (r) {
+        r = shifter._keyDownEvent(e);
+      }
+      return r;
     });
     elem.on('paste,drop', function(e) {
       return caretaker.save();

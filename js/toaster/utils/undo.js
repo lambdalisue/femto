@@ -112,6 +112,9 @@ Base class for Originator
     Caretaker.prototype.save = function(memento) {
       memento = memento || this.originator().createMemento();
       if (!(this._previous != null) || this._previous !== memento) {
+        if (this._undoStack.length === 0 && memento !== "") {
+          this._undoStack.push("");
+        }
         this._undoStack.push(memento);
         this._redoStack = [];
         this._previous = memento;

@@ -219,9 +219,6 @@ Create continuous spaces
         }
         this.insertNewLine();
       }
-      e.stopPropagation();
-      e.stopImmediatePropagation();
-      e.preventDefault();
       return false;
     };
 
