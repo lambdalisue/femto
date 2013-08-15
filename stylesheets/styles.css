@@ -770,6 +770,11 @@ dt {
   float: left;
   margin-left: 0px;
 }
+#header nav li.run-test,
+#header nav li.home {
+  float: left;
+  margin-left: 10px;
+}
 #header nav li.downloads {
   float: right;
   margin-left: 6px;
