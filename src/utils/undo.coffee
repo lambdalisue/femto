@@ -81,6 +81,8 @@ class Caretaker
   save: (memento) ->
     memento = memento or @originator().createMemento()
     if not @_previous? or @_previous isnt memento
+      if @_undoStack.length == 0 and memento isnt ""
+        @_undoStack.push ""
       @_undoStack.push memento
       @_redoStack = []
       @_previous = memento

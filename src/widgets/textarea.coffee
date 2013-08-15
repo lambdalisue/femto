@@ -25,11 +25,11 @@ textarea = (selector, context, options) ->
         caretaker.redo()
       else
         caretaker.undo()
-      # cancel bubbling
-      e.stopPropagation()
-      e.stopImmediatePropagation()
-      # stop default
-      e.preventDefault()
+      # cancel bubbling immediately
+      #e.stopImmediatePropagation()
+      # `return false` in jQuery event call the followings
+      # e.stopPropagation()
+      # e.preventDefault()
       return false
     return true
   # enable Selection
@@ -41,10 +41,9 @@ textarea = (selector, context, options) ->
     options.indentLevel)
   # register event
   elem.on 'keydown', (e) ->
-    result = true
-    result = shifter._keyDownEvent(e) and result
-    result = caretaker._keyDownEvent(e) and result
-    return result
+    r = caretaker._keyDownEvent(e)
+    r = shifter._keyDownEvent(e) if r
+    return r
   elem.on 'paste,drop', (e) ->
     caretaker.save()
   # save instances in elem instance
