@@ -15,7 +15,7 @@
     &raquo;
     <a href='../class_index.html' title='Index'>Index</a>
     &raquo;
-    <span class='title'>Caretaker</span>
+    <span class='title'>Shifter</span>
     <nav>
       <ul>
         <li class='noframes'>
@@ -106,32 +106,17 @@
     <div id='content'>
       <h1>
         Class:
-        Caretaker
+        Shifter
       </h1>
       <table class='box'>
         <tr>
           <td>Defined in:</td>
-          <td>src&#47;utils&#47;undo.coffee</td>
+          <td>src&#47;utils&#47;shifter.coffee</td>
         </tr>
       </table>
       <h2>Overview</h2>
       <div class='docstring'>
-  <p>Caretaker of <code>Originator</code></p>
-  <div class='examples'>
-    <h3>Examples:</h3>
-    <h4>
-      
-    </h4>
-    <pre><code class='coffee'># see the example of Originator
-notebook = new Notebook()
-notebook.caretaker = new Caretaker(notebook)
-# save the changes
-notebook.caretaker.save()
-# undo the changes
-notebook.caretaker.undo()
-# redo the changes
-notebook.caretaker.redo()</code></pre>
-  </div>
+  <p>A text indent management class</p>
 </div>
 <div class='tags'>
 </div>
@@ -140,7 +125,7 @@ notebook.caretaker.redo()</code></pre>
   <li>
     <span class='signature'>
       <a href='#constructor-instance'>
-        - (Caretaker) <strong>constructor</strong>(originator)
+        - (void) <strong>constructor</strong>(textarea, selection, expandTab = true, indentLevel = 4)
       </a>
     </span>
     <span class='constructor note title'>Constructor</span>
@@ -150,62 +135,52 @@ notebook.caretaker.redo()</code></pre>
   </li>
   <li>
     <span class='signature'>
-      <a href='#originator-instance'>
-        - (Originator, Caretaker) <strong>originator</strong>(originator)
+      <a href='#indent-instance'>
+        - (Object) <strong>indent</strong>()
       </a>
     </span>
     <span class='desc'>
-      Get originator when called without any argument.
+      Insert tabString at the current caret position or start point of the selection
     </span>
   </li>
   <li>
     <span class='signature'>
-      <a href='#save-instance'>
-        - (Caretaker) <strong>save</strong>(memento)
+      <a href='#outdent-instance'>
+        - (Object) <strong>outdent</strong>()
       </a>
     </span>
     <span class='desc'>
-      Save a memento of the originator to the undo memento stack.
+      Remove tabString at the current caret position or the left hand of the selection It will not do anything if no tabString is found
     </span>
   </li>
   <li>
     <span class='signature'>
-      <a href='#undo-instance'>
-        - (Caretaker) <strong>undo</strong>()
+      <a href='#insertNewLine-instance'>
+        - (Object) <strong>insertNewLine</strong>()
       </a>
     </span>
     <span class='desc'>
-      Restore a value of the originator from the undo memento stack.
+      Insert newline after the current caret position with appropriate indent characters (keep previous indent level)
     </span>
   </li>
   <li>
     <span class='signature'>
-      <a href='#redo-instance'>
-        - (Caretaker) <strong>redo</strong>()
+      <a href='#enable-instance'>
+        - (Object) <strong>enable</strong>()
       </a>
     </span>
     <span class='desc'>
-      Restore a value of the originator from the redo memento stack.
+      Enable TAB key indent feature on target textarea
     </span>
   </li>
   <li>
     <span class='signature'>
-      <a href='#canUndo-instance'>
-        - (Boolean) <strong>canUndo</strong>()
+      <a href='#disable-instance'>
+        - (Object) <strong>disable</strong>()
       </a>
     </span>
     <span class='desc'>
-      Return whether the undo memento stack isn&#39;t empty or not
-    </span>
-  </li>
-  <li>
-    <span class='signature'>
-      <a href='#canRedo-instance'>
-        - (Boolean) <strong>canRedo</strong>()
-      </a>
-    </span>
-    <span class='desc'>
-      Return whether the redo memento stack isn&#39;t empty or not
+      Disable TAB key indent feature on target textarea
     </span>
   </li>
 </ul>
@@ -213,7 +188,7 @@ notebook.caretaker.redo()</code></pre>
       <div class='methods'>
   <div class='method_details'>
     <p class='signature' id='constructor-instance'>
-      - (Caretaker) <strong>constructor</strong>(originator)
+      - (void) <strong>constructor</strong>(textarea, selection, expandTab = true, indentLevel = 4)
     </p>
     <div class='docstring'>
   <p>Constructor</p>
@@ -222,21 +197,36 @@ notebook.caretaker.redo()</code></pre>
   <h3>Parameters:</h3>
   <ul class='param'>
     <li>
-      <span class='name'>originator</span>
+      <span class='name'>textarea</span>
       <span class='type'>
-        (<tt><a href='../classes/Originator.html'>Originator</a></tt>)
+        (<tt>Object</tt>)
       </span>
       &mdash;
-      <span class='desc'>an instance of originator subclass</span>
+      <span class='desc'>a textarea jQuery instance or DOM element</span>
     </li>
-  </ul>
-  <h3>Returns:</h3>
-  <ul class='return'>
     <li>
-      <span class='type'></span>
-      (<tt><a href='../classes/Caretaker.html'>Caretaker</a></tt>)
+      <span class='name'>selection</span>
+      <span class='type'>
+        (<tt>Object</tt>)
+      </span>
       &mdash;
-      <span class='desc'>the new instance</span>
+      <span class='desc'>a instance of Selection of the textarea</span>
+    </li>
+    <li>
+      <span class='name'>expandTab</span>
+      <span class='type'>
+        (<tt>Boolean</tt>)
+      </span>
+      &mdash;
+      <span class='desc'>if true, use space instead of tab for indent</span>
+    </li>
+    <li>
+      <span class='name'>indentLevel</span>
+      <span class='type'>
+        (<tt>Integer</tt>)
+      </span>
+      &mdash;
+      <span class='desc'>an indent level. enable only when expandTab is <code>true</code></span>
     </li>
   </ul>
 </div>
@@ -245,61 +235,19 @@ notebook.caretaker.redo()</code></pre>
       <h2>Instance Method Details</h2>
       <div class='methods'>
   <div class='method_details'>
-    <p class='signature' id='originator-instance'>
-      - (Originator, Caretaker) <strong>originator</strong>(originator)
+    <p class='signature' id='indent-instance'>
+      - (Object) <strong>indent</strong>()
     </p>
     <div class='docstring'>
-  <p>Get originator when called without any argument.
-Set originator when called with an argument.</p>
+  <p>Insert tabString at the current caret position
+or start point of the selection</p>
 </div>
 <div class='tags'>
-  <h3>Parameters:</h3>
-  <ul class='param'>
-    <li>
-      <span class='name'>originator</span>
-      <span class='type'>
-        (<tt><a href='../classes/Originator.html'>Originator</a></tt>)
-      </span>
-      &mdash;
-      <span class='desc'>set originator of the instance to this.</span>
-    </li>
-  </ul>
   <h3>Returns:</h3>
   <ul class='return'>
     <li>
       <span class='type'></span>
-      (<tt><a href='../classes/Originator.html'>Originator</a>, <a href='../classes/Caretaker.html'>Caretaker</a></tt>)
-      &mdash;
-      <span class='desc'>return Originator instance when called without any argument. return this instance when called with an argument.</span>
-    </li>
-  </ul>
-</div>
-  </div>
-  <div class='method_details'>
-    <p class='signature' id='save-instance'>
-      - (Caretaker) <strong>save</strong>(memento)
-    </p>
-    <div class='docstring'>
-  <p>Save a memento of the originator to the undo memento stack.
-Nothing will be saved if the same memento was saved previously.</p>
-</div>
-<div class='tags'>
-  <h3>Parameters:</h3>
-  <ul class='param'>
-    <li>
-      <span class='name'>memento</span>
-      <span class='type'>
-        (<tt>Object</tt>)
-      </span>
-      &mdash;
-      <span class='desc'>a memento to store. <code>createMemento()</code> of the originator will be used when no memento is specified.</span>
-    </li>
-  </ul>
-  <h3>Returns:</h3>
-  <ul class='return'>
-    <li>
-      <span class='type'></span>
-      (<tt><a href='../classes/Caretaker.html'>Caretaker</a></tt>)
+      (<tt>Object</tt>)
       &mdash;
       <span class='desc'>the instance</span>
     </li>
@@ -307,23 +255,19 @@ Nothing will be saved if the same memento was saved previously.</p>
 </div>
   </div>
   <div class='method_details'>
-    <p class='signature' id='undo-instance'>
-      - (Caretaker) <strong>undo</strong>()
+    <p class='signature' id='outdent-instance'>
+      - (Object) <strong>outdent</strong>()
     </p>
     <div class='docstring'>
-  <div class='note'>
-    <strong>Note:</strong>
-    Nothing will be happen when no memento was stacked on undo memento stack.
-  </div>
-  <p>Restore a value of the originator from the undo memento stack.
-The current value of the originator will be stack on the redo memento stack.</p>
+  <p>Remove tabString at the current caret position
+or the left hand of the selection</p><p>It will not do anything if no tabString is found</p>
 </div>
 <div class='tags'>
   <h3>Returns:</h3>
   <ul class='return'>
     <li>
       <span class='type'></span>
-      (<tt><a href='../classes/Caretaker.html'>Caretaker</a></tt>)
+      (<tt>Object</tt>)
       &mdash;
       <span class='desc'>the instance</span>
     </li>
@@ -331,23 +275,19 @@ The current value of the originator will be stack on the redo memento stack.</p>
 </div>
   </div>
   <div class='method_details'>
-    <p class='signature' id='redo-instance'>
-      - (Caretaker) <strong>redo</strong>()
+    <p class='signature' id='insertNewLine-instance'>
+      - (Object) <strong>insertNewLine</strong>()
     </p>
     <div class='docstring'>
-  <div class='note'>
-    <strong>Note:</strong>
-    Nothing will be happen when no memento was stacked on redo memento stack.
-  </div>
-  <p>Restore a value of the originator from the redo memento stack.
-The current value of the originator will be stack on the undo memento stack.</p>
+  <p>Insert newline after the current caret position
+with appropriate indent characters (keep previous indent level)</p>
 </div>
 <div class='tags'>
   <h3>Returns:</h3>
   <ul class='return'>
     <li>
       <span class='type'></span>
-      (<tt><a href='../classes/Caretaker.html'>Caretaker</a></tt>)
+      (<tt>Object</tt>)
       &mdash;
       <span class='desc'>the instance</span>
     </li>
@@ -355,39 +295,39 @@ The current value of the originator will be stack on the undo memento stack.</p>
 </div>
   </div>
   <div class='method_details'>
-    <p class='signature' id='canUndo-instance'>
-      - (Boolean) <strong>canUndo</strong>()
+    <p class='signature' id='enable-instance'>
+      - (Object) <strong>enable</strong>()
     </p>
     <div class='docstring'>
-  <p>Return whether the undo memento stack isn&#39;t empty or not</p>
+  <p>Enable TAB key indent feature on target textarea</p>
 </div>
 <div class='tags'>
   <h3>Returns:</h3>
   <ul class='return'>
     <li>
       <span class='type'></span>
-      (<tt>Boolean</tt>)
+      (<tt>Object</tt>)
       &mdash;
-      <span class='desc'>return <code>true</code> if the undo memento stack is not empty</span>
+      <span class='desc'>the instance</span>
     </li>
   </ul>
 </div>
   </div>
   <div class='method_details'>
-    <p class='signature' id='canRedo-instance'>
-      - (Boolean) <strong>canRedo</strong>()
+    <p class='signature' id='disable-instance'>
+      - (Object) <strong>disable</strong>()
     </p>
     <div class='docstring'>
-  <p>Return whether the redo memento stack isn&#39;t empty or not</p>
+  <p>Disable TAB key indent feature on target textarea</p>
 </div>
 <div class='tags'>
   <h3>Returns:</h3>
   <ul class='return'>
     <li>
       <span class='type'></span>
-      (<tt>Boolean</tt>)
+      (<tt>Object</tt>)
       &mdash;
-      <span class='desc'>return <code>true</code> if the redo memento stack is not empty</span>
+      <span class='desc'>the instance</span>
     </li>
   </ul>
 </div>
