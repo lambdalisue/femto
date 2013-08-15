@@ -25,7 +25,7 @@ It helps user to write these kind of text with the following features:
 Usage
 --------------------------------------------------------------------------------
 
-1.  Download [femto-0.2.0.tar.gz](https://raw.github.com/lambdalisue/femto/master/release/femto-0.2.0.tar.gz)
+1.  Download [femto-0.2.1.tar.gz](https://raw.github.com/lambdalisue/femto/master/release/femto-0.2.1.tar.gz)
     and extract it
 
 2.  Copy extracted files into `femto` directory like
@@ -35,8 +35,8 @@ Usage
         +- index.html
         +- js
             +- femto
-                +- femto-0.2.0.js
-                +- femto-0.2.0.css
+                +- femto-0.2.1.js
+                +- femto-0.2.1.css
     ```
 
 3.  Write `index.html` as:
