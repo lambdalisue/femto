@@ -21,6 +21,7 @@
       <div id="header">
         <nav>
           <li class="fork"><a href="https://github.com/lambdalisue/femto">View On GitHub</a></li>
+          <li class="test"><a href="test.html">Run test</a></li>
           <li class="downloads"><a href="https://github.com/lambdalisue/femto/zipball/master">ZIP</a></li>
           <li class="downloads"><a href="https://github.com/lambdalisue/femto/tarball/master">TAR</a></li>
           <li class="title">DOWNLOADS</li>
@@ -42,9 +43,29 @@
 <a name="femto-" class="anchor" href="#femto-"><span class="octicon octicon-link"></span></a>femto <a href="https://travis-ci.org/lambdalisue/femto"><img src="https://travis-ci.org/lambdalisue/femto.png" alt="Build Status"></a>
 </h1>
 
+<div id="demo">
+  <textarea id="femto-demo"></textarea>
+  <script src="js/app.js"></script>
+  <script>
+    $(function(){
+      Femto.transformAll();
+    });
+  </script>
+  <style>
+    #femto-demo {
+      display: block;
+      width: 400px;
+      height: 300px;
+      margin: 20px auto;
+      border-radius: 5px;
+      border: 1px solid #ddd;
+    }
+  </style>
+</div>
+
 <p><strong>femto</strong> is a simple and minimum textarea upgrade library.
 It only add the following features but the file size is small (9.6 kB) and well
-tested (passed 211 tests).</p>
+tested (<a href="test.html">passed 211 tests</a>).</p>
 
 <ul>
 <li>Undo and Redo with <code>Ctrl + Z</code> and <code>Ctrl + Shift + Z</code>
@@ -113,7 +134,9 @@ bookmarklet. Use it with your own responsibility.</p>
 <a name="test" class="anchor" href="#test"><span class="octicon octicon-link"></span></a>Test</h2>
 
 <p>You can check the test result at
-<a href="https://travis-ci.org/lambdalisue/femto">femto Travis-ci</a>.</p>
+  <a href="https://travis-ci.org/lambdalisue/femto">femto Travis-ci</a> or
+  try with your browser at <a href="test.html">Test</a>.
+</p>
 
 <h2>
 <a name="develop" class="anchor" href="#develop"><span class="octicon octicon-link"></span></a>Develop</h2>
