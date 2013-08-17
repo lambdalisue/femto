@@ -4,123 +4,85 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="chrome=1">
     <title>Femto by lambdalisue</title>
+
     <link rel="stylesheet" href="stylesheets/styles.css">
     <link rel="stylesheet" href="stylesheets/pygment_trac.css">
-    <link rel="stylesheet" href="css/app.css">
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
-    <script src="javascripts/respond.js"></script>
-    <!--[if lt IE 9]>
-      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
-    <![endif]-->
-    <!--[if lt IE 8]>
-    <link rel="stylesheet" href="stylesheets/ie.css">
-    <![endif]-->
     <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
-
-    <style>
-      .femto {
-        margin: 20px auto;
-      }
-      .femto .panel {
-        background: #fff;
-      }
-    </style>
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
   </head>
   <body>
-      <div id="header">
-        <nav>
-          <li class="fork"><a href="https://github.com/lambdalisue/femto">View On GitHub</a></li>
-          <li class="run-test"><a href="test.html">Run Test</a></li>
-          <li class="downloads"><a href="https://github.com/lambdalisue/femto/zipball/master">ZIP</a></li>
-          <li class="downloads"><a href="https://github.com/lambdalisue/femto/tarball/master">TAR</a></li>
-          <li class="title">DOWNLOADS</li>
-        </nav>
-      </div><!-- end header -->
-
     <div class="wrapper">
+      <header>
+        <h1>Femto</h1>
+        <p>A minimum featured textarea</p>
 
+        <p class="view"><a href="https://github.com/lambdalisue/femto">View the Project on GitHub <small>lambdalisue/femto</small></a></p>
+
+
+        <ul>
+          <li><a href="https://github.com/lambdalisue/femto/zipball/master">Download <strong>ZIP File</strong></a></li>
+          <li><a href="https://github.com/lambdalisue/femto/tarball/master">Download <strong>TAR Ball</strong></a></li>
+          <li><a href="https://github.com/lambdalisue/femto">View On <strong>GitHub</strong></a></li>
+        </ul>
+      </header>
       <section>
-        <div id="title">
-          <h1>Femto</h1>
-          <p>A minimum featured textarea</p>
-          <hr>
-          <span class="credits left">Project maintained by <a href="https://github.com/lambdalisue">lambdalisue</a></span>
-          <span class="credits right">Hosted on GitHub Pages &mdash; Theme by <a href="https://twitter.com/michigangraham">mattgraham</a></span>
-        </div>
-
         <h1>
 <a name="femto-" class="anchor" href="#femto-"><span class="octicon octicon-link"></span></a>femto <a href="https://travis-ci.org/lambdalisue/femto"><img src="https://travis-ci.org/lambdalisue/femto.png" alt="Build Status"></a>
 </h1>
 
-<p>A minimum featured textarea</p>
-
-<textarea id="femto-demo"></textarea>
-<script src="js/app.debug.js"></script>
-<script>
-  $(function(){
-    $("#femto-demo").femto();
-  });
-</script>
-
-<p><strong>femto</strong> allow you to add a simple text editor for writing some kind of Markup
-language.
-It helps user to write these kind of text with the following features:</p>
+<p><strong>femto</strong> is a simple and minimum textarea upgrade library.
+It only add the following features but the file size is small (9.6 kB) and well
+tested (passed 211 tests).</p>
 
 <ul>
-<li>
-<p><code>TAB</code> indent and <code>SHIFT + TAB</code> outdent</p>
-
-<p><code>TAB</code> key move the focus to the next object in browser default <code>textarea</code>.
-However most desktop text editor use <code>TAB</code> key for indent.</p>
+<li>Undo and Redo with <code>Ctrl + Z</code> and <code>Ctrl + Shift + Z</code>
 </li>
-<li>
-<p>Auto indent (Keep indent)</p>
-
-<p>Some desktop text editor automatically keep indent level when user hit
-<code>RETURN</code> key. It is useful when user write a kind of Markup text which use
-indent as a blockquote or code block.</p>
+<li>Indent with <code>Tab</code>
 </li>
-<li>
-<p>Complete Undo/Redo</p>
-
-<p>femto has its own Undo / Redo feature</p>
+<li>Outdent with <code>Shift + Tab</code>
 </li>
 </ul><h2>
+<a name="bookmarklet" class="anchor" href="#bookmarklet"><span class="octicon octicon-link"></span></a>Bookmarklet</h2>
+
+<p><strong>femto</strong> can be used as a bookmarklet. Drag and drop 
+<a title="femtolet">femtolet</a>
+on your bookmark toolbar and click whenever you want to enable femto features.</p>
+
+<h2>
 <a name="usage" class="anchor" href="#usage"><span class="octicon octicon-link"></span></a>Usage</h2>
 
 <ol>
-<li><p>Download <a href="https://raw.github.com/lambdalisue/femto/develop/release/femto-0.2.2.tar.gz">femto-0.2.2.tar.gz</a>
-and extract it</p></li>
+<li> Download <a href="https://github.com/lambdalisue/femto/raw/master/release/femto-0.2.2.tar.gz">femto-0.3.0.tar.gz</a>
+</li>
 <li>
-<p>Copy extracted files into <code>femto</code> directory like</p>
+<p>Copy extracted files into js directory like</p>
 
 <pre><code>+ www
-    +- index.html
-    +- js
-        +- femto
-            +- femto-0.2.2.js
-            +- femto-0.2.2.css
+  + index.html
+  + js
+    + femto-0.3.0.js
 </code></pre>
 </li>
 <li>
-<p>Write <code>index.html</code> as:</p>
+<p>Write index.html as</p>
 
-<div class="highlight"><pre><span class="nt">&lt;html&gt;</span>
-    <span class="nt">&lt;head&gt;</span>
-        <span class="nt">&lt;link</span> <span class="na">rel=</span><span class="s">"stylesheet"</span> <span class="na">href=</span><span class="s">"js/femto/femto.css"</span><span class="nt">&gt;</span>
-    <span class="nt">&lt;/head&gt;</span>
-    <span class="nt">&lt;body&gt;</span>
-        <span class="nt">&lt;textarea</span> <span class="na">id=</span><span class="s">"femto-demo"</span><span class="nt">&gt;&lt;/textarea&gt;</span>
-        <span class="nt">&lt;script </span><span class="na">src=</span><span class="s">"//ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"</span><span class="nt">&gt;&lt;/script&gt;</span>
-        <span class="nt">&lt;script </span><span class="na">src=</span><span class="s">"js/femto/femto.js"</span><span class="nt">&gt;&lt;/script&gt;</span>
-        <span class="nt">&lt;script&gt;</span>
-            <span class="nx">$</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
-                <span class="kd">var</span> <span class="nx">options</span> <span class="o">=</span> <span class="p">{};</span>
-                <span class="c1">// set options if necessary</span>
-                <span class="nx">$</span><span class="p">(</span><span class="s1">'textarea#femto-demo'</span><span class="p">).</span><span class="nx">femto</span><span class="p">(</span><span class="nx">options</span><span class="p">);</span>
-            <span class="p">});</span>
-        <span class="nt">&lt;/script&gt;</span>
-    <span class="nt">&lt;/body&gt;</span>
+<div class="highlight"><pre><span class="cp">&lt;!DOCTYPE html&gt;</span>
+<span class="nt">&lt;html&gt;</span>
+  <span class="nt">&lt;body&gt;</span>
+    <span class="nt">&lt;textarea</span> <span class="na">id=</span><span class="s">"femto"</span><span class="nt">&gt;&lt;/textarea&gt;</span>
+    <span class="nt">&lt;script </span><span class="na">src=</span><span class="s">"js/femto-0.3.0.js"</span><span class="nt">&gt;&lt;/script&gt;</span>
+    <span class="nt">&lt;script&gt;</span>
+      <span class="c1">// or your can use $(function(){});</span>
+      <span class="nb">window</span><span class="p">.</span><span class="nx">onload</span> <span class="o">=</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+        <span class="kd">var</span> <span class="nx">textarea</span><span class="p">,</span> <span class="nx">options</span><span class="p">;</span>
+        <span class="nx">options</span> <span class="o">=</span> <span class="p">{};</span>
+        <span class="nx">textarea</span> <span class="o">=</span> <span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="s2">"femto"</span><span class="p">);</span>
+        <span class="nx">textarea</span> <span class="o">=</span> <span class="nx">Femto</span><span class="p">.</span><span class="nx">transform</span><span class="p">(</span><span class="nx">textarea</span><span class="p">,</span> <span class="nx">options</span><span class="p">);</span>
+      <span class="p">};</span>
+    <span class="nt">&lt;/script&gt;</span>
+  <span class="nt">&lt;/body&gt;</span>
 <span class="nt">&lt;/html&gt;</span>
 </pre></div>
 </li>
@@ -128,25 +90,10 @@ and extract it</p></li>
 <a name="options" class="anchor" href="#options"><span class="octicon octicon-link"></span></a>Options</h3>
 
 <ul>
-<li>  <code>expandTab</code> - when true, use spaces instead of tab (default: true)</li>
-<li>  <code>indentLevel</code> - the number of spaces to describe one indent. it makes sense
-only when <code>expandTab</code> is true (default: 4)</li>
-</ul><h2>
-<a name="supported-browsers" class="anchor" href="#supported-browsers"><span class="octicon octicon-link"></span></a>Supported browsers</h2>
-
-<p>The following browsers are supported (or Not Tested yet).</p>
-
-<ul>
-<li>✓ Google Chrome</li>
-<li>✓ Mozilla Firefox</li>
-<li>✓ Safari</li>
-<li>✓ Lunascape</li>
-<li>✓ Opera</li>
-<li>NT Internet Explorer 10</li>
-<li>NT Internet Explorer 9</li>
-<li>✓ Internet Explorer 8 (limited)</li>
-<li>✓ Internet Explorer 7 (limited)</li>
-<li>✓ Internet Explorer 6 (limited)</li>
+<li>  <code>caretaker</code> -- <code>true</code> to enable Undo / Redo feature</li>
+<li>  <code>indent</code> -- <code>true</code> to enable Indent / Auto indent feature</li>
+<li>  <code>expandTab</code> -- <code>true</code> to use continuous spaces instead of tab string</li>
+<li>  <code>indentLevel</code> -- the number of space for a single indent</li>
 </ul><h2>
 <a name="test" class="anchor" href="#test"><span class="octicon octicon-link"></span></a>Test</h2>
 
@@ -156,20 +103,22 @@ only when <code>expandTab</code> is true (default: 4)</li>
 <h2>
 <a name="develop" class="anchor" href="#develop"><span class="octicon octicon-link"></span></a>Develop</h2>
 
-<p>femto is not stable yet. Features might be changed in future.</p>
+<p>You can read an API documentation at
+<a href="http://coffeedoc.info/github/lambdalisue/femto/master/">femto API documentation</a></p>
 
-<ul>
-<li><a href="http://coffeedoc.info/github/lambdalisue/femto/master/">femto API documentation</a></li>
-</ul><h2>
+<h2>
 <a name="license" class="anchor" href="#license"><span class="octicon octicon-link"></span></a>License</h2>
 
 <p>MIT License</p>
 
-<p>Copyright(c) 2012 lambdalisue, hashnote.net all right reserved.</p>
+<p>© 2012-2013 Alisue, hashnote.net</p>
       </section>
-
+      <footer>
+        <p>This project is maintained by <a href="https://github.com/lambdalisue">lambdalisue</a></p>
+        <p><small>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a></small></p>
+      </footer>
     </div>
-    <!--[if !IE]><script>fixScale(document);</script><![endif]-->
+    <script src="javascripts/scale.fix.js"></script>
               <script type="text/javascript">
             var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
             document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
