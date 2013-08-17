@@ -210,7 +210,6 @@ class Indent
       @insertNewLine()
       caretY = @caret.coordinate().bottom
       offset = caretY - @textarea.scrollTop - @textarea.clientHeight
-      console.log "#{offset} = #{caretY} - #{@textarea.scrollTop} - #{@textarea.clientHeight}"
       if offset > 0
         @textarea.scrollTop += offset + @offsetY
     # cancel bubbling immediately
