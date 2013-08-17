@@ -5,6 +5,7 @@
   Indent = (function() {
 
     function Indent(textarea, options) {
+      var style;
       this.textarea = textarea;
       this._keyDownEvent = __bind(this._keyDownEvent, this);
 
@@ -14,8 +15,11 @@
       });
       this._newlinep = new RegExp("^(?:" + (this._makeTabString(this.options.indentLevel)) + ")*");
       this._leadingp = new RegExp("^\\s*");
-      this.caret = new Femto.utils.Caret(this.textarea);
+      this.caret = new Femto.utils.Caret(this.textarea, true);
       this.linecaret = new Femto.utils.LineCaret(this.textarea);
+      style = document.defaultView.getComputedStyle(this.textarea);
+      this.offsetY = parseFloat(style.paddingTop) + parseFloat(style.borderTopWidth);
+      this.offsetY = this.offsetY >> 0;
     }
 
     Indent.prototype._makeTabString = function(level) {
@@ -160,6 +164,7 @@
     };
 
     Indent.prototype._keyDownEvent = function(e) {
+      var caretY, offset;
       if (e.which !== 9 && e.which !== 13) {
         return true;
       }
@@ -174,6 +179,11 @@
           return true;
         }
         this.insertNewLine();
+        caretY = this.caret.coordinate().bottom;
+        offset = caretY - this.textarea.scrollTop - this.textarea.clientHeight;
+        if (offset > 0) {
+          this.textarea.scrollTop += offset + this.offsetY;
+        }
       }
       e.stopPropagation();
       e.preventDefault();

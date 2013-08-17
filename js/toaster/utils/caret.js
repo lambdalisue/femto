@@ -1,12 +1,99 @@
 (function() {
-  var Caret;
+  var Caret, Coordinate;
+
+  Coordinate = (function() {
+
+    function Coordinate(textarea) {
+      this.textarea = textarea;
+      this.dummy = document.createElement('div');
+      this.style = document.defaultView.getComputedStyle(this.textarea, '');
+      this.dummy.style.font = this.style.font;
+      this.dummy.style.lineHeight = this.style.lineHeight;
+      this.dummy.style.textIndent = this.style.textIndent;
+      this.dummy.style.textAlign = this.style.textAlign;
+      this.dummy.style.textDecoration = this.style.textDecoration;
+      this.dummy.style.textShadow = this.style.textShadow;
+      this.dummy.style.letterSpacing = this.style.letterSpacing;
+      this.dummy.style.wordSpacing = this.style.wordSpacing;
+      this.dummy.style.textTransform = this.style.textTransform;
+      this.dummy.style.whiteSpace = this.style.whiteSpace;
+      this.dummy.style.width = this.style.width;
+      this.dummy.style.height = this.style.height;
+      this.dummy.style.visibility = 'hidden';
+      this.dummy.style.position = 'absolute';
+      this.dummy.style.top = 0;
+      this.dummy.style.left = 0;
+      this.dummy.style.overflow = 'auto';
+      document.body.appendChild(this.dummy);
+      this._previousLength = 0;
+      this._previousHeight = 0;
+    }
+
+    Coordinate.prototype._escapeHTML = function(s) {
+      var pre;
+      pre = document.createElement('pre');
+      pre.textContent = s;
+      return pre.innerHTML;
+    };
+
+    Coordinate.prototype._coordinate = function(elem) {
+      var body, offsetX, offsetY, rect;
+      body = document.body;
+      offsetX = body.scrollLeft;
+      offsetY = body.scrollTop;
+      rect = elem.getBoundingClientRect();
+      rect = {
+        left: (rect.left + offsetX) >> 0,
+        right: (rect.right + offsetX) >> 0,
+        top: (rect.top + offsetY) >> 0,
+        bottom: (rect.bottom + offsetY) >> 0
+      };
+      return rect;
+    };
+
+    Coordinate.prototype.coordinate = function(s, e) {
+      var cursor, lhs, offset, processText, uniqid, wholeText,
+        _this = this;
+      processText = function(text) {
+        return _this._escapeHTML(text).replace(/\n/g, '<br>');
+      };
+      wholeText = this.textarea.value;
+      lhs = wholeText.substring(0, e);
+      uniqid = Date.now().toString();
+      uniqid = "coordinate-cursor-" + uniqid;
+      cursor = "<span id='" + uniqid + "'>*</span>";
+      if (this._previousLength < lhs.length) {
+        offset = this._previousLength;
+      } else {
+        offset = 0;
+        this._previousLength = 0;
+        this._previousHeight = 0;
+      }
+      this.dummy.innerHTML = processText(lhs.substring(offset)) + cursor;
+      cursor = document.getElementById(uniqid);
+      cursor = this._coordinate(cursor);
+      cursor = {
+        left: cursor.left + this.styleOffsetX,
+        right: cursor.right + this.styleOffsetX,
+        top: cursor.top + this._previousHeight,
+        bottom: cursor.bottom + this._previousHeight
+      };
+      this._previousLength = lhs.length;
+      this._previousHeight = cursor.top;
+      return cursor;
+    };
+
+    return Coordinate;
+
+  })();
 
   Caret = (function() {
 
-    function Caret(textarea) {
+    function Caret(textarea, supportCoordinate) {
       this.textarea = textarea;
-      this;
-
+      if (supportCoordinate === true) {
+        this._coordinate = new Coordinate(this.textarea);
+      }
     }
 
     Caret.prototype._replace = function(text, repl, s, e) {
@@ -135,6 +222,13 @@
       }
       this.textarea.scrollTop = scrollTop;
       return this;
+    };
+
+    Caret.prototype.coordinate = function() {
+      if (!(this._coordinate != null)) {
+        throw new Error("Caret instance should be construct with " + "second argument `true` to use coordinate method");
+      }
+      return this._coordinate.coordinate.apply(this._coordinate, this.get());
     };
 
     return Caret;
