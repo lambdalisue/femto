@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta charset='UTF-8'>
+  <title>CoffeeScript API Documentation</title>
+  <link rel='stylesheet' href='../assets/codo.css' type='text/css'>
+  <script src='../assets/codo.js'></script>
+  <script src='../assets/search_data.js'></script>
+</head>
+  <body>
+    <div id='base' data-path='../'></div>
+<div id='header'>
+  <div id='menu'>
+    <a href='../README.md.html' title='Femto'>Femto</a>
+    &raquo;
+    <a href='../class_index.html' title='Index'>Index</a>
+    &raquo;
+    <span class='title'>Indent</span>
+    <nav>
+      <ul>
+        <li class='noframes'>
+          (<a class='noframes' href='#'>no frames</a>)
+        </li>
+      </ul>
+    </nav>
+    <div id='search'>
+      <a id='class_list_link' href='../class_list.html'>Classes</a>
+      <a id='file_list_link' href='../file_list.html'>Files</a>
+      <a id='method_list_link' href='../method_list.html'>Methods</a>
+      <a id='extra_list_link' href='../extra_list.html'>Extras</a>
+    </div>
+  </div>
+  <iframe id='search_frame'></iframe>
+  <div id='fuzzySearch'>
+    <input type='text'>
+    <ol></ol>
+  </div>
+  <div id='help'>
+    <p>
+      Quickly fuzzy find classes, mixins, methods, file:
+    </p>
+    <ul>
+      <li>
+        <span>Ctrl-T</span>
+        Open fuzzy finder dialog
+      </li>
+    </ul>
+    <p>
+      In frame mode you can toggle the list naviation frame on the left side:
+    </p>
+    <ul>
+      <li>
+        <span>Ctrl-L</span>
+        Toggle list view
+      </li>
+    </ul>
+    <p>
+      You can focus a list in frame mode or toggle a tab in frameless mode:
+    </p>
+    <ul>
+      <li>
+        <span>Ctrl-C</span>
+        Class list
+      </li>
+      <li>
+        <span>Ctrl-I</span>
+        Mixin list
+      </li>
+      <li>
+        <span>Ctrl-F</span>
+        File list
+      </li>
+      <li>
+        <span>Ctrl-M</span>
+        Method list
+      </li>
+      <li>
+        <span>Ctrl-E</span>
+        Extras list
+      </li>
+    </ul>
+    <p>
+      You can focus and blur the search input:
+    </p>
+    <ul>
+      <li>
+        <span>Ctrl-S</span>
+        Focus search input
+      </li>
+      <li>
+        <span>Esc</span>
+        Blur search input
+      </li>
+    </ul>
+    <p>
+      In frameless mode you can close the list tab:
+    </p>
+    <ul>
+      <li>
+        <span>Esc</span>
+        Close list tab
+      </li>
+    </ul>
+  </div>
+</div>
+    <div id='content'>
+      <h1>
+        Class:
+        Indent
+      </h1>
+      <table class='box'>
+        <tr>
+          <td>Defined in:</td>
+          <td>src&#47;utils&#47;indent.coffee</td>
+        </tr>
+      </table>
+      <h2>Overview</h2>
+      <div class='docstring'>
+  <p>A textarea indent management class</p>
+</div>
+<div class='tags'>
+</div>
+      <h2>Instance Method Summary</h2>
+      <ul class='summary'>
+  <li>
+    <span class='signature'>
+      <a href='#constructor-instance'>
+        - (void) <strong>constructor</strong>(textarea, options)
+      </a>
+    </span>
+    <span class='constructor note title'>Constructor</span>
+    <span class='desc'>
+      Construct a new indent instance
+    </span>
+  </li>
+  <li>
+    <span class='signature'>
+      <a href='#indent-instance'>
+        - (Indent) <strong>indent</strong>()
+      </a>
+    </span>
+    <span class='desc'>
+      Insert tabString at a current caret position or a start position of each selected lines
+    </span>
+  </li>
+  <li>
+    <span class='signature'>
+      <a href='#outdent-instance'>
+        - (Indent) <strong>outdent</strong>()
+      </a>
+    </span>
+    <span class='desc'>
+      Remove tabString at the current caret position of the left hand of the selection.
+    </span>
+  </li>
+  <li>
+    <span class='signature'>
+      <a href='#insertNewLine-instance'>
+        - (Indent) <strong>insertNewLine</strong>()
+      </a>
+    </span>
+    <span class='desc'>
+      Insert newline after the curret caret position with appropriate indent characters to keep previous indent level
+    </span>
+  </li>
+  <li>
+    <span class='signature'>
+      <a href='#enable-instance'>
+        - (Indent) <strong>enable</strong>()
+      </a>
+    </span>
+    <span class='desc'>
+      Enable indent feature
+    </span>
+  </li>
+  <li>
+    <span class='signature'>
+      <a href='#disable-instance'>
+        - (Indent) <strong>disable</strong>()
+      </a>
+    </span>
+    <span class='desc'>
+      Disable indent feature
+    </span>
+  </li>
+</ul>
+      <h2>Constructor Details</h2>
+      <div class='methods'>
+  <div class='method_details'>
+    <p class='signature' id='constructor-instance'>
+      - (void) <strong>constructor</strong>(textarea, options)
+    </p>
+    <div class='docstring'>
+  <p>Construct a new indent instance</p>
+  <div class='examples'>
+    <h3>Examples:</h3>
+    <h4>
+      
+    </h4>
+    <pre><code class='coffee'>textarea = document.getElementByTagName(&#39;textarea&#39;)[0]
+indent = new Indent(textarea)</code></pre>
+  </div>
+</div>
+<div class='tags'>
+  <h3>Parameters:</h3>
+  <ul class='param'>
+    <li>
+      <span class='name'>textarea</span>
+      <span class='type'>
+        (<tt>Object</tt>)
+      </span>
+      &mdash;
+      <span class='desc'>a textarea DOM element</span>
+    </li>
+  </ul>
+  <h3>
+    Options Hash:
+    (option):
+  </h3>
+  <ul class='options'>
+    <li>
+      <span class='name'>expandTab</span>
+      <span class='type'>
+        (<tt>Boolean</tt>)
+      </span>
+      &mdash;
+      <span class='desc'>use continuous spaces instead of tab (Default: <code>true</code>)</span>
+    </li>
+    <li>
+      <span class='name'>indentLevel</span>
+      <span class='type'>
+        (<tt>Integer</tt>)
+      </span>
+      &mdash;
+      <span class='desc'>the number of spaces. it is enable only when <code>expandTab</code> is true (Default: <code>4</code>)</span>
+    </li>
+  </ul>
+</div>
+  </div>
+</div>
+      <h2>Instance Method Details</h2>
+      <div class='methods'>
+  <div class='method_details'>
+    <p class='signature' id='indent-instance'>
+      - (Indent) <strong>indent</strong>()
+    </p>
+    <div class='docstring'>
+  <p>Insert tabString at a current caret position or a start position of each
+selected lines</p>
+</div>
+<div class='tags'>
+  <h3>Returns:</h3>
+  <ul class='return'>
+    <li>
+      <span class='type'></span>
+      (<tt><a href='../classes/Indent.html'>Indent</a></tt>)
+      &mdash;
+      <span class='desc'>an instance of Indent</span>
+    </li>
+  </ul>
+</div>
+  </div>
+  <div class='method_details'>
+    <p class='signature' id='outdent-instance'>
+      - (Indent) <strong>outdent</strong>()
+    </p>
+    <div class='docstring'>
+  <p>Remove tabString at the current caret position of the left hand of the
+selection. It will do nothing when no tabString is found on left hand</p>
+</div>
+<div class='tags'>
+  <h3>Returns:</h3>
+  <ul class='return'>
+    <li>
+      <span class='type'></span>
+      (<tt><a href='../classes/Indent.html'>Indent</a></tt>)
+      &mdash;
+      <span class='desc'>an instance of Indent</span>
+    </li>
+  </ul>
+</div>
+  </div>
+  <div class='method_details'>
+    <p class='signature' id='insertNewLine-instance'>
+      - (Indent) <strong>insertNewLine</strong>()
+    </p>
+    <div class='docstring'>
+  <p>Insert newline after the curret caret position with appropriate indent
+characters to keep previous indent level</p>
+</div>
+<div class='tags'>
+  <h3>Returns:</h3>
+  <ul class='return'>
+    <li>
+      <span class='type'></span>
+      (<tt><a href='../classes/Indent.html'>Indent</a></tt>)
+      &mdash;
+      <span class='desc'>an instance of Indent</span>
+    </li>
+  </ul>
+</div>
+  </div>
+  <div class='method_details'>
+    <p class='signature' id='enable-instance'>
+      - (Indent) <strong>enable</strong>()
+    </p>
+    <div class='docstring'>
+  <p>Enable indent feature</p>
+</div>
+<div class='tags'>
+  <h3>Returns:</h3>
+  <ul class='return'>
+    <li>
+      <span class='type'></span>
+      (<tt><a href='../classes/Indent.html'>Indent</a></tt>)
+      &mdash;
+      <span class='desc'>an instance of Indent</span>
+    </li>
+  </ul>
+</div>
+  </div>
+  <div class='method_details'>
+    <p class='signature' id='disable-instance'>
+      - (Indent) <strong>disable</strong>()
+    </p>
+    <div class='docstring'>
+  <p>Disable indent feature</p>
+</div>
+<div class='tags'>
+  <h3>Returns:</h3>
+  <ul class='return'>
+    <li>
+      <span class='type'></span>
+      (<tt><a href='../classes/Indent.html'>Indent</a></tt>)
+      &mdash;
+      <span class='desc'>an instance of Indent</span>
+    </li>
+  </ul>
+</div>
+  </div>
+</div>
+    </div>
+    <div id='footer'>
+  Generated on
+  Sat Aug 17 2013 20:41:45 GMT+0900 (JST)
+  by
+  <a href='https://github.com/netzpirat/codo' title='CoffeeScript API documentation generator'>Codo</a>
+  v1.7.0
+  (Node.js v0.11.3).
+  &#10034;
+  Press Ctrl-h to see the keyboard shortcuts
+  &#10034;
+  <a href='http://twitter.com/#!/netzpirat'>@netzpirat</a>
+  &#10034;
+  <a href='https://mksoft.ch'>mksoft.ch</a>
+</div>
+  </body>
+</html>

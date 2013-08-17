@@ -1,83 +1,100 @@
-###
-Base class for Originator
-
-@example
-  class Notebook extends utils.Originator
-    constructor: ->
-      @value = ""
-    createMemento: -> @value
-    setMemento: (memento) -> @value = memento
-###
+# Base class for Originator
+# 
+# @see Caretaker
+# @example
+#   class Notebook extends utils.Originator
+#     constructor: ->
+#       @value = ""
+#     createMemento: -> @value
+#     setMemento: (memento) -> @value = memento
 class Originator
-  ###
-  Create memento of the instance
-
-  @return [Object] a memento of the instance
-
-  @note Subclass must overload this method
-  @throw Not implemented yet
-  ###
+  # Create memento of the instance
+  #
+  # @return [Object] a memento of the instance
+  # @throw [Error] throw "Not implemented yet" error
+  # @note Subclass must overload this method
   createMemento: -> throw Error("Not implemented yet")
-  ###
-  Set memento of the instance
-
-  @param [Object] memento a memento of the instance
-
-  @note Subclass must overload this method
-  @throw Not implemented yet
-  ###
+  # Set memento of the instance
+  #
+  # @param [Object] memento a memento of the instance
+  # @return [Originator] an instance of Originator
+  # @throw [Error] throw "Not implemented yet" error
+  # @note Subclass must overload this method
   setMemento: (memento) -> throw Error("Not implemented yet")
 
 
-###
-Caretaker of `Originator`
-
-@example
-  # see the example of Originator
-  notebook = new Notebook()
-  notebook.caretaker = new Caretaker(notebook)
-  # save the changes
-  notebook.caretaker.save()
-  # undo the changes
-  notebook.caretaker.undo()
-  # redo the changes
-  notebook.caretaker.redo()
-###
+# Caretaker of `Originator`
+# 
+# @see Originator
+# @example
+#   # see the example of Originator
+#   notebook = new Notebook()
+#   notebook.caretaker = new Caretaker(notebook)
+#   # save the changes
+#   notebook.caretaker.save()
+#   # undo the changes
+#   notebook.caretaker.undo()
+#   # redo the changes
+#   notebook.caretaker.redo()
 class Caretaker
-  ###
-  Constructor
-
-  @param [Originator] originator an instance of originator subclass
-  @return [Caretaker] the new instance
-  ###
+  # Construct a new caretaker instance
+  #
+  # @param [Originator] originator an instance of originator subclass
+  # @example
+  #   # define originator required function (or make subclass of originator)
+  #   originator = new Originator()
+  #   originator.createMemento = -> @_memento
+  #   originator.setMemento = (value) -> @_memento = value
+  #   # create caretaker
+  #   caretaker = new Caretaker(originator)
   constructor: (originator) ->
     @_originator = originator
     @_undoStack = []
     @_redoStack = []
     @_previous = null
 
-  ###
-  Get originator when called without any argument.
-  Set originator when called with an argument.
-
-  @param [Originator] originator set originator of the instance to this.
-  @return [Originator, Caretaker] return Originator instance when called
-    without any argument. return this instance when called with an argument.
-  ###
+  # Get or set an originator instance
+  #
+  # @overload originator()
+  #   Get an originator instance
+  #   @return [Originator] an instance of Originator
+  #
+  # @overload originator(originator)
+  #   Set an originator instance
+  #   @param [Originator] originator a new originator instance
+  #   @return [Caretaker] an instance of Caretaker
   originator: (originator) ->
     if originator?
       @_originator = originator
       return @
     return @_originator
 
-  ###
-  Save a memento of the originator to the undo memento stack.
-  Nothing will be saved if the same memento was saved previously.
-
-  @param [Object] memento a memento to store. `createMemento()` of the
-    originator will be used when no memento is specified.
-  @return [Caretaker] the instance
-  ###
+  # Save a memento of the originator to an undo memento stock. A redo memento
+  # stock will be cleared.
+  #
+  # @note Nothing will be saved when the current memento is save as the
+  #   previous one.
+  #
+  # @overload save()
+  #   Save a current memento of the originator to an undo memento stock.
+  #   The current memento will be obtain by calling `createMemento()` method
+  #   of the originator.
+  #   @return [Caretaker] an instance of Caretaker
+  #
+  # @overload save(memento)
+  #   Save a specified memento (`memento`) of the originator to an undo
+  #   memento stock.
+  #   @param [Object] memento a memento which will be stored
+  #   @return [Caretaker] an instance of Caretaker
+  #
+  # @see Originator#createMemento
+  # @example
+  #   # automatically create memento of the originator by calling
+  #   # `createMemento()`
+  #   caretaker.save()
+  #   # manually create memento of the originator
+  #   memento = originator.createMemento() + "Hello"
+  #   caretaker.save(memento)
   save: (memento) ->
     memento = memento or @originator().createMemento()
     if not @_previous? or @_previous isnt memento
@@ -88,14 +105,14 @@ class Caretaker
       @_previous = memento
     return @
 
-  ###
-  Restore a value of the originator from the undo memento stack.
-  The current value of the originator will be stack on the redo memento stack.
-
-  @return [Caretaker] the instance
-
-  @note Nothing will be happen when no memento was stacked on undo memento stack.
-  ###
+  # Restore a value of the originator from an undo memento stock.
+  # The current memento will be stock on a redo memento stock
+  #
+  # @note Nothing will be restored or stored when no memento was stocked on
+  #   an undo memento stock
+  # @return [Caretaker] an instance of Caretaker
+  # @see Caretaker#canUndo
+  # @see Caretaker#redo
   undo: ->
     return @ if not @canUndo()
     originator = @originator()
@@ -106,14 +123,14 @@ class Caretaker
     originator.setMemento @_undoStack.pop()
     return @
 
-  ###
-  Restore a value of the originator from the redo memento stack.
-  The current value of the originator will be stack on the undo memento stack.
-
-  @return [Caretaker] the instance
-
-  @note Nothing will be happen when no memento was stacked on redo memento stack.
-  ###
+  # Restore a value of the originator from an redo memento stock.
+  # The current memento will be stock on a undo memento stock
+  #
+  # @note Nothing will be restored or stored when no memento was stocked on
+  #   an redo memento stock
+  # @return [Caretaker] an instance of Caretaker
+  # @see Caretaker#canRedo
+  # @see Caretaker#undo
   redo: ->
     return @ if not @canRedo()
     originator = @originator()
@@ -124,19 +141,19 @@ class Caretaker
     originator.setMemento @_redoStack.pop()
     return @
 
-  ###
-  Return whether the undo memento stack isn't empty or not
-
-  @return [Boolean] return `true` if the undo memento stack is not empty
-  ###
+  # Return `true` when an undo memeto stock has at least one memento
+  #
+  # @return [Boolean] return `true` if an undo memento stock is not empty
+  # @see Caretaker#undo
+  # @see Caretaker#canRedo
   canUndo: ->
     return @_undoStack.length > 0
 
-  ###
-  Return whether the redo memento stack isn't empty or not
-
-  @return [Boolean] return `true` if the redo memento stack is not empty
-  ###
+  # Return `true` when an redo memeto stock has at least one memento
+  #
+  # @return [Boolean] return `true` if an redo memento stock is not empty
+  # @see Caretaker#redo
+  # @see Caretaker#canUndo
   canRedo: ->
     return @_redoStack.length > 0
 

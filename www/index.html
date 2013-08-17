@@ -1,67 +1,26 @@
 <!DOCTYPE html>
-<html class="no-js" lang="en"><!-- the "no-js" class is for Modernizr. -->
+<html lang="en">
 <head>
 	<meta charset="UTF-8">
-	<!-- Always force latest IE rendering engine (even in intranet) & Chrome Frame -->
-	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-	<link rel="stylesheet" href="css/app.css">
-  <link rel="stylesheet"
-    href="http://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css">
   <style>
-    #debug-info {
-      position: absolute;
-      width: 300px;
-      height: 100%;
-      top: 0;
-      left: 0;
+    #femto {
+      display: block;
+      width: 640px;
+      height: 480px;
+      margin: auto;
     }
   </style>
 </head>
 <body>
 	<textarea id="femto"></textarea>
-  <div id="debug-info">
-    <div id="undo-stack">
-      <h2>Undo stack</h2>
-      <ol></ol>
-    </div>
-    <div id="redo-stack">
-      <h2>Redo stack</h2>
-      <ol></ol>
-    </div>
-  </div>
-  <script src="http://ajax.googleapis.com/ajax/libs/chrome-frame/1.0.2/CFInstall.min.js"></script>
-  <script src="http://code.jquery.com/jquery-1.9.1.js"></script>
-	<!-- fake `describe` function to prevent run-time error with test version of femto -->
-  <script>window.describe = function(){};</script>
 	<script src="js/app.debug.js"></script>
 	<script>
-		$(function() {
-		  var instance, updateStacks;
-      instance = $('textarea#femto').femto();
-      instance = instance.data('femto');
-      // watch undo/redo stack changes
-      updateStack = function(stack, id) {
-        var elem;
-        elem = $("#" + id + " ol");
-        elem.empty();
-        for(var i=0; i<stack.length; i++) {
-          var li;
-          li = $("<li>").html(stack[i].replace(/\n/, "&crarr;"));
-          elem.append(li);
-        }
-      };
-      updateStacks = function(){
-        var undoStack, redoStack;
-        undoStack = instance.editor.caretaker._undoStack;
-        redoStack = instance.editor.caretaker._redoStack;
-        updateStack(undoStack, "undo-stack");
-        updateStack(redoStack, "redo-stack");
-      };
-      instance.editor.textarea.on("keydown", function(e){
-        updateStacks();
-      });
-      updateStacks();
-		});
+    window.onload = function() {
+      var textarea, options;
+      options = {};
+      textarea = document.getElementById("femto");
+      textarea = Femto.transform(textarea, options);
+    };
 	</script>
 </body>
 </html>

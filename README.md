@@ -1,86 +1,52 @@
 femto [![Build Status](https://travis-ci.org/lambdalisue/femto.png)](https://travis-ci.org/lambdalisue/femto)
 ================================================================================
 
-A minimum featured textarea
+**femto** is a simple and minimum textarea upgrade library.
+It only add the following features but the file size is small (9.6 kB) and well
+tested (passed 211 tests).
 
-**femto** allow you to add a simple text editor for writing some kind of Markup
-language.
-It helps user to write these kind of text with the following features:
-
--   `TAB` indent and `SHIFT + TAB` outdent
-
-    `TAB` key move the focus to the next object in browser default `textarea`.
-    However most desktop text editor use `TAB` key for indent.
-
--   Auto indent (Keep indent)
-
-    Some desktop text editor automatically keep indent level when user hit
-    `RETURN` key. It is useful when user write a kind of Markup text which use
-    indent as a blockquote or code block.
-
--   Complete Undo/Redo
-
-    femto has its own Undo / Redo feature
+- Undo and Redo with `Ctrl + Z` and `Ctrl + Shift + Z`
+- Indent with `Tab`
+- Outdent with `Shift + Tab`
 
 Usage
 --------------------------------------------------------------------------------
-
-1.  Download [femto-0.2.2.tar.gz](https://raw.github.com/lambdalisue/femto/master/release/femto-0.2.2.tar.gz)
-    and extract it
-
-2.  Copy extracted files into `femto` directory like
+1.  Download [femto-0.3.0.tar.gz][]
+2.  Copy extracted files into js directory like
 
     ```
     + www
-        +- index.html
-        +- js
-            +- femto
-                +- femto-0.2.2.js
-                +- femto-0.2.2.css
+      + index.html
+      + js
+        + femto-0.3.0.js
     ```
-
-3.  Write `index.html` as:
+3.  Write index.html as
 
     ```html
+    <!DOCTYPE html>
     <html>
-        <head>
-            <link rel="stylesheet" href="js/femto/femto.css">
-        </head>
-        <body>
-            <textarea id="femto-demo"></textarea>
-            <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
-            <script src="js/femto/femto.js"></script>
-            <script>
-                $(function() {
-                    var options = {};
-                    // set options if necessary
-                    $('textarea#femto-demo').femto(options);
-                });
-            </script>
-        </body>
+      <body>
+        <textarea id="femto"></textarea>
+        <script src="js/femto-0.3.0.js"></script>
+        <script>
+          // or your can use $(function(){});
+          window.onload = function() {
+            var textarea, options;
+            options = {};
+            textarea = document.getElementById("femto");
+            textarea = Femto.transform(textarea, options);
+          };
+        </script>
+      </body>
     </html>
     ```
 
 ### Options
 
--   `expandTab` - when true, use spaces instead of tab (default: true)
--   `indentLevel` - the number of spaces to describe one indent. it makes sense
-    only when `expandTab` is true (default: 4)
-
-Supported browsers
---------------------------------------------------------------------------------
-The following browsers are supported (or Not Tested yet).
-
-- &#x2713; Google Chrome
-- &#x2713; Mozilla Firefox
-- &#x2713; Safari
-- &#x2713; Lunascape
-- &#x2713; Opera
-- NT Internet Explorer 10
-- NT Internet Explorer 9
-- &#x2713; Internet Explorer 8 (limited)
-- &#x2713; Internet Explorer 7 (limited)
-- &#x2713; Internet Explorer 6 (limited)
+-   `caretaker` -- `true` to enable Undo / Redo feature
+-   `indent` -- `true` to enable Indent / Auto indent feature
+-   `expandTab` -- `true` to use continuous spaces instead of tab string
+-   `indentLevel` -- the number of space for a single indent
 
 Test
 --------------------------------------------------------------------------------
@@ -89,12 +55,15 @@ You can check the test result at
 
 Develop
 --------------------------------------------------------------------------------
-femto is not stable yet. Features might be changed in future.
-
-- [femto API documentation](http://coffeedoc.info/github/lambdalisue/femto/master/)
+You can read an API documentation at
+[femto API documentation](http://coffeedoc.info/github/lambdalisue/femto/master/)
 
 License
 --------------------------------------------------------------------------------
 MIT License
 
-Copyright(c) 2012 lambdalisue, hashnote.net all right reserved.
+&copy; 2012-2013 Alisue, hashnote.net
+
+[femto-0.3.0.tar.gz]: https://github.com/lambdalisue/femto/raw/master/release/femto-0.2.2.tar.gz
+[femto Travis-ci]: https://travis-ci.org/lambdalisue/femto
+[femto API documentation]: http://coffeedoc.info/github/lambdalisue/femto/master/

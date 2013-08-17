@@ -134,38 +134,44 @@ notebook.caretaker.redo()</code></pre>
   </div>
 </div>
 <div class='tags'>
+  <h3>See also:</h3>
+  <ul class='see'>
+    <li>
+      <a href='../classes/Originator.html'>Originator</a>
+    </li>
+  </ul>
 </div>
       <h2>Instance Method Summary</h2>
       <ul class='summary'>
   <li>
     <span class='signature'>
       <a href='#constructor-instance'>
-        - (Caretaker) <strong>constructor</strong>(originator)
+        - (void) <strong>constructor</strong>(originator)
       </a>
     </span>
     <span class='constructor note title'>Constructor</span>
     <span class='desc'>
-      Constructor
+      Construct a new caretaker instance
     </span>
   </li>
   <li>
     <span class='signature'>
       <a href='#originator-instance'>
-        - (Originator, Caretaker) <strong>originator</strong>(originator)
+        - (void) <strong>originator</strong>(originator)
       </a>
     </span>
     <span class='desc'>
-      Get originator when called without any argument.
+      Get or set an originator instance
     </span>
   </li>
   <li>
     <span class='signature'>
       <a href='#save-instance'>
-        - (Caretaker) <strong>save</strong>(memento)
+        - (void) <strong>save</strong>(memento)
       </a>
     </span>
     <span class='desc'>
-      Save a memento of the originator to the undo memento stack.
+      Save a memento of the originator to an undo memento stock.
     </span>
   </li>
   <li>
@@ -175,7 +181,7 @@ notebook.caretaker.redo()</code></pre>
       </a>
     </span>
     <span class='desc'>
-      Restore a value of the originator from the undo memento stack.
+      Restore a value of the originator from an undo memento stock.
     </span>
   </li>
   <li>
@@ -185,7 +191,7 @@ notebook.caretaker.redo()</code></pre>
       </a>
     </span>
     <span class='desc'>
-      Restore a value of the originator from the redo memento stack.
+      Restore a value of the originator from an redo memento stock.
     </span>
   </li>
   <li>
@@ -195,7 +201,7 @@ notebook.caretaker.redo()</code></pre>
       </a>
     </span>
     <span class='desc'>
-      Return whether the undo memento stack isn&#39;t empty or not
+      Return <code>true</code> when an undo memeto stock has at least one memento
     </span>
   </li>
   <li>
@@ -205,7 +211,7 @@ notebook.caretaker.redo()</code></pre>
       </a>
     </span>
     <span class='desc'>
-      Return whether the redo memento stack isn&#39;t empty or not
+      Return <code>true</code> when an redo memeto stock has at least one memento
     </span>
   </li>
 </ul>
@@ -213,10 +219,22 @@ notebook.caretaker.redo()</code></pre>
       <div class='methods'>
   <div class='method_details'>
     <p class='signature' id='constructor-instance'>
-      - (Caretaker) <strong>constructor</strong>(originator)
+      - (void) <strong>constructor</strong>(originator)
     </p>
     <div class='docstring'>
-  <p>Constructor</p>
+  <p>Construct a new caretaker instance</p>
+  <div class='examples'>
+    <h3>Examples:</h3>
+    <h4>
+      
+    </h4>
+    <pre><code class='coffee'># define originator required function (or make subclass of originator)
+originator = new Originator()
+originator.createMemento = -&gt; @_memento
+originator.setMemento = (value) -&gt; @_memento = value
+# create caretaker
+caretaker = new Caretaker(originator)</code></pre>
+  </div>
 </div>
 <div class='tags'>
   <h3>Parameters:</h3>
@@ -230,15 +248,6 @@ notebook.caretaker.redo()</code></pre>
       <span class='desc'>an instance of originator subclass</span>
     </li>
   </ul>
-  <h3>Returns:</h3>
-  <ul class='return'>
-    <li>
-      <span class='type'></span>
-      (<tt><a href='../classes/Caretaker.html'>Caretaker</a></tt>)
-      &mdash;
-      <span class='desc'>the new instance</span>
-    </li>
-  </ul>
 </div>
   </div>
 </div>
@@ -246,11 +255,42 @@ notebook.caretaker.redo()</code></pre>
       <div class='methods'>
   <div class='method_details'>
     <p class='signature' id='originator-instance'>
-      - (Originator, Caretaker) <strong>originator</strong>(originator)
+      - (Originator) <strong>originator</strong>()
+      <br>
+      - (Caretaker) <strong>originator</strong>(originator)
+      <br>
     </p>
     <div class='docstring'>
-  <p>Get originator when called without any argument.
-Set originator when called with an argument.</p>
+  <p>Get or set an originator instance</p>
+</div>
+<div class='tags'>
+  <div class='overloads'>
+    <h3>Overloads:</h3>
+    <div class='overload'>
+      <p class='signature'>
+        - (Originator) <strong>originator</strong>()
+      </p>
+      <div class='docstring'>
+  <p>Get an originator instance</p>
+</div>
+<div class='tags'>
+  <h3>Returns:</h3>
+  <ul class='return'>
+    <li>
+      <span class='type'></span>
+      (<tt><a href='../classes/Originator.html'>Originator</a></tt>)
+      &mdash;
+      <span class='desc'>an instance of Originator</span>
+    </li>
+  </ul>
+</div>
+    </div>
+    <div class='overload'>
+      <p class='signature'>
+        - (Caretaker) <strong>originator</strong>(originator)
+      </p>
+      <div class='docstring'>
+  <p>Set an originator instance</p>
 </div>
 <div class='tags'>
   <h3>Parameters:</h3>
@@ -261,27 +301,87 @@ Set originator when called with an argument.</p>
         (<tt><a href='../classes/Originator.html'>Originator</a></tt>)
       </span>
       &mdash;
-      <span class='desc'>set originator of the instance to this.</span>
+      <span class='desc'>a new originator instance</span>
     </li>
   </ul>
   <h3>Returns:</h3>
   <ul class='return'>
     <li>
       <span class='type'></span>
-      (<tt><a href='../classes/Originator.html'>Originator</a>, <a href='../classes/Caretaker.html'>Caretaker</a></tt>)
+      (<tt><a href='../classes/Caretaker.html'>Caretaker</a></tt>)
       &mdash;
-      <span class='desc'>return Originator instance when called without any argument. return this instance when called with an argument.</span>
+      <span class='desc'>an instance of Caretaker</span>
     </li>
   </ul>
+</div>
+    </div>
+  </div>
 </div>
   </div>
   <div class='method_details'>
     <p class='signature' id='save-instance'>
+      - (Caretaker) <strong>save</strong>()
+      <br>
       - (Caretaker) <strong>save</strong>(memento)
+      <br>
     </p>
     <div class='docstring'>
-  <p>Save a memento of the originator to the undo memento stack.
-Nothing will be saved if the same memento was saved previously.</p>
+  <div class='note'>
+    <strong>Note:</strong>
+    Nothing will be saved when the current memento is save as the previous one.
+  </div>
+  <p>Save a memento of the originator to an undo memento stock. A redo memento
+stock will be cleared.</p>
+  <div class='examples'>
+    <h3>Examples:</h3>
+    <h4>
+      
+    </h4>
+    <pre><code class='coffee'># automatically create memento of the originator by calling
+# `createMemento()`
+caretaker.save()
+# manually create memento of the originator
+memento = originator.createMemento() + &quot;Hello&quot;
+caretaker.save(memento)</code></pre>
+  </div>
+</div>
+<div class='tags'>
+  <h3>See also:</h3>
+  <ul class='see'>
+    <li>
+      <a href='../classes/Originator.html#createMemento-instance'>Originator#createMemento</a>
+    </li>
+  </ul>
+  <div class='overloads'>
+    <h3>Overloads:</h3>
+    <div class='overload'>
+      <p class='signature'>
+        - (Caretaker) <strong>save</strong>()
+      </p>
+      <div class='docstring'>
+  <p>Save a current memento of the originator to an undo memento stock.
+The current memento will be obtain by calling <code>createMemento()</code> method
+of the originator.</p>
+</div>
+<div class='tags'>
+  <h3>Returns:</h3>
+  <ul class='return'>
+    <li>
+      <span class='type'></span>
+      (<tt><a href='../classes/Caretaker.html'>Caretaker</a></tt>)
+      &mdash;
+      <span class='desc'>an instance of Caretaker</span>
+    </li>
+  </ul>
+</div>
+    </div>
+    <div class='overload'>
+      <p class='signature'>
+        - (Caretaker) <strong>save</strong>(memento)
+      </p>
+      <div class='docstring'>
+  <p>Save a specified memento (<code>memento</code>) of the originator to an undo
+memento stock.</p>
 </div>
 <div class='tags'>
   <h3>Parameters:</h3>
@@ -292,7 +392,7 @@ Nothing will be saved if the same memento was saved previously.</p>
         (<tt>Object</tt>)
       </span>
       &mdash;
-      <span class='desc'>a memento to store. <code>createMemento()</code> of the originator will be used when no memento is specified.</span>
+      <span class='desc'>a memento which will be stored</span>
     </li>
   </ul>
   <h3>Returns:</h3>
@@ -301,9 +401,12 @@ Nothing will be saved if the same memento was saved previously.</p>
       <span class='type'></span>
       (<tt><a href='../classes/Caretaker.html'>Caretaker</a></tt>)
       &mdash;
-      <span class='desc'>the instance</span>
+      <span class='desc'>an instance of Caretaker</span>
     </li>
   </ul>
+</div>
+    </div>
+  </div>
 </div>
   </div>
   <div class='method_details'>
@@ -313,10 +416,10 @@ Nothing will be saved if the same memento was saved previously.</p>
     <div class='docstring'>
   <div class='note'>
     <strong>Note:</strong>
-    Nothing will be happen when no memento was stacked on undo memento stack.
+    Nothing will be restored or stored when no memento was stocked on an undo memento stock
   </div>
-  <p>Restore a value of the originator from the undo memento stack.
-The current value of the originator will be stack on the redo memento stack.</p>
+  <p>Restore a value of the originator from an undo memento stock.
+The current memento will be stock on a redo memento stock</p>
 </div>
 <div class='tags'>
   <h3>Returns:</h3>
@@ -325,7 +428,16 @@ The current value of the originator will be stack on the redo memento stack.</p>
       <span class='type'></span>
       (<tt><a href='../classes/Caretaker.html'>Caretaker</a></tt>)
       &mdash;
-      <span class='desc'>the instance</span>
+      <span class='desc'>an instance of Caretaker</span>
+    </li>
+  </ul>
+  <h3>See also:</h3>
+  <ul class='see'>
+    <li>
+      <a href='../classes/Caretaker.html#canUndo-instance'>Caretaker#canUndo</a>
+    </li>
+    <li>
+      <a href='../classes/Caretaker.html#redo-instance'>Caretaker#redo</a>
     </li>
   </ul>
 </div>
@@ -337,10 +449,10 @@ The current value of the originator will be stack on the redo memento stack.</p>
     <div class='docstring'>
   <div class='note'>
     <strong>Note:</strong>
-    Nothing will be happen when no memento was stacked on redo memento stack.
+    Nothing will be restored or stored when no memento was stocked on an redo memento stock
   </div>
-  <p>Restore a value of the originator from the redo memento stack.
-The current value of the originator will be stack on the undo memento stack.</p>
+  <p>Restore a value of the originator from an redo memento stock.
+The current memento will be stock on a undo memento stock</p>
 </div>
 <div class='tags'>
   <h3>Returns:</h3>
@@ -349,7 +461,16 @@ The current value of the originator will be stack on the undo memento stack.</p>
       <span class='type'></span>
       (<tt><a href='../classes/Caretaker.html'>Caretaker</a></tt>)
       &mdash;
-      <span class='desc'>the instance</span>
+      <span class='desc'>an instance of Caretaker</span>
+    </li>
+  </ul>
+  <h3>See also:</h3>
+  <ul class='see'>
+    <li>
+      <a href='../classes/Caretaker.html#canRedo-instance'>Caretaker#canRedo</a>
+    </li>
+    <li>
+      <a href='../classes/Caretaker.html#undo-instance'>Caretaker#undo</a>
     </li>
   </ul>
 </div>
@@ -359,7 +480,7 @@ The current value of the originator will be stack on the undo memento stack.</p>
       - (Boolean) <strong>canUndo</strong>()
     </p>
     <div class='docstring'>
-  <p>Return whether the undo memento stack isn&#39;t empty or not</p>
+  <p>Return <code>true</code> when an undo memeto stock has at least one memento</p>
 </div>
 <div class='tags'>
   <h3>Returns:</h3>
@@ -368,7 +489,16 @@ The current value of the originator will be stack on the undo memento stack.</p>
       <span class='type'></span>
       (<tt>Boolean</tt>)
       &mdash;
-      <span class='desc'>return <code>true</code> if the undo memento stack is not empty</span>
+      <span class='desc'>return <code>true</code> if an undo memento stock is not empty</span>
+    </li>
+  </ul>
+  <h3>See also:</h3>
+  <ul class='see'>
+    <li>
+      <a href='../classes/Caretaker.html#undo-instance'>Caretaker#undo</a>
+    </li>
+    <li>
+      <a href='../classes/Caretaker.html#canRedo-instance'>Caretaker#canRedo</a>
     </li>
   </ul>
 </div>
@@ -378,7 +508,7 @@ The current value of the originator will be stack on the undo memento stack.</p>
       - (Boolean) <strong>canRedo</strong>()
     </p>
     <div class='docstring'>
-  <p>Return whether the redo memento stack isn&#39;t empty or not</p>
+  <p>Return <code>true</code> when an redo memeto stock has at least one memento</p>
 </div>
 <div class='tags'>
   <h3>Returns:</h3>
@@ -387,7 +517,16 @@ The current value of the originator will be stack on the undo memento stack.</p>
       <span class='type'></span>
       (<tt>Boolean</tt>)
       &mdash;
-      <span class='desc'>return <code>true</code> if the redo memento stack is not empty</span>
+      <span class='desc'>return <code>true</code> if an redo memento stock is not empty</span>
+    </li>
+  </ul>
+  <h3>See also:</h3>
+  <ul class='see'>
+    <li>
+      <a href='../classes/Caretaker.html#redo-instance'>Caretaker#redo</a>
+    </li>
+    <li>
+      <a href='../classes/Caretaker.html#canUndo-instance'>Caretaker#canUndo</a>
     </li>
   </ul>
 </div>
@@ -396,10 +535,10 @@ The current value of the originator will be stack on the undo memento stack.</p>
     </div>
     <div id='footer'>
   Generated on
-  Thu Aug 15 2013 16:04:47 GMT+0900 (JST)
+  Sat Aug 17 2013 20:41:45 GMT+0900 (JST)
   by
   <a href='https://github.com/netzpirat/codo' title='CoffeeScript API documentation generator'>Codo</a>
-  v1.5.6
+  v1.7.0
   (Node.js v0.11.3).
   &#10034;
   Press Ctrl-h to see the keyboard shortcuts

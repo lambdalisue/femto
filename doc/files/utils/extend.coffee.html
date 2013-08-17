@@ -3,19 +3,21 @@
   <head>
   <meta charset='UTF-8'>
   <title>CoffeeScript API Documentation</title>
-  <link rel='stylesheet' href='../assets/codo.css' type='text/css'>
-  <script src='../assets/codo.js'></script>
-  <script src='../assets/search_data.js'></script>
+  <link rel='stylesheet' href='../../assets/codo.css' type='text/css'>
+  <script src='../../assets/codo.js'></script>
+  <script src='../../assets/search_data.js'></script>
 </head>
   <body>
-    <div id='base' data-path='../'></div>
+    <div id='base' data-path='../../'></div>
 <div id='header'>
   <div id='menu'>
-    <a href='../README.md.html' title='Femto'>Femto</a>
+    <a href='../../README.md.html' title='Femto'>Femto</a>
     &raquo;
-    <a href='../class_index.html' title='Index'>Index</a>
+    <a href='../../class_index.html' title='Index'>Index</a>
     &raquo;
-    <span class='title'>core.coffee</span>
+    <span class='title'>utils</span>
+    &raquo;
+    <span class='title'>extend.coffee</span>
     <nav>
       <ul>
         <li class='noframes'>
@@ -24,10 +26,10 @@
       </ul>
     </nav>
     <div id='search'>
-      <a id='class_list_link' href='../class_list.html'>Classes</a>
-      <a id='file_list_link' href='../file_list.html'>Files</a>
-      <a id='method_list_link' href='../method_list.html'>Methods</a>
-      <a id='extra_list_link' href='../extra_list.html'>Extras</a>
+      <a id='class_list_link' href='../../class_list.html'>Classes</a>
+      <a id='file_list_link' href='../../file_list.html'>Files</a>
+      <a id='method_list_link' href='../../method_list.html'>Methods</a>
+      <a id='extra_list_link' href='../../extra_list.html'>Extras</a>
     </div>
   </div>
   <iframe id='search_frame'></iframe>
@@ -106,94 +108,64 @@
     <div id='content'>
       <h1>
         File:
-        core.coffee
+        extend.coffee
       </h1>
       <table class='box'>
         <tr>
           <td>Defined in:</td>
-          <td></td>
+          <td>utils</td>
         </tr>
       </table>
       <h2>Method Summary</h2>
       <ul class='summary'>
   <li>
     <span class='signature'>
-      <a href='#transform-file'>
-        ? (Object) <strong>transform</strong>(textarea, options = {})
+      <a href='#clone-file'>
+        ? (Object) <strong>clone</strong>(a)
       </a>
     </span>
     <span class='desc'>
-      Transform a normal textarea to femto
+      Clone object
     </span>
   </li>
   <li>
     <span class='signature'>
-      <a href='#transformAll-file'>
-        ? (Object) <strong>transformAll</strong>(options)
+      <a href='#extend-file'>
+        ? (Object) <strong>extend</strong>(a, b)
       </a>
     </span>
     <span class='desc'>
-      Transform all normal textarea in the document to femto
+      Extend object like jQuery extend method
     </span>
   </li>
 </ul>
       <h2>Method Details</h2>
       <div class='methods'>
   <div class='method_details'>
-    <p class='signature' id='transform-file'>
-      ? (Object) <strong>transform</strong>(textarea, options = {})
+    <p class='signature' id='clone-file'>
+      ? (Object) <strong>clone</strong>(a)
     </p>
     <div class='docstring'>
-  <p>Transform a normal textarea to femto</p>
+  <p>Clone object</p>
+  <div class='examples'>
+    <h3>Examples:</h3>
+    <h4>
+      
+    </h4>
+    <pre><code class='coffee'>a = {&#39;a&#39;: 1, &#39;b&#39;: 2}
+b = clone(a)</code></pre>
+  </div>
 </div>
 <div class='tags'>
   <h3>Parameters:</h3>
   <ul class='param'>
     <li>
-      <span class='name'>textarea</span>
+      <span class='name'>a</span>
       <span class='type'>
         (<tt>Object</tt>)
       </span>
       &mdash;
-      <span class='desc'>a textarea DOM element</span>
-    </li>
-  </ul>
-  <h3>
-    Options Hash:
-    (option):
-  </h3>
-  <ul class='options'>
-    <li>
-      <span class='name'>caretaker</span>
-      <span class='type'>
-        (<tt>Boolean</tt>)
-      </span>
-      &mdash;
-      <span class='desc'>enable caretaker feature (Undo/Redo)</span>
-    </li>
-    <li>
-      <span class='name'>indent</span>
-      <span class='type'>
-        (<tt>Boolean</tt>)
-      </span>
-      &mdash;
-      <span class='desc'>enable indent feature</span>
-    </li>
-    <li>
-      <span class='name'>expandTab</span>
-      <span class='type'>
-        (<tt>Boolean</tt>)
-      </span>
-      &mdash;
-      <span class='desc'>use continuous spaces instead of tab</span>
-    </li>
-    <li>
-      <span class='name'>indentLevel</span>
-      <span class='type'>
-        (<tt>Integer</tt>)
-      </span>
-      &mdash;
-      <span class='desc'>the number of spaces for indent</span>
+      <span class='desc'>an object will be cloned</span>
     </li>
   </ul>
   <h3>Returns:</h3>
@@ -202,55 +174,45 @@
       <span class='type'></span>
       (<tt>Object</tt>)
       &mdash;
-      <span class='desc'>a textarea DOM element with several features</span>
+      <span class='desc'>an object cloned</span>
     </li>
   </ul>
 </div>
   </div>
   <div class='method_details'>
-    <p class='signature' id='transformAll-file'>
-      ? (Object) <strong>transformAll</strong>(options)
+    <p class='signature' id='extend-file'>
+      ? (Object) <strong>extend</strong>(a, b)
     </p>
     <div class='docstring'>
-  <p>Transform all normal textarea in the document to femto</p>
+  <p>Extend object like jQuery extend method</p>
+  <div class='examples'>
+    <h3>Examples:</h3>
+    <h4>
+      
+    </h4>
+    <pre><code class='coffee'>a = {&#39;a&#39;: 1, &#39;b&#39;: 2}
+b = {&#39;a&#39;: 2}
+c = extend(b, a)  # -&gt; {&#39;a&#39;: 2, &#39;b&#39;: 2}</code></pre>
+  </div>
 </div>
 <div class='tags'>
-  <h3>
-    Options Hash:
-    (option):
-  </h3>
-  <ul class='options'>
+  <h3>Parameters:</h3>
+  <ul class='param'>
     <li>
-      <span class='name'>caretaker</span>
+      <span class='name'>a</span>
       <span class='type'>
-        (<tt>Boolean</tt>)
+        (<tt>Object</tt>)
       </span>
       &mdash;
-      <span class='desc'>enable caretaker feature (Undo/Redo)</span>
+      <span class='desc'>an object of user specified values</span>
     </li>
     <li>
-      <span class='name'>indent</span>
+      <span class='name'>b</span>
       <span class='type'>
-        (<tt>Boolean</tt>)
+        (<tt>Object</tt>)
       </span>
       &mdash;
-      <span class='desc'>enable indent feature</span>
-    </li>
-    <li>
-      <span class='name'>expandTab</span>
-      <span class='type'>
-        (<tt>Boolean</tt>)
-      </span>
-      &mdash;
-      <span class='desc'>use continuous spaces instead of tab</span>
-    </li>
-    <li>
-      <span class='name'>indentLevel</span>
-      <span class='type'>
-        (<tt>Integer</tt>)
-      </span>
-      &mdash;
-      <span class='desc'>the number of spaces for indent</span>
+      <span class='desc'>an object of default values</span>
     </li>
   </ul>
   <h3>Returns:</h3>
@@ -259,7 +221,7 @@
       <span class='type'></span>
       (<tt>Object</tt>)
       &mdash;
-      <span class='desc'>a textarea DOM element with several features</span>
+      <span class='desc'>an object extended with user specified value</span>
     </li>
   </ul>
 </div>

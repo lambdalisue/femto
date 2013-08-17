@@ -43,7 +43,8 @@ describe 'Femto.utils.Caretaker', ->
       expect(r).to.be.a(Dummy)
       expect(r).to.be.eql(dummy)
 
-    it 'should change originator and return the instance when called with a argument', ->
+    it 'should change originator and return the ' +\
+       'instance when called with a argument', ->
       class Dummy2 extends Dummy
         createMemento: -> return @memento + @memento
       dummy2 = new Dummy2()
@@ -61,7 +62,8 @@ describe 'Femto.utils.Caretaker', ->
       r = instance.save('HELLO')
       expect(r).to.be.eql(instance)
 
-    it 'should call originator `createMemento()` method to get current memento without any argument', ->
+    it 'should call originator `createMemento()` method ' +\
+       'to get current memento without any argument', ->
       o = instance.originator()
       createMemento = o.createMemento
       o.createMemento = -> @createMemento.called = true
@@ -70,7 +72,8 @@ describe 'Femto.utils.Caretaker', ->
       expect(o.createMemento.called).to.be.true
       o.createMemento = createMemento
 
-    it 'should save new memento into `_undoStack` and change `_previous` when called without any argument', ->
+    it 'should save new memento into `_undoStack` and change ' +\
+       '`_previous` when called without any argument', ->
       dummy.memento = 'HELLO'
       instance.save()
       # Caretaker automatically add "" stack to make sure that the undoStack
@@ -80,7 +83,8 @@ describe 'Femto.utils.Caretaker', ->
       expect(instance._undoStack[1]).to.be.eql('HELLO')
       expect(instance._previous).to.be.eql('HELLO')
 
-    it 'should save specified memento into `_undoStack` and change `_previous` when called with a argument', ->
+    it 'should save specified memento into `_undoStack` and ' +\
+       'change `_previous` when called with a argument', ->
       instance.save('HELLO')
       # Caretaker automatically add "" stack to make sure that the undoStack
       # starts from empty statement
@@ -121,7 +125,8 @@ describe 'Femto.utils.Caretaker', ->
       expect(instance._redoStack.length).to.be.eql(0)
       expect(instance._previous).to.be.eql(null)
 
-    it 'should call originator `createMemento()` method to get current value', ->
+    it 'should call originator `createMemento()` ' +\
+       'method to get current value', ->
       o = instance.originator()
       createMemento = o.createMemento
       o.createMemento = -> @createMemento.called = true
@@ -130,7 +135,8 @@ describe 'Femto.utils.Caretaker', ->
       expect(o.createMemento.called).to.be.true
       o.createMemento = createMemento
 
-    it 'should call originator `setMemento(value)` method to change current value', ->
+    it 'should call originator `setMemento(value)` ' +\
+       'method to change current value', ->
       o = instance.originator()
       setMemento = o.setMemento
       o.setMemento = -> @setMemento.called = true
@@ -178,7 +184,8 @@ describe 'Femto.utils.Caretaker', ->
       expect(instance._redoStack.length).to.be.eql(0)
       expect(instance._previous).to.be.eql(null)
 
-    it 'should call originator `createMemento()` method to get current value', ->
+    it 'should call originator `createMemento()` ' +\
+       'method to get current value', ->
       o = instance.originator()
       createMemento = o.createMemento
       o.createMemento = -> @createMemento.called = true
@@ -187,7 +194,8 @@ describe 'Femto.utils.Caretaker', ->
       expect(o.createMemento.called).to.be.true
       o.createMemento = createMemento
 
-    it 'should call originator `setMemento(value)` method to change current value', ->
+    it 'should call originator `setMemento(value)` method ' +\
+       'to change current value', ->
       o = instance.originator()
       setMemento = o.setMemento
       o.setMemento = -> @setMemento.called = true
