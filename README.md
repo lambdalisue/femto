@@ -13,7 +13,7 @@ tested (passed 211 tests).
 Bookmarklet
 --------------------------------------------------------------------------------
 **femto** can be used as a bookmarklet. Drag and drop 
-<a href="javascript:(function(){var s=document.createElement('script');s.src="http://goo.gl/NHDBkx";s.onload=function(){console.log("Loaded");Femto.transformAll();};document.body.appendChild(s);})();" title="femtolet">femtolet</a>
+<a href="javascript:(function(){var s=document.createElement('script');s.src='http://goo.gl/NHDBkx';s.onload=function(){console.log('Loaded');Femto.transformAll();};document.body.appendChild(s);})();" title="femtolet">femtolet</a>
 on your bookmark toolbar and click whenever you want to enable femto features.
 
 
