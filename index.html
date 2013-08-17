@@ -4,30 +4,40 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="chrome=1">
     <title>Femto by lambdalisue</title>
-
     <link rel="stylesheet" href="stylesheets/styles.css">
     <link rel="stylesheet" href="stylesheets/pygment_trac.css">
-    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+    <script src="javascripts/respond.js"></script>
     <!--[if lt IE 9]>
-    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
     <![endif]-->
+    <!--[if lt IE 8]>
+    <link rel="stylesheet" href="stylesheets/ie.css">
+    <![endif]-->
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+
   </head>
   <body>
+      <div id="header">
+        <nav>
+          <li class="fork"><a href="https://github.com/lambdalisue/femto">View On GitHub</a></li>
+          <li class="downloads"><a href="https://github.com/lambdalisue/femto/zipball/master">ZIP</a></li>
+          <li class="downloads"><a href="https://github.com/lambdalisue/femto/tarball/master">TAR</a></li>
+          <li class="title">DOWNLOADS</li>
+        </nav>
+      </div><!-- end header -->
+
     <div class="wrapper">
-      <header>
-        <h1>Femto</h1>
-        <p>A minimum featured textarea</p>
 
-        <p class="view"><a href="https://github.com/lambdalisue/femto">View the Project on GitHub <small>lambdalisue/femto</small></a></p>
-
-
-        <ul>
-          <li><a href="https://github.com/lambdalisue/femto/zipball/master">Download <strong>ZIP File</strong></a></li>
-          <li><a href="https://github.com/lambdalisue/femto/tarball/master">Download <strong>TAR Ball</strong></a></li>
-          <li><a href="https://github.com/lambdalisue/femto">View On <strong>GitHub</strong></a></li>
-        </ul>
-      </header>
       <section>
+        <div id="title">
+          <h1>Femto</h1>
+          <p>A minimum featured textarea</p>
+          <hr>
+          <span class="credits left">Project maintained by <a href="https://github.com/lambdalisue">lambdalisue</a></span>
+          <span class="credits right">Hosted on GitHub Pages &mdash; Theme by <a href="https://twitter.com/michigangraham">mattgraham</a></span>
+        </div>
+
         <h1>
 <a name="femto-" class="anchor" href="#femto-"><span class="octicon octicon-link"></span></a>femto <a href="https://travis-ci.org/lambdalisue/femto"><img src="https://travis-ci.org/lambdalisue/femto.png" alt="Build Status"></a>
 </h1>
@@ -46,9 +56,14 @@ tested (passed 211 tests).</p>
 </ul><h2>
 <a name="bookmarklet" class="anchor" href="#bookmarklet"><span class="octicon octicon-link"></span></a>Bookmarklet</h2>
 
-<p><strong>femto</strong> can be used as a bookmarklet. Drag and drop 
-<a href="javascript:(function(){var s=document.createElement('script');s.src='http://goo.gl/NHDBkx';s.onload=function(){console.log('Loaded');Femto.transformAll();};document.body.appendChild(s);})();" title="femtolet">femtolet</a>
-on your bookmark toolbar and click whenever you want to enable femto features.</p>
+<p><strong>femto</strong> can be used as a bookmarklet and then you can enable to use features
+of femto anywhere.
+Because github does not allow me to paste bookmarklet as a link.
+You need to make the bookmarklet as your self. The following is a code of the
+bookmarklet. Use it with your own responsibility.</p>
+
+<div class="highlight"><pre><span class="nx">javascript</span><span class="o">:</span><span class="p">(</span><span class="kd">function</span><span class="p">(){</span><span class="kd">var</span> <span class="nx">s</span><span class="o">=</span><span class="nb">document</span><span class="p">.</span><span class="nx">createElement</span><span class="p">(</span><span class="s1">'script'</span><span class="p">);</span><span class="nx">s</span><span class="p">.</span><span class="nx">src</span><span class="o">=</span><span class="s1">'http://goo.gl/NHDBkx'</span><span class="p">;</span><span class="nx">s</span><span class="p">.</span><span class="nx">onload</span><span class="o">=</span><span class="kd">function</span><span class="p">(){</span><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">'Loaded'</span><span class="p">);</span><span class="nx">Femto</span><span class="p">.</span><span class="nx">transformAll</span><span class="p">();};</span><span class="nb">document</span><span class="p">.</span><span class="nx">body</span><span class="p">.</span><span class="nx">appendChild</span><span class="p">(</span><span class="nx">s</span><span class="p">);})();</span>
+</pre></div>
 
 <h2>
 <a name="usage" class="anchor" href="#usage"><span class="octicon octicon-link"></span></a>Usage</h2>
@@ -113,12 +128,9 @@ on your bookmark toolbar and click whenever you want to enable femto features.</
 
 <p>© 2012-2013 Alisue, hashnote.net</p>
       </section>
-      <footer>
-        <p>This project is maintained by <a href="https://github.com/lambdalisue">lambdalisue</a></p>
-        <p><small>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a></small></p>
-      </footer>
+
     </div>
-    <script src="javascripts/scale.fix.js"></script>
+    <!--[if !IE]><script>fixScale(document);</script><![endif]-->
               <script type="text/javascript">
             var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
             document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
