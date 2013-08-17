@@ -13,10 +13,13 @@
 </head>
 <body>
 	<textarea id="femto"></textarea>
+  <p><a href="javascript:void(0);" onclick="javascript:textarea.femto.enable(); return false;">Enable</a></p>
+  <p><a href="javascript:void(0);" onclick="javascript:textarea.femto.disable(); return false;">Disable</a></p>
 	<script src="js/app.debug.js"></script>
 	<script>
+	  var textarea;
     window.onload = function() {
-      var textarea, options;
+      var options;
       options = {};
       textarea = document.getElementById("femto");
       textarea = Femto.transform(textarea, options);

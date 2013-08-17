@@ -23,8 +23,13 @@ class Indent
     @_newlinep = new RegExp("^(?:#{@_makeTabString(@options.indentLevel)})*")
     @_leadingp = new RegExp("^\\s*")
     # create caret and linecaret instance
-    @caret = new Femto.utils.Caret(@textarea)
+    @caret = new Femto.utils.Caret(@textarea, true)
     @linecaret = new Femto.utils.LineCaret(@textarea)
+    # scrollTop regulation Y
+    style = document.defaultView.getComputedStyle(@textarea)
+    @offsetY = parseFloat(style.paddingTop) + parseFloat(style.borderTopWidth)
+    @offsetY = @offsetY >> 0
+
 
   # Create tabString of each levels
   #
@@ -203,6 +208,10 @@ class Indent
       return true if e.shiftKey
       # insert newline with appropriate indent characters
       @insertNewLine()
+      caretY = @caret.coordinate().bottom
+      offset = caretY - @textarea.scrollTop - @textarea.clientHeight
+      if offset > 0
+        @textarea.scrollTop += offset + @offsetY
     # cancel bubbling immediately
     #e.stopImmediatePropagation()
     # cancel bubbling and default behavior

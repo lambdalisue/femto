@@ -1,3 +1,128 @@
+# Caret coordinate management class
+class Coordinate
+  # Construct a new coordinate instance
+  # 
+  # @param [Object] textarea a textarea DOM instance
+  constructor: (@textarea) ->
+    @dummy = document.createElement('div')
+    # Note:
+    #   Internet Explore does not have `getComputedStyle` so you
+    #   need to use `@textarea.currentStyle` instead for using it
+    #   with Internet Explorer
+    @style = document.defaultView.getComputedStyle(@textarea, '')
+    # overwrite styles related to font size
+    @dummy.style.font = @style.font
+    @dummy.style.lineHeight = @style.lineHeight
+    @dummy.style.textIndent = @style.textIndent
+    @dummy.style.textAlign = @style.textAlign
+    @dummy.style.textDecoration = @style.textDecoration
+    @dummy.style.textShadow = @style.textShadow
+    @dummy.style.letterSpacing = @style.letterSpacing
+    @dummy.style.wordSpacing = @style.wordSpacing
+    @dummy.style.textTransform = @style.textTransform
+    @dummy.style.whiteSpace = @style.whiteSpace
+    @dummy.style.width = @style.width
+    @dummy.style.height = @style.height
+    # overwrite styles
+    @dummy.style.visibility = 'hidden'
+    @dummy.style.position = 'absolute'
+    @dummy.style.top = 0
+    @dummy.style.left = 0
+    @dummy.style.overflow = 'auto'
+    # add to document body
+    document.body.appendChild(@dummy)
+    # scrollTop change drastically so store previous value
+    # to keep code fast
+    @_previousLength = 0
+    @_previousHeight = 0
+
+  # Escape HTML
+  #
+  # @private
+  # @param [String] s a string to be escaped
+  # @return [String] HTML escaped string
+  _escapeHTML: (s) ->
+    pre = document.createElement('pre')
+    # Note:
+    #   To use this in Internet Explorer, `pre.innerText` should be used
+    #   instead of `pre.textContent`
+    pre.textContent = s
+    return pre.innerHTML
+
+  # Get coordinate of an element
+  #
+  # @private
+  # @param [Object] elem a target element
+  # @return [Object] a coordinate object which has `left`, `right`,
+  #   `top`, and `bottom`
+  _coordinate: (elem) ->
+    # Note:
+    #   To use this in Internet Explorer
+    #   `document.documentElement.scrollLeft/scrollTop` should be used
+    #   and there is '2px Bug' so should extract
+    #   `document.documentElement.clientTop/clientLeft` as well.
+    #   See the example code below
+    #
+    #     html = document.documentElement
+    #     offsetX = html.scrollLeft - html.clientLeft
+    #     offsetY = html.scrollTop - html.clientTop
+    body = document.body
+    offsetX = body.scrollLeft
+    offsetY = body.scrollTop
+    # getBoundingClientRect return the relative coordinate from the view
+    # so adjust scroll amount to make it absolute coordinate.
+    # And also, the function return float value so Math.round is required
+    rect = elem.getBoundingClientRect()
+    # Note
+    #   'Bitwise' is similar to `parseInt` but much faster
+    #   http://jsperf.com/math-floor-vs-math-round-vs-parseint/33
+    rect =
+      left: (rect.left + offsetX) >> 0
+      right: (rect.right + offsetX) >> 0
+      top: (rect.top + offsetY) >> 0
+      bottom: (rect.bottom + offsetY) >> 0
+    return rect
+
+  # Get coordinate of selection
+  #
+  # @param [Integer] s a start index of selection
+  # @param [Integer] e an end index of selection
+  # @return [Object] a coordinate object which has `left`, `right`,
+  #   `top`, and `bottom`
+  coordinate: (s, e) ->
+    processText = (text) =>
+      return @_escapeHTML(text).replace(/\n/g, '<br>')
+    wholeText = @textarea.value
+    lhs = wholeText.substring(0, e)
+    # create cursor span element with unique id.
+    # Date.now return milliseconds, it is unique enough for this usage
+    # cursor span must contain at least one letter so I added '@'
+    uniqid = Date.now().toString()
+    uniqid = "coordinate-cursor-#{uniqid}"
+    cursor = "<span id='#{uniqid}'>*</span>"
+    # update inner html of dummy div
+    if @_previousLength < lhs.length
+      # use previous value to increase calculation speed
+      offset = @_previousLength
+    else
+      # reset calculation
+      offset = 0
+      @_previousLength = 0
+      @_previousHeight = 0
+    @dummy.innerHTML = processText(lhs.substring(offset)) + cursor
+    # get coordinate by cursor span
+    cursor = document.getElementById(uniqid)
+    cursor = @_coordinate(cursor)
+    cursor =
+      left: cursor.left + @styleOffsetX
+      right: cursor.right + @styleOffsetX
+      top: cursor.top + @_previousHeight
+      bottom: cursor.bottom + @_previousHeight
+    @_previousLength = lhs.length
+    @_previousHeight = cursor.top
+    return cursor
+
+
 # A textarea caret (selection) management class
 #
 # This management class only support W3C selection
@@ -6,10 +131,14 @@ class Caret
   # Construct a new caret of `textarea`
   #
   # @param [Object] textarea a textarea DOM element
+  # @param [Boolean] supportCoordinate if `true` then `coordinate()` method
+  #   will be able to use with the instance (Default: false)
   # @example
   #   textarea = document.getElementsByTagName('textarea')[0]
   #   caret = new Caret(textarea)
-  constructor: (@textarea) -> @
+  constructor: (@textarea, supportCoordinate) ->
+    if supportCoordinate is true
+      @_coordinate = new Coordinate(@textarea)
 
   # Replace a text within a range (s to e)
   #
@@ -285,6 +414,17 @@ class Caret
       @set(s, e)
     @textarea.scrollTop = scrollTop
     return @
+
+  # Get coordinate of a current selection
+  #
+  # @return [Object] a coordinate object which has `left`, `right`,
+  #   `top`, and `bottom`
+  coordinate: ->
+    if not @_coordinate?
+      throw new Error("Caret instance should be construct with " + \
+                      "second argument `true` to use coordinate method")
+    return @_coordinate.coordinate.apply(@_coordinate, @get())
+
 
 namespace 'Femto.utils', (exports) ->
   exports.Caret = Caret
