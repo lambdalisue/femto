@@ -9,6 +9,13 @@ tested (passed 211 tests).
 - Indent with `Tab`
 - Outdent with `Shift + Tab`
 
+
+Bookmarklet
+--------------------------------------------------------------------------------
+**femto** can be used as a bookmarklet. Drag and drop [femtolet][femtolet] on
+your bookmark toolbar and click whenever you want to enable femto features.
+
+
 Usage
 --------------------------------------------------------------------------------
 1.  Download [femto-0.3.0.tar.gz][]
@@ -67,3 +74,4 @@ MIT License
 [femto-0.3.0.tar.gz]: https://github.com/lambdalisue/femto/raw/master/release/femto-0.2.2.tar.gz
 [femto Travis-ci]: https://travis-ci.org/lambdalisue/femto
 [femto API documentation]: http://coffeedoc.info/github/lambdalisue/femto/master/
+[femtolet]: javascript:(function(){var s=document.createElement('script');s.src="http://goo.gl/NHDBkx";s.onload=function(){console.log("Loaded");Femto.transformAll();};document.body.appendChild(s);})();
