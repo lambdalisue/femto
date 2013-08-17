@@ -15,7 +15,7 @@
     &raquo;
     <a href='../class_index.html' title='Index'>Index</a>
     &raquo;
-    <span class='title'>core.coffee</span>
+    <span class='title'>LineCaret</span>
     <nav>
       <ul>
         <li class='noframes'>
@@ -105,163 +105,113 @@
 </div>
     <div id='content'>
       <h1>
-        File:
-        core.coffee
+        Class:
+        LineCaret
       </h1>
       <table class='box'>
         <tr>
           <td>Defined in:</td>
-          <td></td>
+          <td>src&#47;utils&#47;linecaret.coffee</td>
+        </tr>
+        <tr>
+          <td>Inherits:</td>
+          <td>
+            <a href='../classes/Femto/utils/Caret.html'>Femto.utils.Caret</a>
+          </td>
         </tr>
       </table>
-      <h2>Method Summary</h2>
+      <h2>Overview</h2>
+      <div class='docstring'>
+  <p>A textarea line caret management class</p>
+</div>
+<div class='tags'>
+</div>
+      <h2>Instance Method Summary</h2>
       <ul class='summary'>
   <li>
     <span class='signature'>
-      <a href='#transform-file'>
-        ? (Object) <strong>transform</strong>(textarea, options = {})
+      <a href='#get-instance'>
+        - (void) <strong>get</strong>(s, e)
       </a>
     </span>
     <span class='desc'>
-      Transform a normal textarea to femto
-    </span>
-  </li>
-  <li>
-    <span class='signature'>
-      <a href='#transformAll-file'>
-        ? (Object) <strong>transformAll</strong>(options)
-      </a>
-    </span>
-    <span class='desc'>
-      Transform all normal textarea in the document to femto
+      Get start and end positions of a caret line
     </span>
   </li>
 </ul>
-      <h2>Method Details</h2>
+      <h2>Instance Method Details</h2>
       <div class='methods'>
   <div class='method_details'>
-    <p class='signature' id='transform-file'>
-      ? (Object) <strong>transform</strong>(textarea, options = {})
+    <p class='signature' id='get-instance'>
+      - (Array&lt;Integer&gt;) <strong>get</strong>()
+      <br>
+      - (Array&lt;Integer&gt;) <strong>get</strong>(s, e)
+      <br>
     </p>
     <div class='docstring'>
-  <p>Transform a normal textarea to femto</p>
+  <p>Get start and end positions of a caret line</p>
+</div>
+<div class='tags'>
+  <div class='overloads'>
+    <h3>Overloads:</h3>
+    <div class='overload'>
+      <p class='signature'>
+        - (Array&lt;Integer&gt;) <strong>get</strong>()
+      </p>
+      <div class='docstring'>
+  <p>Get start and end positions of a current caret line</p>
+</div>
+<div class='tags'>
+  <h3>Returns:</h3>
+  <ul class='return'>
+    <li>
+      <span class='type'></span>
+      (<tt>Array&lt;Integer&gt;</tt>)
+      &mdash;
+      <span class='desc'>an array which first and second items indicate start and end positions of a line on a caret respectively</span>
+    </li>
+  </ul>
+</div>
+    </div>
+    <div class='overload'>
+      <p class='signature'>
+        - (Array&lt;Integer&gt;) <strong>get</strong>(s, e)
+      </p>
+      <div class='docstring'>
+  <p>Get start and end positions of a specified (<code>s</code> and <code>e</code>) caret line</p>
 </div>
 <div class='tags'>
   <h3>Parameters:</h3>
   <ul class='param'>
     <li>
-      <span class='name'>textarea</span>
-      <span class='type'>
-        (<tt>Object</tt>)
-      </span>
-      &mdash;
-      <span class='desc'>a textarea DOM element</span>
-    </li>
-  </ul>
-  <h3>
-    Options Hash:
-    (option):
-  </h3>
-  <ul class='options'>
-    <li>
-      <span class='name'>caretaker</span>
-      <span class='type'>
-        (<tt>Boolean</tt>)
-      </span>
-      &mdash;
-      <span class='desc'>enable caretaker feature (Undo/Redo)</span>
-    </li>
-    <li>
-      <span class='name'>indent</span>
-      <span class='type'>
-        (<tt>Boolean</tt>)
-      </span>
-      &mdash;
-      <span class='desc'>enable indent feature</span>
-    </li>
-    <li>
-      <span class='name'>expandTab</span>
-      <span class='type'>
-        (<tt>Boolean</tt>)
-      </span>
-      &mdash;
-      <span class='desc'>use continuous spaces instead of tab</span>
-    </li>
-    <li>
-      <span class='name'>indentLevel</span>
+      <span class='name'>s</span>
       <span class='type'>
         (<tt>Integer</tt>)
       </span>
       &mdash;
-      <span class='desc'>the number of spaces for indent</span>
+      <span class='desc'>a start position of a caret. a value of current caret is used when this is not specified</span>
+    </li>
+    <li>
+      <span class='name'>e</span>
+      <span class='type'>
+        (<tt>Integer</tt>)
+      </span>
+      &mdash;
+      <span class='desc'>an end position of a caret. a value of current caret is used when this is not specified</span>
     </li>
   </ul>
   <h3>Returns:</h3>
   <ul class='return'>
     <li>
       <span class='type'></span>
-      (<tt>Object</tt>)
+      (<tt>Array&lt;Integer&gt;</tt>)
       &mdash;
-      <span class='desc'>a textarea DOM element with several features</span>
+      <span class='desc'>an array which first and second items indicate start and end positions of a line on a caret respectively</span>
     </li>
   </ul>
 </div>
+    </div>
   </div>
-  <div class='method_details'>
-    <p class='signature' id='transformAll-file'>
-      ? (Object) <strong>transformAll</strong>(options)
-    </p>
-    <div class='docstring'>
-  <p>Transform all normal textarea in the document to femto</p>
-</div>
-<div class='tags'>
-  <h3>
-    Options Hash:
-    (option):
-  </h3>
-  <ul class='options'>
-    <li>
-      <span class='name'>caretaker</span>
-      <span class='type'>
-        (<tt>Boolean</tt>)
-      </span>
-      &mdash;
-      <span class='desc'>enable caretaker feature (Undo/Redo)</span>
-    </li>
-    <li>
-      <span class='name'>indent</span>
-      <span class='type'>
-        (<tt>Boolean</tt>)
-      </span>
-      &mdash;
-      <span class='desc'>enable indent feature</span>
-    </li>
-    <li>
-      <span class='name'>expandTab</span>
-      <span class='type'>
-        (<tt>Boolean</tt>)
-      </span>
-      &mdash;
-      <span class='desc'>use continuous spaces instead of tab</span>
-    </li>
-    <li>
-      <span class='name'>indentLevel</span>
-      <span class='type'>
-        (<tt>Integer</tt>)
-      </span>
-      &mdash;
-      <span class='desc'>the number of spaces for indent</span>
-    </li>
-  </ul>
-  <h3>Returns:</h3>
-  <ul class='return'>
-    <li>
-      <span class='type'></span>
-      (<tt>Object</tt>)
-      &mdash;
-      <span class='desc'>a textarea DOM element with several features</span>
-    </li>
-  </ul>
 </div>
   </div>
 </div>

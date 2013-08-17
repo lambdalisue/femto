@@ -130,6 +130,12 @@
   </div>
 </div>
 <div class='tags'>
+  <h3>See also:</h3>
+  <ul class='see'>
+    <li>
+      <a href='../classes/Caretaker.html'>Caretaker</a>
+    </li>
+  </ul>
 </div>
       <h2>Instance Method Summary</h2>
       <ul class='summary'>
@@ -146,7 +152,7 @@
   <li>
     <span class='signature'>
       <a href='#setMemento-instance'>
-        - (void) <strong>setMemento</strong>(memento)
+        - (Originator) <strong>setMemento</strong>(memento)
       </a>
     </span>
     <span class='desc'>
@@ -172,9 +178,9 @@
   <ul class='throw'>
     <li>
       <span class='type'></span>
-      (<tt>?</tt>)
+      (<tt>Error</tt>)
       &mdash;
-      <span class='desc'>Not implemented yet</span>
+      <span class='desc'>throw &quot;Not implemented yet&quot; error</span>
     </li>
   </ul>
   <h3>Returns:</h3>
@@ -190,7 +196,7 @@
   </div>
   <div class='method_details'>
     <p class='signature' id='setMemento-instance'>
-      - (void) <strong>setMemento</strong>(memento)
+      - (Originator) <strong>setMemento</strong>(memento)
     </p>
     <div class='docstring'>
   <div class='note'>
@@ -215,9 +221,18 @@
   <ul class='throw'>
     <li>
       <span class='type'></span>
-      (<tt>?</tt>)
+      (<tt>Error</tt>)
       &mdash;
-      <span class='desc'>Not implemented yet</span>
+      <span class='desc'>throw &quot;Not implemented yet&quot; error</span>
+    </li>
+  </ul>
+  <h3>Returns:</h3>
+  <ul class='return'>
+    <li>
+      <span class='type'></span>
+      (<tt><a href='../classes/Originator.html'>Originator</a></tt>)
+      &mdash;
+      <span class='desc'>an instance of Originator</span>
     </li>
   </ul>
 </div>
@@ -226,10 +241,10 @@
     </div>
     <div id='footer'>
   Generated on
-  Thu Aug 15 2013 16:04:47 GMT+0900 (JST)
+  Sat Aug 17 2013 20:41:45 GMT+0900 (JST)
   by
   <a href='https://github.com/netzpirat/codo' title='CoffeeScript API documentation generator'>Codo</a>
-  v1.5.6
+  v1.7.0
   (Node.js v0.11.3).
   &#10034;
   Press Ctrl-h to see the keyboard shortcuts

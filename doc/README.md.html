@@ -115,43 +115,26 @@
         </p>
       </nav>
       <div id='filecontents'>
-        <h1>femto <a href="https://travis-ci.org/lambdalisue/femto"><img src="https://travis-ci.org/lambdalisue/femto.png" alt="Build Status"></a></h1><p>A well tested simple and powerful web based text editor (Version: 0.1.1).</p><p><strong>femto</strong> allow you to add a simple and powerful text editor on your web site.
-It is assumed to use for writing a Markup text.
+        <h1>femto <a href="https://travis-ci.org/lambdalisue/femto"><img src="https://travis-ci.org/lambdalisue/femto.png" alt="Build Status"></a></h1><p>A minimum featured textarea</p><p><strong>femto</strong> allow you to add a simple text editor for writing some kind of Markup
+language.
 It helps user to write these kind of text with the following features:</p><ul>
-<li><p>Preview panel (bundle)</p><p>femto has a preview panel to check the output of the current text.
-It is under developping now</p></li>
-<li><p>DocumentType (bundle)</p><p>femto can treat different types of document such as Markdown, Textile or so
-on. See Usage for more detail.</p></li>
-<li><p><code>TAB</code> indent and <code>SHIFT + TAB</code> outdent (features)</p><p><code>TAB</code> key move the focus to the next object in browser default <code>textarea</code>.
+<li><p><code>TAB</code> indent and <code>SHIFT + TAB</code> outdent</p><p><code>TAB</code> key move the focus to the next object in browser default <code>textarea</code>.
 However most desktop text editor use <code>TAB</code> key for indent.</p></li>
-<li><p>Auto indent (Keep indent) (features)</p><p>Some desktop text editor automatically keep indent level when user hit
+<li><p>Auto indent (Keep indent)</p><p>Some desktop text editor automatically keep indent level when user hit
 <code>RETURN</code> key. It is useful when user write a kind of Markup text which use
 indent as a blockquote or code block.</p></li>
-<li><p>Smart indent (plugin)</p><p>With <code>smartIndent</code> plugin, femto automatically insert a Markup specified
-leading characters like <code>&gt;</code> in Markdown or <code>#.</code> in reStructuredText.
-It has not developed yet.</p></li>
-<li><p>Fullscreen (plugin)</p><p>With <code>fullscreen</code> plugin, user can use femto in fullscreen mode.
-It has not developed yet.</p></li>
-<li><p>Mobile support (plugin)</p><p>With <code>mobile</code> plugin, user can use femto in smart phone like iPhone.
-It has not developed yet.</p></li>
-<li><p>Attachment (plugin)</p><p>With <code>attachment</code> plugin, user can attach files like Image or Zip to the
-text. It use some free upload services or user specified upload services to
-store files.
-It has not developed yet.</p></li>
+<li><p>Complete Undo/Redo</p><p>femto has its own Undo / Redo feature</p></li>
 </ul>
 <h2>Usage</h2>
 <ol>
-<li><p>Download the following files</p><ul>
-<li><a href="https://raw.github.com/lambdalisue/femto/master/publish/femto.js">femto.js</a></li>
-<li><a href="https://raw.github.com/lambdalisue/femto/master/publish/femto.css">femto.css</a></li>
-</ul>
-</li>
-<li><p>Copy the files into <code>femto</code> directory like</p><pre><code>+ www
+<li><p>Download <a href="https://raw.github.com/lambdalisue/femto/master/release/femto-0.2.2.tar.gz">femto-0.2.2.tar.gz</a>
+and extract it</p></li>
+<li><p>Copy extracted files into <code>femto</code> directory like</p><pre><code>+ www
     +- index.html
     +- js
         +- femto
-            +- femto.js
-            +- femto.css</code></pre>
+            +- femto-0.2.2.js
+            +- femto-0.2.2.css</code></pre>
 </li>
 <li><p>Write <code>index.html</code> as:</p><pre><code class="lang-html">&lt;html&gt;
     &lt;head&gt;
@@ -163,63 +146,21 @@ It has not developed yet.</p></li>
         &lt;script src=&quot;js/femto/femto.js&quot;&gt;&lt;/script&gt;
         &lt;script&gt;
             $(function() {
-                var textarea;
-                textarea = $(&#39;textarea#femto-demo&#39;);
-                textarea = Femto.transform(textarea);
+                var options = {};
+                // set options if necessary
+                $(&#39;textarea#femto-demo&#39;).femto(options);
             });
         &lt;/script&gt;
     &lt;/body&gt;
 &lt;/html&gt;</code></pre>
 </li>
 </ol>
-<h3>Disable features of each femto instance</h3><p>If you want to disable features of each femto instance, follow the steps below:</p><pre><code class="lang-javascript">var textarea;
-textarea = $(&#39;textarea#femto-demo&#39;);
-textarea = Femto.transform(textarea);
-// if you want to disable `indent` feature
-textarea.features.indent.disable();</code></pre>
-<h3>Disable features globally</h3><p>If you want to disable features of all femto instance, follow the steps below:</p><pre><code class="lang-javascript">// You have to disable features before you make the instance
-del Femto.features.indent;
-var textarea;
-textarea = $(&#39;textarea#femto-demo&#39;);
-textarea = Femto.transform(textarea);</code></pre>
-<h3>Enable Markup language</h3><p>You can use any external libraries to convert markup into html.</p><p>See the sample code below (<a href="https://github.com/chjj/marked">chjj/marked</a>,
-<a href="https://github.com/borgar/textile-js">borgar/textile.js</a> and
-<a href="https://github.com/nitoyon/text-hatena.js">nitoyon/text-hatena.js</a> are used in
-the following code.)</p><pre><code class="lang-html">&lt;!-- marked by chjj --&gt;
-&lt;script src=&quot;https://raw.github.com/chjj/marked/master/lib/marked.js&quot;&gt;&lt;/script&gt;
-&lt;!-- textile-js by borgar --&gt;
-&lt;script src=&quot;https://raw.github.com/borgar/textile-js/master/lib/textile.js&quot;&gt;&lt;/script&gt;
-&lt;!-- text-hatena.js by nitoyon --&gt;
-&lt;script src=&quot;https://raw.github.com/nitoyon/text-hatena.js/master/text-hatena.js&quot;&gt;&lt;/script&gt;
-&lt;script src=&quot;femto/femto.js&quot;&gt;&lt;/script&gt;
-&lt;script&gt;
-    $(function() {
-        var markdown_filter = function(text) {
-            marked.setOptions({gfm: false, tables: false, breaks: false});
-            return marked(text);
-        };
-        var gfm_filter = function(text) {
-            marked.setOptions({gfm: true, tables: true, breaks: true});
-            return marked(text);
-        };
-        var textile_filter = textile;
-        var hatena_filter = function(text) {
-            var parser = new TextHatena();
-            return parser.parse(text);
-        };
-        var options = {
-            documentTypes: {
-            &#39;markdown&#39;: markdown_filter,
-            &#39;gfm&#39;: gfm_filter,
-            &#39;textile&#39;: textile_filter,
-            &#39;Hatena&#39;: hatena_filter
-            }
-        };
-        var femto;
-        femto = $(&#39;textarea#femto&#39;);
-        femto = Femto.transform(femto, options);
-    }
-&lt;/script&gt;</code></pre>
+<h3>Options</h3>
+<ul>
+<li><code>expandTab</code> - when true, use spaces instead of tab (default: true)</li>
+<li><code>indentLevel</code> - the number of spaces to describe one indent. it makes sense
+only when <code>expandTab</code> is true (default: 4)</li>
+</ul>
 <h2>Supported browsers</h2><p>The following browsers are supported (or Not Tested yet).</p><ul>
 <li>&#x2713; Google Chrome</li>
 <li>&#x2713; Mozilla Firefox</li>
@@ -241,10 +182,10 @@ the following code.)</p><pre><code class="lang-html">&lt;!-- marked by chjj --&g
     </div>
     <div id='footer'>
   Generated on
-  Thu Aug 15 2013 16:04:47 GMT+0900 (JST)
+  Sat Aug 17 2013 20:41:45 GMT+0900 (JST)
   by
   <a href='https://github.com/netzpirat/codo' title='CoffeeScript API documentation generator'>Codo</a>
-  v1.5.6
+  v1.7.0
   (Node.js v0.11.3).
   &#10034;
   Press Ctrl-h to see the keyboard shortcuts

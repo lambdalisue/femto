@@ -18,11 +18,10 @@
 
 }).call(this);
 
-document.write('<scri'+'pt src="js/toaster/utils/selection.js"></scr'+'ipt>')
-document.write('<scri'+'pt src="js/toaster/utils/selection.ie.js"></scr'+'ipt>')
-document.write('<scri'+'pt src="js/toaster/widgets/widget.js"></scr'+'ipt>')
+document.write('<scri'+'pt src="js/toaster/utils/extend.js"></scr'+'ipt>')
+document.write('<scri'+'pt src="js/toaster/utils/caret.js"></scr'+'ipt>')
+document.write('<scri'+'pt src="js/toaster/utils/linecaret.js"></scr'+'ipt>')
 document.write('<scri'+'pt src="js/toaster/utils/undo.js"></scr'+'ipt>')
-document.write('<scri'+'pt src="js/toaster/utils/shifter.js"></scr'+'ipt>')
-document.write('<scri'+'pt src="js/toaster/widgets/textarea.js"></scr'+'ipt>')
-document.write('<scri'+'pt src="js/toaster/widgets/editor.js"></scr'+'ipt>')
+document.write('<scri'+'pt src="js/toaster/utils/indent.js"></scr'+'ipt>')
 document.write('<scri'+'pt src="js/toaster/core.js"></scr'+'ipt>')
+document.write('<scri'+'pt src="js/toaster/utils/typeof.js"></scr'+'ipt>')
