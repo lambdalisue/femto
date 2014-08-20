@@ -19,7 +19,7 @@ You need to make the bookmarklet as your self. The following is a code of the
 bookmarklet. Use it with your own responsibility.
 
 ```javascript
-javascript:(function(){var s=document.createElement('script');s.src='http://goo.gl/NHDBkx';s.onload=function(){console.log('Loaded');Femto.transformAll();};document.body.appendChild(s);})();
+javascript:(function(){var s=document.createElement('script');s.src='https://rawgit.com/lambdalisue/femto/gh-pages/js/app.js';s.onload=function(){console.log('Loaded');Femto.transformAll();};document.body.appendChild(s);})();
 ```
 
 
