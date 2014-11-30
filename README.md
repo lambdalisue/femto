@@ -25,14 +25,14 @@ javascript:(function(){var s=document.createElement('script');s.src='https://raw
 
 Usage
 --------------------------------------------------------------------------------
-1.  Download [femto-0.3.0.tar.gz][]
+1.  Download [femto-0.3.1.tar.gz][]
 2.  Copy extracted files into js directory like
 
     ```
     + www
       + index.html
       + js
-        + femto-0.3.0.js
+        + femto-0.3.1.js
     ```
 3.  Write index.html as
 
@@ -41,7 +41,7 @@ Usage
     <html>
       <body>
         <textarea id="femto"></textarea>
-        <script src="js/femto-0.3.0.js"></script>
+        <script src="js/femto-0.3.1.js"></script>
         <script>
           // or your can use $(function(){});
           window.onload = function() {
@@ -78,6 +78,6 @@ MIT License
 
 &copy; 2012-2013 Alisue, hashnote.net
 
-[femto-0.3.0.tar.gz]: https://github.com/lambdalisue/femto/raw/master/release/femto-0.2.2.tar.gz
+[femto-0.3.1.tar.gz]: https://github.com/lambdalisue/femto/raw/master/release/femto-0.3.1.tar.gz
 [femto Travis-ci]: https://travis-ci.org/lambdalisue/femto
 [femto API documentation]: http://coffeedoc.info/github/lambdalisue/femto/master/
